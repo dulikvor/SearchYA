@@ -5,20 +5,26 @@
 #include "SyncQueue.h"
 #include "Thread.h"
 
-class AsyncTask;
-
-class AsyncExecutor
+namespace Core
 {
-public:
-    explicit AsyncExecutor(int thredPoolSize = 1);
-    ~AsyncExecutor();
+	class AsyncTask;
+}
 
-    void SpawnTask(AsyncTask* task){m_taskQueue.Push(task);}
+namespace Core
+{
+	class AsyncExecutor
+	{
+	public:
+		explicit AsyncExecutor(int thredPoolSize = 1);
+		~AsyncExecutor();
 
-private:
-    void EntryPoint(void);
+		void SpawnTask(AsyncTask* task){m_taskQueue.Push(task);}
 
-private:
-    std::vector<Thread> m_threadPool;
-    SyncQueue<AsyncTask*> m_taskQueue;
-};
+	private:
+		void EntryPoint(void);
+
+	private:
+		std::vector<Thread> m_threadPool;
+		SyncQueue<AsyncTask*> m_taskQueue;
+	};
+}

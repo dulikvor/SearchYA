@@ -4,7 +4,10 @@
 #include "SyncQueue.h"
 #include "LogElement.h"
 
-class Thread;
+namespace Core
+{
+	class Thread;
+}
 
 class Logger
 {
@@ -19,7 +22,7 @@ private:
     Logger();
     void HandleLog();
 private:
-    std::unique_ptr<Thread> m_thread;
-    SyncQueue<LogElement*> m_queue;
+    std::unique_ptr<Core::Thread> m_thread;
+	Core::SyncQueue<LogElement*> m_queue;
     std::string m_logPath;
 };

@@ -2,14 +2,14 @@
 
 #include "State.h"
 
-class PowerUpState : public State
+class ProcessingState : public State
 {
 public:
-    PowerUpState(){}
-    virtual ~PowerUpState(){}
+    ProcessingState(){}
+    virtual ~ProcessingState(){}
 
     void HandleState(StateContext& stateContext, CommandType commandType, const Params& params) override;
     
 private:
-    void HandleInit(const Params& params);
+    void HandleProcess(const Params& params);
 };

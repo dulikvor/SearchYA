@@ -3,16 +3,11 @@ syntax = "proto3";
 package ClusterService;
 
 service Commands {
-  rpc LoadParams (Params) returns (Empty){}
+  rpc Init (Params) returns (Empty){}
 }
 
 message Empty
 {
-}
-
-enum AlgoType
-{
-    Measurment = 0;
 }
 
 message Param
@@ -32,15 +27,12 @@ message Param
 		bool valueBool = 5;
 		string valueString = 6;
 	}
-
-	ValueType type = 7;
-	string name = 8;
-	repeated string valueStringCollection = 9;
-
+	repeated string valueStringCollection = 7;
+	ValueType type = 8;
+	string name = 9;
 }
 
 message Params
 {
-    AlgoType algoType = 1;
     repeated Param genericParams = 2;
 }

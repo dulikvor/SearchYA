@@ -5,10 +5,10 @@
 
 using namespace grpc;
 
-Status CommandsImpl::LoadParams(ServerContext* context, const ClusterService::Params* request, ClusterService::Empty* response)
+Status CommandsImpl::Init(ServerContext* context, const ClusterService::Params* request, ClusterService::Empty* response)
 {
     Params nativeParams;
     nativeParams.Load(*request);
-    ClusterManager::Instace().NewCommand(CommandType::LoadParams, nativeParams);
+    ClusterManager::Instace().NewCommand(CommandType::Init, nativeParams);
 }
 

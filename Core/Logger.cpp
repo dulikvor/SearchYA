@@ -5,6 +5,7 @@
 #include "Exception.h"
 
 using namespace std;
+using namespace Core;
 
 Logger& Logger::Instance()
 {

@@ -42,12 +42,12 @@ struct VariantParam<X, T, Arg...>
 };
 
 template<typename... Arg>
-struct VariantParamWrapper
+struct VariantHelper
 {
 };
 
 template<typename... Arg>
-struct VariantParamWrapper<TypesCollection<Arg...>>
+struct VariantHelper<TypesCollection<Arg...>>
 {
 	template<typename X>
 	static int GetTypeID()
@@ -57,47 +57,14 @@ struct VariantParamWrapper<TypesCollection<Arg...>>
 };
 
 template<typename... Arg>
-struct Destroyer 
-{
-};
+struct ParamHelper{};
 
 template<typename X>
-struct Destroyer<X>
-{
-	static void Destroy(int& typeID, char* rawBuffer)
-	{
-		if(typeID == VariantParamWrapper<GeneralTypesCollection>::GetTypeID<X>())
-		{
-			delete reinterpret_cast<X*>(rawBuffer);
-		}
-	}
-};
-
-template<typename X, typename... Arg>
-struct Destroyer<X, Arg...>
-{
-	static void Destroy(int& typeID, char* rawBuffer)
-	{
-		if(typeID == VariantParamWrapper<GeneralTypesCollection>::GetTypeID<X>())
-		{
-			delete reinterpret_cast<X*>(rawBuffer);
-		}
-		else
-			Destroyer<Arg...>::Destroy(typeID, rawBuffer);
-	}
-};
-
-template<typename... Arg>
-struct DeepCopier
-{
-};
-
-template<typename X>
-struct DeepCopier<X>
+struct ParamHelper<X>
 {
 	static void Copy(int& typeID, char* myBuffer, char* const objBuffer)
 	{
-		if(typeID == VariantParamWrapper<GeneralTypesCollection>::GetTypeID<X>())
+		if(typeID == VariantHelper<GeneralTypesCollection>::GetTypeID<X>())
 		{
 			char* temp = (char*)malloc(sizeof(char)*sizeof(X));
 			new (temp) X(*reinterpret_cast<X*>(objBuffer));
@@ -105,14 +72,21 @@ struct DeepCopier<X>
 			delete reinterpret_cast<X*>(temp);
 		}
 	}
+	static void Destroy(int& typeID, char* rawBuffer)
+	{
+		if(typeID == VariantHelper<GeneralTypesCollection>::GetTypeID<X>())
+		{
+			delete reinterpret_cast<X*>(rawBuffer);
+		}
+	}
 };
 
 template<typename X, typename... Arg>
-struct DeepCopier<X, Arg...>
+struct ParamHelper<X, Arg...>
 {
-	static void Copy(int& typeID, char* myBuffer, char* const  objBuffer )
+	static void Copy(int& typeID, char* myBuffer, char* const objBuffer)
 	{
-		if(typeID == VariantParamWrapper<GeneralTypesCollection>::GetTypeID<X>())
+		if(typeID == VariantHelper<GeneralTypesCollection>::GetTypeID<X>())
 		{
 			char* temp = (char*)malloc(sizeof(char)*sizeof(X));
 			new (temp) X(*reinterpret_cast<X*>(objBuffer));
@@ -120,7 +94,16 @@ struct DeepCopier<X, Arg...>
 			delete reinterpret_cast<X*>(temp);
 		}
 		else
-			DeepCopier<Arg...>::Copy(typeID, myBuffer, objBuffer);
+			ParamHelper<Arg...>::Copy(typeID, myBuffer, objBuffer);
+	}
+	static void Destroy(int& typeID, char* rawBuffer)
+	{
+		if(typeID == VariantHelper<GeneralTypesCollection>::GetTypeID<X>())
+		{
+			delete reinterpret_cast<X*>(rawBuffer);
+		}
+		else
+			ParamHelper<Arg...>::Destroy(typeID, rawBuffer);
 	}
 };
 
@@ -132,7 +115,7 @@ class Param<TypesCollection<Arg...>>
 {
 public:
     Param():m_rawBuffer(nullptr){}
-    ~Param(){ Destroyer<Arg...>::Destroy(m_typeID, m_rawBuffer); }
+    ~Param(){ ParamHelper<Arg...>::Destroy(m_typeID, m_rawBuffer); }
 
     void operator = (const Param& rhs) = delete;
 
@@ -147,13 +130,13 @@ public:
 	Param(const Param& obj)
 	{
 		m_typeID = obj.GetTypeID();
-		DeepCopier<Arg...>::Copy(m_typeID, m_rawBuffer, obj.GetBuffer());
+		ParamHelper<Arg...>::Copy(m_typeID, m_rawBuffer, obj.GetBuffer());
 	}
 
     Param(Param&& obj)
     {
         m_typeID = obj.GetTypeID();
-		char* newBuffer = obj.GetBuffer();
+		char* newBuffer = obj.ReleaseBuffer();
 		std::swap(m_rawBuffer, newBuffer);
     }
 
@@ -180,11 +163,16 @@ public:
         return *(reinterpret_cast<X*>(m_rawBuffer));
     }
 
+	char* ReleaseBuffer()
+	{
+		char* oldBuffer = m_rawBuffer;
+		m_rawBuffer = nullptr;
+		return oldBuffer;
+	}
     //Accessor
 
     int GetTypeID() const {return m_typeID;}
 	char* const GetBuffer() const { return m_rawBuffer; }
-	char* GetBuffer() { return m_rawBuffer; }
 
 private:
 	void SetPrimitive(const ClusterService::Param& param)
@@ -223,7 +211,7 @@ private:
 				}
 			defualt:
 			{
-				throw Exception(SOURCE, "None supported generic value type was provided");
+				throw Core::Exception(SOURCE, "None supported generic value type was provided");
 			}
 		}
 	}

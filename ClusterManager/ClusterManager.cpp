@@ -3,9 +3,11 @@
 #include "Core/Exception.h"
 #include "Core/Assert.h"
 #include "Core/AsyncTask.h"
+#include "ConfigParams.h"
 #include "Command.h"
 
 using namespace std;
+using namespace Core;
 
 ClusterManager& ClusterManager::Instace()
 {
@@ -20,6 +22,11 @@ ClusterManager::ClusterManager()
 
 ClusterManager::~ClusterManager()
 {
+}
+
+void ClusterManager::Init()
+{
+	//m_scheduler.Initialize();
 }
 
 void ClusterManager::NewCommand(CommandType commandType, const Params &params)

@@ -17,9 +17,6 @@ public:
 
     void Load(const ClusterService::Params& params)
     {
-        GeneralParam nativeAlgoType;
-        nativeAlgoType.Set((int)params.algotype());
-        m_values.push_back({"Algo Type", std::move(nativeAlgoType)});
         for(int index = 0; index < params.genericparams_size(); index++)
         {
             GeneralParam nativeParam;
@@ -41,7 +38,7 @@ public:
         }
         else
         {
-            throw Exception(SOURCE, "A requested key was already existed - %s", key.c_str());
+            throw Core::Exception(SOURCE, "A requested key was already existed - %s", key.c_str());
         }
     }
 	

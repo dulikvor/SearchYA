@@ -14,7 +14,7 @@ int main()
     Logger::Instance().Start("");
 	Params params;
 	params.Load(CreateStubConfig());
-    ClusterManager::Instace().NewCommand(CommandType::LoadParams, params);
+    ClusterManager::Instace().NewCommand(CommandType::Init, params);
     Trace(SOURCE, "Cluster Manager initiated");
     ClusterManager::Instace().WaitForCompletion();
     return 0;

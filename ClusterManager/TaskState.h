@@ -3,14 +3,15 @@
 #include <string>
 #include "Core/Enumeration.h"
 
-class CommandType
+class TaskState
 {
 public:
     enum Enumeration
     {
-		Init,
-        Process,
-        Terminate
+		Starting,
+        Running,
+		Finished,
+		Failed
     };
-ENUMERATION(CommandType)
+ENUMERATION(TaskState)
 };
