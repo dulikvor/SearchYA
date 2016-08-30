@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package ClusterService;
+
+service Commands {
+  rpc LoadParams (Params) returns (Empty){}
+}
+
+message Empty
+{
+}
+
+enum AlgoType
+{
+    Measurment = 0;
+}
+
+enum ParamValueType
+{
+    BOOL = 0;
+    SHORT = 1;
+    INT = 2;
+    LONG = 3;
+    FLOAT = 4;
+    DOUBLE = 5;
+    STRING = 6;
+}
+
+message Param
+{
+    string name = 1;
+    int32 valueInt = 2;
+    int64 valueLong = 3;
+    float valueFloat = 4;
+    double valueDouble = 5;
+    bool valueBool = 6;
+    string valueString = 7;
+    ParamValueType selectedParamValueType = 8;
+}
+
+message Params
+{
+    AlgoType algoType = 1;
+    repeated Param genericParams = 2;
+}
