@@ -27,3 +27,14 @@
 *.exe
 *.out
 *.app
+bin/
+# Cmake
+CMakeCache.txt
+*.cmake
+CMakeFiles/
+#ctags
+tags
+ctags.bash
+.tags/
+#YouCompleteMe
+*ycm*

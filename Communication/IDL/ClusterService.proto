@@ -15,27 +15,28 @@ enum AlgoType
     Measurment = 0;
 }
 
-enum ParamValueType
-{
-    BOOL = 0;
-    SHORT = 1;
-    INT = 2;
-    LONG = 3;
-    FLOAT = 4;
-    DOUBLE = 5;
-    STRING = 6;
-}
-
 message Param
 {
-    string name = 1;
-    int32 valueInt = 2;
-    int64 valueLong = 3;
-    float valueFloat = 4;
-    double valueDouble = 5;
-    bool valueBool = 6;
-    string valueString = 7;
-    ParamValueType selectedParamValueType = 8;
+	enum ValueType
+	{
+		Primitive = 0;
+		StringCollection = 1;
+	}
+	
+	oneof valueOneOf
+	{	
+		int32 valueInt = 1;
+		int64 valueLong = 2;
+		float valueFloat = 3;
+		double valueDouble = 4;
+		bool valueBool = 5;
+		string valueString = 6;
+	}
+
+	ValueType type = 7;
+	string name = 8;
+	repeated string valueStringCollection = 9;
+
 }
 
 message Params
