@@ -8,8 +8,6 @@
 #include "Communication/GeneretedFiles/ClusterService.pb.h"
 #include "Param.h"
 
-typedef Param<short, int, long, float, double, bool, std::string, std::list<std::string>> GeneralParam;
-
 class Params
 {
 public:
@@ -20,7 +18,7 @@ public:
     void Load(const ClusterService::Params& params)
     {
         GeneralParam nativeAlgoType;
-        nativeAlgoType.Set(params.algotype());
+        nativeAlgoType.Set((int)params.algotype());
         m_values.push_back({"Algo Type", std::move(nativeAlgoType)});
         for(int index = 0; index < params.genericparams_size(); index++)
         {
@@ -46,8 +44,8 @@ public:
             throw Exception(SOURCE, "A requested key was already existed - %s", key.c_str());
         }
     }
-
-    const GeneralParam& GetValue(const std::string& key)
+	
+    GeneralParam GetValue(const std::string& key) const
     {
         typedef std::pair<std::string, GeneralParam> ParamPair;
         auto comparator = [&key](const ParamPair& pair) -> bool {return pair.first == key;}; //redundancy from above, but never mind :)
@@ -60,3 +58,8 @@ private:
     std::list<std::pair<std::string, GeneralParam>> m_values;
 };
 
+class StringConverter
+{
+public:
+	static std::string Convert(const std::string str) { return str; }
+};

@@ -43,7 +43,7 @@ void Logger::HandleLog()
             LogElement* logElement = m_queue.Pop();
             if(logElement ==  nullptr)
                 break;
-            cout<<logElement->message<<endl;
+            cout<<ctime(&logElement->traceTime)<<logElement->message<<endl;
             delete logElement;
         }
     }

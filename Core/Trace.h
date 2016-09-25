@@ -9,6 +9,9 @@
 #include "Logger.h"
 #include "LogDefs.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-security"
+
 const int ORIGINAL_STACK_FRAMES_GUESS = 20; //20 is arbitrary
 
 template<typename ... Args>
@@ -57,3 +60,5 @@ void PrintStack(const char* fileName, int line, const std::string& format, Args&
     }
     free(stackFramesSymbols);
 }
+
+#pragma GCC diagnstic pop

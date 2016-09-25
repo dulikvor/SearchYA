@@ -139,6 +139,30 @@ ClusterManager.cpp.s:
 	cd /home/dudi/DevArea/MesosBenchMark && $(MAKE) -f ClusterManager/CMakeFiles/ClusterManager.dir/build.make ClusterManager/CMakeFiles/ClusterManager.dir/ClusterManager.cpp.s
 .PHONY : ClusterManager.cpp.s
 
+ConfigParams.o: ConfigParams.cpp.o
+.PHONY : ConfigParams.o
+
+# target to build an object file
+ConfigParams.cpp.o:
+	cd /home/dudi/DevArea/MesosBenchMark && $(MAKE) -f ClusterManager/CMakeFiles/ClusterManager.dir/build.make ClusterManager/CMakeFiles/ClusterManager.dir/ConfigParams.cpp.o
+.PHONY : ConfigParams.cpp.o
+
+ConfigParams.i: ConfigParams.cpp.i
+.PHONY : ConfigParams.i
+
+# target to preprocess a source file
+ConfigParams.cpp.i:
+	cd /home/dudi/DevArea/MesosBenchMark && $(MAKE) -f ClusterManager/CMakeFiles/ClusterManager.dir/build.make ClusterManager/CMakeFiles/ClusterManager.dir/ConfigParams.cpp.i
+.PHONY : ConfigParams.cpp.i
+
+ConfigParams.s: ConfigParams.cpp.s
+.PHONY : ConfigParams.s
+
+# target to generate assembly for a file
+ConfigParams.cpp.s:
+	cd /home/dudi/DevArea/MesosBenchMark && $(MAKE) -f ClusterManager/CMakeFiles/ClusterManager.dir/build.make ClusterManager/CMakeFiles/ClusterManager.dir/ConfigParams.cpp.s
+.PHONY : ConfigParams.cpp.s
+
 PowerUpState.o: PowerUpState.cpp.o
 .PHONY : PowerUpState.o
 
@@ -162,6 +186,30 @@ PowerUpState.s: PowerUpState.cpp.s
 PowerUpState.cpp.s:
 	cd /home/dudi/DevArea/MesosBenchMark && $(MAKE) -f ClusterManager/CMakeFiles/ClusterManager.dir/build.make ClusterManager/CMakeFiles/ClusterManager.dir/PowerUpState.cpp.s
 .PHONY : PowerUpState.cpp.s
+
+Scheduler.o: Scheduler.cpp.o
+.PHONY : Scheduler.o
+
+# target to build an object file
+Scheduler.cpp.o:
+	cd /home/dudi/DevArea/MesosBenchMark && $(MAKE) -f ClusterManager/CMakeFiles/ClusterManager.dir/build.make ClusterManager/CMakeFiles/ClusterManager.dir/Scheduler.cpp.o
+.PHONY : Scheduler.cpp.o
+
+Scheduler.i: Scheduler.cpp.i
+.PHONY : Scheduler.i
+
+# target to preprocess a source file
+Scheduler.cpp.i:
+	cd /home/dudi/DevArea/MesosBenchMark && $(MAKE) -f ClusterManager/CMakeFiles/ClusterManager.dir/build.make ClusterManager/CMakeFiles/ClusterManager.dir/Scheduler.cpp.i
+.PHONY : Scheduler.cpp.i
+
+Scheduler.s: Scheduler.cpp.s
+.PHONY : Scheduler.s
+
+# target to generate assembly for a file
+Scheduler.cpp.s:
+	cd /home/dudi/DevArea/MesosBenchMark && $(MAKE) -f ClusterManager/CMakeFiles/ClusterManager.dir/build.make ClusterManager/CMakeFiles/ClusterManager.dir/Scheduler.cpp.s
+.PHONY : Scheduler.cpp.s
 
 StateContext.o: StateContext.cpp.o
 .PHONY : StateContext.o
@@ -223,9 +271,15 @@ help:
 	@echo "... ClusterManager.o"
 	@echo "... ClusterManager.i"
 	@echo "... ClusterManager.s"
+	@echo "... ConfigParams.o"
+	@echo "... ConfigParams.i"
+	@echo "... ConfigParams.s"
 	@echo "... PowerUpState.o"
 	@echo "... PowerUpState.i"
 	@echo "... PowerUpState.s"
+	@echo "... Scheduler.o"
+	@echo "... Scheduler.i"
+	@echo "... Scheduler.s"
 	@echo "... StateContext.o"
 	@echo "... StateContext.i"
 	@echo "... StateContext.s"

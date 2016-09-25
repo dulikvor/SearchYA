@@ -3,11 +3,20 @@
 #include <list>
 #include <string>
 #include <iostream>
+#include <memory>
+#include <algorithm>
 #include "Core/Assert.h"
 #include "Core/Exception.h"
 #include "Core/LogDefs.h"
+#include "Core/Trace.h"
 #include "Communication/GeneretedFiles/ClusterService.pb.h"
 #include "Communication/ParamValueType.h"
+
+template<typename... Arg>
+struct TypesCollection{
+};
+
+typedef TypesCollection<short, int, long, float, double, bool, std::string, std::list<std::string>> GeneralTypesCollection;
 
 template<typename... Arg>
 struct VariantParam
@@ -32,33 +41,120 @@ struct VariantParam<X, T, Arg...>
     const static int typeLocation = (VariantParam<X, Arg...>::typeLocation >= 0 ? VariantParam<X, Arg...>::typeLocation + 1 : VariantParam<X, Arg...>::typeLocation);
 };
 
+template<typename... Arg>
+struct VariantParamWrapper
+{
+};
+
+template<typename... Arg>
+struct VariantParamWrapper<TypesCollection<Arg...>>
+{
+	template<typename X>
+	static int GetTypeID()
+	{
+		return VariantParam<X, Arg...>::typeLocation;
+	}
+};
+
+template<typename... Arg>
+struct Destroyer 
+{
+};
+
+template<typename X>
+struct Destroyer<X>
+{
+	static void Destroy(int& typeID, char* rawBuffer)
+	{
+		if(typeID == VariantParamWrapper<GeneralTypesCollection>::GetTypeID<X>())
+		{
+			delete reinterpret_cast<X*>(rawBuffer);
+		}
+	}
+};
+
+template<typename X, typename... Arg>
+struct Destroyer<X, Arg...>
+{
+	static void Destroy(int& typeID, char* rawBuffer)
+	{
+		if(typeID == VariantParamWrapper<GeneralTypesCollection>::GetTypeID<X>())
+		{
+			delete reinterpret_cast<X*>(rawBuffer);
+		}
+		else
+			Destroyer<Arg...>::Destroy(typeID, rawBuffer);
+	}
+};
+
+template<typename... Arg>
+struct DeepCopier
+{
+};
+
+template<typename X>
+struct DeepCopier<X>
+{
+	static void Copy(int& typeID, char* myBuffer, char* const objBuffer)
+	{
+		if(typeID == VariantParamWrapper<GeneralTypesCollection>::GetTypeID<X>())
+		{
+			char* temp = (char*)malloc(sizeof(char)*sizeof(X));
+			new (temp) X(*reinterpret_cast<X*>(objBuffer));
+			std::swap(myBuffer, temp);
+			delete reinterpret_cast<X*>(temp);
+		}
+	}
+};
+
+template<typename X, typename... Arg>
+struct DeepCopier<X, Arg...>
+{
+	static void Copy(int& typeID, char* myBuffer, char* const  objBuffer )
+	{
+		if(typeID == VariantParamWrapper<GeneralTypesCollection>::GetTypeID<X>())
+		{
+			char* temp = (char*)malloc(sizeof(char)*sizeof(X));
+			new (temp) X(*reinterpret_cast<X*>(objBuffer));
+			std::swap(myBuffer, temp);
+			delete reinterpret_cast<X*>(temp);
+		}
+		else
+			DeepCopier<Arg...>::Copy(typeID, myBuffer, objBuffer);
+	}
+};
+
 template<typename ...Arg>
-class Param
+class Param{};
+
+template<typename ...Arg>
+class Param<TypesCollection<Arg...>>
 {
 public:
     Param():m_rawBuffer(nullptr){}
-    ~Param(){free(m_rawBuffer);}
+    ~Param(){ Destroyer<Arg...>::Destroy(m_typeID, m_rawBuffer); }
 
-    Param(const Param& obj) = delete;
     void operator = (const Param& rhs) = delete;
 
     void Load(const ClusterService::Param& param)
     {
 		if(param.type() == ClusterService::Param::Primitive)
-		{
 			SetPrimitive(param);
-		}
 		else //String list is the only second option as of now
-		{
 			SetStringCollection(param);
-		}
     }
+	
+	Param(const Param& obj)
+	{
+		m_typeID = obj.GetTypeID();
+		DeepCopier<Arg...>::Copy(m_typeID, m_rawBuffer, obj.GetBuffer());
+	}
 
     Param(Param&& obj)
     {
-        free(m_rawBuffer);
         m_typeID = obj.GetTypeID();
-        m_rawBuffer = obj.ReleaseBuffer();
+		char* newBuffer = obj.GetBuffer();
+		std::swap(m_rawBuffer, newBuffer);
     }
 
     template<typename X>
@@ -85,14 +181,10 @@ public:
     }
 
     //Accessor
-    char* ReleaseBuffer()
-    {
-        char* temporal = nullptr;
-        std::swap(temporal, m_rawBuffer);
-        return temporal;
-    }
 
     int GetTypeID() const {return m_typeID;}
+	char* const GetBuffer() const { return m_rawBuffer; }
+	char* GetBuffer() { return m_rawBuffer; }
 
 private:
 	void SetPrimitive(const ClusterService::Param& param)
@@ -129,10 +221,10 @@ private:
 					Set(param.valuestring());
 					break;
 				}
-		}
-		defualt:
-		{
-			throw Exception(SOURCE, "None supported generic value type was provided");
+			defualt:
+			{
+				throw Exception(SOURCE, "None supported generic value type was provided");
+			}
 		}
 	}
 
@@ -147,6 +239,9 @@ private:
 	}
 
 private:
-    char* m_rawBuffer;
+	char* m_rawBuffer;
     int m_typeID;
 };
+
+
+typedef Param<GeneralTypesCollection> GeneralParam;

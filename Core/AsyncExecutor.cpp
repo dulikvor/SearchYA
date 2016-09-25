@@ -10,6 +10,7 @@ AsyncExecutor::AsyncExecutor(int threadPoolSize)
     for(int index = 0; index < threadPoolSize; index++)
     {
         m_threadPool.push_back(Thread(string("AsyncExec_") + to_string(index), std::bind(&AsyncExecutor::EntryPoint, this)));
+		m_threadPool.back().Start();
     }
 }
 

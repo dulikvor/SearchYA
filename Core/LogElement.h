@@ -1,5 +1,6 @@
 #pragma once
 
+#include <time.h>
 #include <string>
 /*LogElement is a static struct which every single instance of it represent a request for logging, the
 struct contains the following states:

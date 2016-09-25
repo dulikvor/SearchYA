@@ -139,6 +139,54 @@ CommandsImpl.cpp.s:
 	cd /home/dudi/DevArea/MesosBenchMark && $(MAKE) -f Communication/CMakeFiles/Communication.dir/build.make Communication/CMakeFiles/Communication.dir/CommandsImpl.cpp.s
 .PHONY : CommandsImpl.cpp.s
 
+GeneretedFiles/ClusterService.grpc.pb.o: GeneretedFiles/ClusterService.grpc.pb.cc.o
+.PHONY : GeneretedFiles/ClusterService.grpc.pb.o
+
+# target to build an object file
+GeneretedFiles/ClusterService.grpc.pb.cc.o:
+	cd /home/dudi/DevArea/MesosBenchMark && $(MAKE) -f Communication/CMakeFiles/Communication.dir/build.make Communication/CMakeFiles/Communication.dir/GeneretedFiles/ClusterService.grpc.pb.cc.o
+.PHONY : GeneretedFiles/ClusterService.grpc.pb.cc.o
+
+GeneretedFiles/ClusterService.grpc.pb.i: GeneretedFiles/ClusterService.grpc.pb.cc.i
+.PHONY : GeneretedFiles/ClusterService.grpc.pb.i
+
+# target to preprocess a source file
+GeneretedFiles/ClusterService.grpc.pb.cc.i:
+	cd /home/dudi/DevArea/MesosBenchMark && $(MAKE) -f Communication/CMakeFiles/Communication.dir/build.make Communication/CMakeFiles/Communication.dir/GeneretedFiles/ClusterService.grpc.pb.cc.i
+.PHONY : GeneretedFiles/ClusterService.grpc.pb.cc.i
+
+GeneretedFiles/ClusterService.grpc.pb.s: GeneretedFiles/ClusterService.grpc.pb.cc.s
+.PHONY : GeneretedFiles/ClusterService.grpc.pb.s
+
+# target to generate assembly for a file
+GeneretedFiles/ClusterService.grpc.pb.cc.s:
+	cd /home/dudi/DevArea/MesosBenchMark && $(MAKE) -f Communication/CMakeFiles/Communication.dir/build.make Communication/CMakeFiles/Communication.dir/GeneretedFiles/ClusterService.grpc.pb.cc.s
+.PHONY : GeneretedFiles/ClusterService.grpc.pb.cc.s
+
+GeneretedFiles/ClusterService.pb.o: GeneretedFiles/ClusterService.pb.cc.o
+.PHONY : GeneretedFiles/ClusterService.pb.o
+
+# target to build an object file
+GeneretedFiles/ClusterService.pb.cc.o:
+	cd /home/dudi/DevArea/MesosBenchMark && $(MAKE) -f Communication/CMakeFiles/Communication.dir/build.make Communication/CMakeFiles/Communication.dir/GeneretedFiles/ClusterService.pb.cc.o
+.PHONY : GeneretedFiles/ClusterService.pb.cc.o
+
+GeneretedFiles/ClusterService.pb.i: GeneretedFiles/ClusterService.pb.cc.i
+.PHONY : GeneretedFiles/ClusterService.pb.i
+
+# target to preprocess a source file
+GeneretedFiles/ClusterService.pb.cc.i:
+	cd /home/dudi/DevArea/MesosBenchMark && $(MAKE) -f Communication/CMakeFiles/Communication.dir/build.make Communication/CMakeFiles/Communication.dir/GeneretedFiles/ClusterService.pb.cc.i
+.PHONY : GeneretedFiles/ClusterService.pb.cc.i
+
+GeneretedFiles/ClusterService.pb.s: GeneretedFiles/ClusterService.pb.cc.s
+.PHONY : GeneretedFiles/ClusterService.pb.s
+
+# target to generate assembly for a file
+GeneretedFiles/ClusterService.pb.cc.s:
+	cd /home/dudi/DevArea/MesosBenchMark && $(MAKE) -f Communication/CMakeFiles/Communication.dir/build.make Communication/CMakeFiles/Communication.dir/GeneretedFiles/ClusterService.pb.cc.s
+.PHONY : GeneretedFiles/ClusterService.pb.cc.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -151,6 +199,12 @@ help:
 	@echo "... CommandsImpl.o"
 	@echo "... CommandsImpl.i"
 	@echo "... CommandsImpl.s"
+	@echo "... GeneretedFiles/ClusterService.grpc.pb.o"
+	@echo "... GeneretedFiles/ClusterService.grpc.pb.i"
+	@echo "... GeneretedFiles/ClusterService.grpc.pb.s"
+	@echo "... GeneretedFiles/ClusterService.pb.o"
+	@echo "... GeneretedFiles/ClusterService.pb.i"
+	@echo "... GeneretedFiles/ClusterService.pb.s"
 .PHONY : help
 
 
