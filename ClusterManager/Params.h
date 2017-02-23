@@ -38,7 +38,7 @@ public:
         }
         else
         {
-            throw Core::Exception(SOURCE, "A requested key was already existed - %s", key.c_str());
+            throw core::Exception(SOURCE, "A requested key was already existed - %s", key.c_str());
         }
     }
 	
@@ -47,7 +47,7 @@ public:
         typedef std::pair<std::string, GeneralParam> ParamPair;
         auto comparator = [&key](const ParamPair& pair) -> bool {return pair.first == key;}; //redundancy from above, but never mind :)
         std::list<ParamPair>::const_iterator it = std::find_if(m_values.begin(), m_values.end(), comparator);
-        ASSERT(it != m_values.end(), "Requested Key was not found - %s", key.c_str());
+        ASSERT(it != m_values.end());
         return it->second;
     }
 

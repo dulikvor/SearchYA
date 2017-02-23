@@ -5,12 +5,12 @@
 #include "SyncQueue.h"
 #include "Thread.h"
 
-namespace Core
+namespace core
 {
 	class AsyncTask;
 }
 
-namespace Core
+namespace core
 {
 	class AsyncExecutor
 	{
@@ -24,7 +24,7 @@ namespace Core
 		void EntryPoint(void);
 
 	private:
-		std::vector<Thread> m_threadPool;
+		std::vector<std::unique_ptr<Thread>> m_threadPool;
 		SyncQueue<AsyncTask*> m_taskQueue;
 	};
 }

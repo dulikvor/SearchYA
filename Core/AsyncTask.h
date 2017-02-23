@@ -5,7 +5,7 @@
 #include <mutex>
 #include <string>
 
-namespace Core
+namespace core
 {
 	class AsyncTask
 	{

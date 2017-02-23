@@ -23,6 +23,8 @@ public:
 	//Init routine will do the followings:
 	//1) Initializing the scheduler.
 	void Init();
+	//
+	void InitializeMesosDriver();
 	//Accessors
 	Scheduler& GetScheduler(){ return m_scheduler; }
 
@@ -40,7 +42,7 @@ private:
     ClusterManager();
 
 private:
-	Core::AsyncExecutor m_asyncExecutor;
+	core::AsyncExecutor m_asyncExecutor;
     StateContext m_stateMachine;
     State m_state;
 	Scheduler m_scheduler;

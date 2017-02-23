@@ -2,10 +2,9 @@
 
 #include <exception>
 #include <string>
-#include "Trace.h"
-#include "LogDefs.h"
+#include "Logger.h"
 
-namespace Core
+namespace core
 {
 	/**/
 	class Exception : public std::exception
@@ -14,10 +13,10 @@ namespace Core
 		/*Exception constructor will megerge the received exception message and print out the message and the entire
 		stack frames to the log.*/
 		template<typename ... Args>
-		Exception(const char* fileName, int line, const std::string& format, Args ... args)
+		Exception(const Source& source, const char* format, Args ... args)
 		{
-			m_message = MergeFormat(format, args...);
-			PrintStack(fileName, line, m_message);
+			m_message = Logger::Instance().FormatMessage(source, format, args...);
+			Logger::Instance().PrintStack(source, "%s", m_message.c_str());
 		}
 
 		Exception() = delete;

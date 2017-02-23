@@ -16,7 +16,7 @@ void ProcessingState::HandleState(StateContext& stateContext, CommandType comman
         }
         defualt:
         {
-            throw Core::Exception(SOURCE, "Unauthorized command was received - %s", commandType.ToString().c_str());
+            throw core::Exception(SOURCE, "Unauthorized command was received - %s", commandType.ToString().c_str());
         }
     }
 }

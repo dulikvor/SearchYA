@@ -1,6 +1,5 @@
 #include "PowerUpState.h"
 #include <memory>
-#include "Core/LogDefs.h"
 #include "Core/Exception.h"
 #include "ConfigParams.h"
 #include "ClusterManager.h"
@@ -20,7 +19,7 @@ void PowerUpState::HandleState(StateContext &stateContext, CommandType commandTy
         }
         defualt:
         {
-            throw Core::Exception(SOURCE, "Unauthorized command was received - %s", commandType.ToString().c_str());
+            throw core::Exception(SOURCE, "Unauthorized command was received - %s", commandType.ToString().c_str());
         }
     }
 }

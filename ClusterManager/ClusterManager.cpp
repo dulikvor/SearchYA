@@ -2,12 +2,14 @@
 #include <functional>
 #include "Core/Exception.h"
 #include "Core/Assert.h"
+#include "Core/Exception.h"
+#include "Core/Assert.h"
 #include "Core/AsyncTask.h"
 #include "ConfigParams.h"
 #include "Command.h"
 
 using namespace std;
-using namespace Core;
+using namespace core;
 
 ClusterManager& ClusterManager::Instace()
 {
@@ -26,7 +28,11 @@ ClusterManager::~ClusterManager()
 
 void ClusterManager::Init()
 {
-	//m_scheduler.Initialize();
+	m_scheduler.Initialize();
+}
+
+void ClusterManager::InitializeMesosDriver()
+{
 }
 
 void ClusterManager::NewCommand(CommandType commandType, const Params &params)

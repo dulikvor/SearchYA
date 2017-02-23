@@ -34,6 +34,6 @@ private: \
 			if(m_enumToString[index].enumValue == m_currentEnum)\
 				return m_enumToString[index].enumStrName;\
 		}\
-		throw Core::Exception(SOURCE, "Not all enum values are covered");\
+		throw core::Exception(SOURCE, "%s", "Not all enum values are covered");\
 	}
 

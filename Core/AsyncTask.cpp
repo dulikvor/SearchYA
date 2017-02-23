@@ -1,10 +1,10 @@
 #include "AsyncTask.h"
 #include "Exception.h"
-#include "LogDefs.h"
+#include "Logger.h"
 
 using namespace std;
 
-namespace Core
+namespace core
 {
 	void AsyncTask::Start()
 	{
@@ -27,7 +27,7 @@ namespace Core
 		m_conditionVar.wait(localLock, [&]{return m_state == AsyncTaskState::CANCELED ||
 					m_state == AsyncTaskState::COMPLETED;});
 		if(m_state == AsyncTaskState::CANCELED)
-			throw Exception(SOURCE, m_failureReason);
+			throw Exception(SOURCE, "%s", m_failureReason.c_str());
 	}
 
 	void AsyncTask::NotifyOnFailure()

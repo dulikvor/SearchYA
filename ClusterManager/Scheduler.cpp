@@ -1,5 +1,5 @@
 #include "Scheduler.h"
-#include "Core/Trace.h"
+#include "Core/Logger.h"
 #include <mesos/resources.hpp>
 
 using namespace std;
@@ -11,7 +11,7 @@ void Scheduler::Initialize()
 		for(int id : pair.second)
 			m_processingUnits[pair.first].PushBack(Pu(id));
 	}
-	for(const std::unordered_map<ConfigParams::NodeAddress, Core::OrderedList<Pu>>::value_type& pair : m_processingUnits)
+	for(const std::unordered_map<ConfigParams::NodeAddress, core::OrderedList<Pu>>::value_type& pair : m_processingUnits)
 	{
 		m_processingUnits[pair.first].Sort();
 	}
@@ -21,8 +21,7 @@ void Scheduler::Initialize()
 
 void Scheduler::registered(mesos::SchedulerDriver* driver, const mesos::FrameworkID& frameworkId, const mesos::MasterInfo& masterInfo)
 {
-	Trace(SOURCE, "Scheduler is connected to master, fwid - %s, scheduler host -%s, master host - %s:%d", frameworkId.value().c_str(),
-		ConfigParams::Instance().GetHostAddress().c_str(), masterInfo.address().ip().c_str(), masterInfo.address().port());
+	TRACE_INFO("Scheduler is connected to master, fwid - %s, scheduler host -%s, master host - %s:%d", frameworkId.value().c_str(), ConfigParams::Instance().GetHostAddress().c_str(), masterInfo.address().ip().c_str(), masterInfo.address().port());
 }
 
 void Scheduler::resourceOffers(mesos::SchedulerDriver* driver, const vector<mesos::Offer>& offers)
@@ -47,7 +46,6 @@ void Scheduler::resourceOffers(mesos::SchedulerDriver* driver, const vector<meso
 			}
 			else
 				noneQualifiedJobs.push_back(job);
-
 		}
 		m_jobsQueue.Push(noneQualifiedJobs);
 		vector<mesos::TaskInfo> tasks;
@@ -69,14 +67,13 @@ void Scheduler::InitializeMesos()
 	//Add a label which depicts where the ClusterManager will try to resolve the GRPC communication.
 	//label->set_name("GRPC:Host");
 	//label->set_value(ConfigParams::Instance().GetHostAddress() + ":300");
-
-
-	m_frameWorkInfo.set_user("");
-	m_frameWorkInfo.set_name("Stub FrameWork");
-	m_frameWorkInfo.set_failover_timeout(ConfigParams::Instance().GetRecoveryTime());
-	m_frameWorkInfo.set_hostname(ConfigParams::Instance().GetHostAddress());
-	string masterAddress = ConfigParams::Instance().GetMesosMasterAddress() + ":" + to_string(ConfigParams::Instance().GetMesosMasterPort());
-	m_mesosDriver.reset(new mesos::MesosSchedulerDriver(this, m_frameWorkInfo, masterAddress));
+	mesos::FrameworkInfo frameWorkInfo;
+	frameWorkInfo.set_user("");
+	frameWorkInfo.set_name("Stub FrameWork");
+	frameWorkInfo.set_failover_timeout(ConfigParams::Instance().GetRecoveryTime());
+	frameWorkInfo.set_hostname(ConfigParams::Instance().GetHostAddress());
+	string mesosMasterAddress = ConfigParams::Instance().GetMesosMasterAddress() + ":" + to_string(ConfigParams::Instance().GetMesosMasterPort());
+	m_mesosDriver.reset(new mesos::MesosSchedulerDriver(this, frameWorkInfo, mesosMasterAddress));
 	m_mesosDriver->start();
 }
 

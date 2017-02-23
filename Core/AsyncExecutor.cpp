@@ -1,18 +1,21 @@
 #include "AsyncExecutor.h"
 #include <string>
+#include <functional>
 #include "Exception.h"
 #include "AsyncTask.h"
+#include "Assert.h"
 
 using namespace std;
 
-namespace Core
+namespace core
 {
 	AsyncExecutor::AsyncExecutor(int threadPoolSize)
 	{
+		ASSERT(threadPoolSize == 1); //For now, temporary, support for more than one thread in thread pool is not supported.
 		for(int index = 0; index < threadPoolSize; index++)
 		{
-			m_threadPool.push_back(Thread(string("AsyncExec_") + to_string(index), std::bind(&AsyncExecutor::EntryPoint, this)));
-			m_threadPool.back().Start();
+			m_threadPool.emplace_back(new Thread(string("AsyncExec_") + to_string(index), bind(&AsyncExecutor::EntryPoint, this)));
+			m_threadPool.back()->Start();
 		}
 	}
 
@@ -22,9 +25,9 @@ namespace Core
 		{
 			m_taskQueue.Push(nullptr);
 		}
-		for(Thread& thread : m_threadPool)
+		for(const unique_ptr<Thread>& thread : m_threadPool)
 		{
-			thread.Join();
+			thread->Join();
 		}
 	}
 
@@ -45,6 +48,8 @@ namespace Core
 					task->NotifyOnFailure();
 				}
 			}
+			else
+				break;
 		}
 	}
 }

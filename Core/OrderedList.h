@@ -2,7 +2,7 @@
 
 #include <list>
 
-namespace Core
+namespace core
 {
 	//OrderedList provide a mean to represent an ordered list, the class will not force the ordering, but its up to the user
 	//to invoke the ordering request and to provide a weak order mean to validate that orderering (functor for that purpose).

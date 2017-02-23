@@ -7,8 +7,6 @@
 #include <algorithm>
 #include "Core/Assert.h"
 #include "Core/Exception.h"
-#include "Core/LogDefs.h"
-#include "Core/Trace.h"
 #include "Communication/GeneretedFiles/ClusterService.pb.h"
 #include "Communication/ParamValueType.h"
 
@@ -62,7 +60,7 @@ struct ParamHelper{};
 template<typename X>
 struct ParamHelper<X>
 {
-	static void Copy(int& typeID, char* myBuffer, char* const objBuffer)
+	static void Copy(int& typeID, char*& myBuffer, char* const objBuffer)
 	{
 		if(typeID == VariantHelper<GeneralTypesCollection>::GetTypeID<X>())
 		{
@@ -84,7 +82,7 @@ struct ParamHelper<X>
 template<typename X, typename... Arg>
 struct ParamHelper<X, Arg...>
 {
-	static void Copy(int& typeID, char* myBuffer, char* const objBuffer)
+	static void Copy(int& typeID, char*& myBuffer, char* const objBuffer)
 	{
 		if(typeID == VariantHelper<GeneralTypesCollection>::GetTypeID<X>())
 		{
@@ -127,13 +125,13 @@ public:
 			SetStringCollection(param);
     }
 	
-	Param(const Param& obj)
+	Param(const Param& obj):m_rawBuffer(nullptr), m_typeID(-1)
 	{
 		m_typeID = obj.GetTypeID();
 		ParamHelper<Arg...>::Copy(m_typeID, m_rawBuffer, obj.GetBuffer());
 	}
 
-    Param(Param&& obj)
+    Param(Param&& obj):m_rawBuffer(nullptr), m_typeID(-1)
     {
         m_typeID = obj.GetTypeID();
 		char* newBuffer = obj.ReleaseBuffer();
@@ -159,7 +157,7 @@ public:
     operator X() const
     {
         int neededLocation = VariantParam<X, Arg...>::typeLocation;
-        ASSERT(neededLocation == m_typeID, "Invalid implicit conversion was requested");
+        ASSERT(neededLocation == m_typeID);
         return *(reinterpret_cast<X*>(m_rawBuffer));
     }
 
@@ -211,7 +209,7 @@ private:
 				}
 			defualt:
 			{
-				throw Core::Exception(SOURCE, "None supported generic value type was provided");
+				throw core::Exception(SOURCE, "None supported generic value type was provided");
 			}
 		}
 	}

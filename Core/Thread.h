@@ -1,12 +1,14 @@
 #pragma once
 
-#include <pthread.h>
+#include <memory>
 #include <functional>
+#include <thread>
 #include <string>
+#include <atomic>
 
 const int MAX_THREAD_NAME = 15;
 
-namespace Core
+namespace core
 {
 	/*Thread reperesent a thread, providing the following capabilties:
 	1)Creating a new thread.
@@ -20,24 +22,27 @@ namespace Core
 		Thread(const std::string& threadName, const std::function<void(void)>& requestedPoint);
 		~Thread(){} //Destructor
 		Thread() = delete;
+		Thread(const Thread&) = delete;
+		void operator = (const Thread&) = delete;
 		//Accessors
-		pthread_t GetUnixID() const {return m_id;}
+		std::thread::id GetThreadID() const {return m_thread->get_id();}
 		//Start will create the thread, initiating its run.
 		void Start();
 
-		void Join(int miliSecondsWait = 0);
+		void Join() const;
 
 	private:
 		/*A deteministic entry point to the thread, providing the capability to initiate its desire entry point (the one
 		received at the constructor) and to catch various exceptions (it will be best if this will be the only catch
 		in the scope of the entire all the stack frames from this point.*/
-		static void* EntryPoint(void*);
+		void EntryPoint();
 		//Cleanup is a specific cancallation handler.
 		static void Cleanup(void*);
 
 	private:
 		std::string m_name;
+		std::atomic_bool m_running;
 		std::function<void(void)> m_requestedPoint;
-		pthread_t m_id;
+		std::unique_ptr<std::thread> m_thread;
 	};
 }

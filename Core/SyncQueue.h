@@ -6,7 +6,7 @@
 #include <string>
 #include <list>
 
-namespace Core
+namespace core
 {
 	template <typename T>
 	class SyncQueue
@@ -20,8 +20,10 @@ namespace Core
 		{
 			std::unique_lock<std::mutex>(m_mutex);
 			for(const T& element : elements)
+			{
 				m_queue.push(element);
-			m_conditionVar.notify_one();
+				m_conditionVar.notify_one();
+			}
 		}
 
 		void Push(const T& element)

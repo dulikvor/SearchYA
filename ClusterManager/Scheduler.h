@@ -6,7 +6,6 @@
 #include <utility>
 #include <memory>
 #include <mesos/scheduler.hpp>
-#include <mesos/mesos.pb.h>
 #include "Core/SyncQueue.h"
 #include "Core/OrderedList.h"
 #include "Core/ConcurrentDictionary.h"
@@ -52,16 +51,14 @@ public:
 private:
 	void InitializeMesos();
 	//
-	void BuildTasks(const std::list<std::pair<Job,std::pair<mesos::Resource, mesos::SlaveID>>>& jobs,
-			std::vector<mesos::TaskInfo>& tasks);
+	void BuildTasks(const std::list<std::pair<Job,std::pair<mesos::Resource, mesos::SlaveID>>>& jobs, std::vector<mesos::TaskInfo>& tasks);
 
 private:
 	using TaskID = int;
 private:
-	std::unordered_map<ConfigParams::NodeAddress, Core::OrderedList<Pu>> m_processingUnits;
+	std::unordered_map<ConfigParams::NodeAddress, core::OrderedList<Pu>> m_processingUnits;
+	core::ConcurrentDictionary<TaskID, Task> m_activatedTasks; 
+	core::SyncQueue<Job> m_jobsQueue;
 	std::unique_ptr<mesos::SchedulerDriver> m_mesosDriver;
-	Core::ConcurrentDictionary<TaskID, Task> m_activatedTasks; 
-	Core::SyncQueue<Job> m_jobsQueue;
-	mesos::FrameworkInfo m_frameWorkInfo;
 	mesos::ExecutorInfo m_executorInfo;
 };
