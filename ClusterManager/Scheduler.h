@@ -9,6 +9,7 @@
 #include "Core/SyncQueue.h"
 #include "Core/OrderedList.h"
 #include "Core/ConcurrentDictionary.h"
+#include "Core/TimedAsyncExecutor.h"
 #include "ConfigParams.h"
 #include "Pu.h"
 #include "Job.h"
@@ -59,6 +60,7 @@ private:
 	std::unordered_map<ConfigParams::NodeAddress, core::OrderedList<Pu>> m_processingUnits;
 	core::ConcurrentDictionary<TaskID, Task> m_activatedTasks; 
 	core::SyncQueue<Job> m_jobsQueue;
+	core::TimedAsyncExecutor m_timedAsyncExec;
 	std::unique_ptr<mesos::SchedulerDriver> m_mesosDriver;
 	mesos::ExecutorInfo m_executorInfo;
 };

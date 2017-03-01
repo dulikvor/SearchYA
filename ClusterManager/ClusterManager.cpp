@@ -5,6 +5,7 @@
 #include "Core/Exception.h"
 #include "Core/Assert.h"
 #include "Core/AsyncTask.h"
+#include "Communication/CommandsImpl.h"
 #include "ConfigParams.h"
 #include "Command.h"
 
@@ -31,17 +32,19 @@ void ClusterManager::Init()
 	m_scheduler.Initialize();
 }
 
-void ClusterManager::InitializeMesosDriver()
+void ClusterManager::InitializeServer(const string& serverListeningPoint)
 {
+	m_server.reset(new GrpcServer(serverListeningPoint));
+	m_server->AddService(unique_ptr<grpc::Service>(new CommandsImpl()));
+	m_server->Start();
 }
 
 void ClusterManager::NewCommand(CommandType commandType, const Params &params)
 {
-    Command command(commandType, params);
-    AsyncTask* asyncTask = new AsyncTask(bind(&ClusterManager::HandleCommand, this, cref(command)));
-    m_asyncExecutor.SpawnTask(asyncTask);
-    asyncTask->Wait();
-    delete asyncTask;
+	Command command(commandType, params);
+	AsyncTask asyncTask(bind(&ClusterManager::HandleCommand, this, cref(command)));
+	m_asyncExecutor.SpawnTask(&asyncTask);
+	asyncTask.Wait();
 }
 
 void ClusterManager::WaitForCompletion()

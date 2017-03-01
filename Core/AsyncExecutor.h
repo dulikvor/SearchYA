@@ -15,10 +15,10 @@ namespace core
 	class AsyncExecutor
 	{
 	public:
-		explicit AsyncExecutor(int thredPoolSize = 1);
+		explicit AsyncExecutor(int threadPoolSize = 1);
 		~AsyncExecutor();
 
-		void SpawnTask(AsyncTask* task){m_taskQueue.Push(task);}
+		virtual void SpawnTask(AsyncTask* task){m_taskQueue.Push(task);}
 
 	private:
 		void EntryPoint(void);

@@ -1,13 +1,14 @@
 #pragma once
 
-#include <memory>
 #include <condition_variable>
 #include <mutex>
 #include "Core/AsyncExecutor.h"
+#include "Communication/GrpcServer.h"
 #include "StateContext.h"
 #include "Scheduler.h"
 
 struct Command;
+class GrpcServer;
 
 class ClusterManager
 {
@@ -23,10 +24,12 @@ public:
 	//Init routine will do the followings:
 	//1) Initializing the scheduler.
 	void Init();
-	//
-	void InitializeMesosDriver();
+	//Will create and set grpc build server with a received listening point.
+	//The server will be subscribed with needed services and start.
+	void InitializeServer(const std::string& serverListeningPoint);
 	//Accessors
 	Scheduler& GetScheduler(){ return m_scheduler; }
+	GrpcServer& GetServer(){ return *m_server; }
 
 public:
     enum class State
@@ -46,6 +49,7 @@ private:
     StateContext m_stateMachine;
     State m_state;
 	Scheduler m_scheduler;
+	std::unique_ptr<GrpcServer> m_server;
     mutable std::condition_variable m_conditionVar;
     mutable std::mutex m_mutex;
 };

@@ -23,7 +23,6 @@ public:
 	const std::string& GetHostAddress() const { return m_hostAddress; }
 	const std::string& GetMesosMasterAddress() const { return m_mesosMasterAddress; }
 	std::string GetMesosMasterAddress() { return const_cast<const ConfigParams&>(*this).GetMesosMasterAddress(); }
-	int GetMesosMasterPort() const { return m_mesosMasterPort; }
 	const std::string&  GetExecDir() const { return m_executableDir; }
 	std::string GetExecDir() { return const_cast<const ConfigParams&>(*this).GetExecDir(); }
 

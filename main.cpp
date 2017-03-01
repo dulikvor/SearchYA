@@ -7,6 +7,8 @@
 #include "ClusterManager/Param.h"
 #include "ClusterManager/ClusterManager.h"
 #include "Communication/GeneretedFiles/ClusterService.pb.h"
+#include "Core/TimedAsyncExecutor.h"
+#include "Core/AsyncTask.h"
 
 using namespace core;
 using namespace std;
@@ -17,12 +19,8 @@ int main()
 {
 	Logger::Instance().AddListener(make_shared<FileRotationListener>(TraceSeverity::Info, string("Service"), 50 * 1024 * 1024, 20));
     Logger::Instance().Start(TraceSeverity::Info);
-	Params params;
-	params.Load(CreateStubConfig());
-    ClusterManager::Instace().NewCommand(CommandType::Init, params);
-    TRACE_INFO("Cluster Manager initiated");
-	ClusterManager::Instace().InitializeMesosDriver();
- //  	ClusterManager::Instace().WaitForCompletion();
+	ClusterManager::Instace().InitializeServer("127.0.0.1:50051");
+   	ClusterManager::Instace().WaitForCompletion();
     return 0;
 }
 
@@ -45,10 +43,6 @@ ClusterService::Params CreateStubConfig()
 	param = params.add_genericparams();
 	param->set_valuestring("127.0.0.1");
 	param->set_name("Mesos Host Address");
-	param->set_type(ClusterService::Param::Primitive);
-	param = params.add_genericparams();
-	param->set_valueint(5050);
-	param->set_name("Mesos Port Address");
 	param->set_type(ClusterService::Param::Primitive);
 	param = params.add_genericparams();
 	param->set_valuestring("~");

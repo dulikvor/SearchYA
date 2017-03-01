@@ -10,5 +10,6 @@ Status CommandsImpl::Init(ServerContext* context, const ClusterService::Params* 
     Params nativeParams;
     nativeParams.Load(*request);
     ClusterManager::Instace().NewCommand(CommandType::Init, nativeParams);
+	return Status::OK;
 }
 

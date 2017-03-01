@@ -72,7 +72,7 @@ void Scheduler::InitializeMesos()
 	frameWorkInfo.set_name("Stub FrameWork");
 	frameWorkInfo.set_failover_timeout(ConfigParams::Instance().GetRecoveryTime());
 	frameWorkInfo.set_hostname(ConfigParams::Instance().GetHostAddress());
-	string mesosMasterAddress = ConfigParams::Instance().GetMesosMasterAddress() + ":" + to_string(ConfigParams::Instance().GetMesosMasterPort());
+	string mesosMasterAddress = ConfigParams::Instance().GetMesosMasterAddress() + ":5050";
 	m_mesosDriver.reset(new mesos::MesosSchedulerDriver(this, frameWorkInfo, mesosMasterAddress));
 	m_mesosDriver->start();
 }
