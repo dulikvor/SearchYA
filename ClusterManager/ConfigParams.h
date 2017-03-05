@@ -25,6 +25,7 @@ public:
 	std::string GetMesosMasterAddress() { return const_cast<const ConfigParams&>(*this).GetMesosMasterAddress(); }
 	const std::string&  GetExecDir() const { return m_executableDir; }
 	std::string GetExecDir() { return const_cast<const ConfigParams&>(*this).GetExecDir(); }
+	const std::string& GetRole() const { return m_role; }
 
 private:
 	ConfigParams(){}
@@ -36,5 +37,5 @@ private:
 	std::string m_mesosMasterAddress;
 	int m_mesosMasterPort;
 	std::string m_executableDir;
-
+	std::string m_role;
 };

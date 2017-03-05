@@ -28,7 +28,7 @@ public:
 	//The server will be subscribed with needed services and start.
 	void InitializeServer(const std::string& serverListeningPoint);
 	//Accessors
-	Scheduler& GetScheduler(){ return m_scheduler; }
+	Scheduler& GetScheduler(){ return *m_scheduler; }
 	GrpcServer& GetServer(){ return *m_server; }
 
 public:
@@ -48,7 +48,7 @@ private:
 	core::AsyncExecutor m_asyncExecutor;
     StateContext m_stateMachine;
     State m_state;
-	Scheduler m_scheduler;
+	std::unique_ptr<Scheduler> m_scheduler;
 	std::unique_ptr<GrpcServer> m_server;
     mutable std::condition_variable m_conditionVar;
     mutable std::mutex m_mutex;

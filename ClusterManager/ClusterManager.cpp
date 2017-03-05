@@ -5,6 +5,7 @@
 #include "Core/Exception.h"
 #include "Core/Assert.h"
 #include "Core/AsyncTask.h"
+#include "Core/Logger.h"
 #include "Communication/CommandsImpl.h"
 #include "ConfigParams.h"
 #include "Command.h"
@@ -29,7 +30,8 @@ ClusterManager::~ClusterManager()
 
 void ClusterManager::Init()
 {
-	m_scheduler.Initialize();
+	m_scheduler.reset(new Scheduler(ConfigParams::Instance().GetRole()));
+	m_scheduler->Initialize();
 }
 
 void ClusterManager::InitializeServer(const string& serverListeningPoint)
@@ -37,6 +39,7 @@ void ClusterManager::InitializeServer(const string& serverListeningPoint)
 	m_server.reset(new GrpcServer(serverListeningPoint));
 	m_server->AddService(unique_ptr<grpc::Service>(new CommandsImpl()));
 	m_server->Start();
+	TRACE_INFO("GRPC Server is up at - %s", serverListeningPoint.c_str());
 }
 
 void ClusterManager::NewCommand(CommandType commandType, const Params &params)
@@ -56,6 +59,7 @@ void ClusterManager::WaitForCompletion()
 void ClusterManager::Terminate()
 {
     unique_lock<mutex> localLock(m_mutex);
+	Logger::Instance().Flush();
     m_state = State::TERMINATED;
     m_conditionVar.notify_one();
 }

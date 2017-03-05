@@ -3,7 +3,9 @@ syntax = "proto3";
 package ClusterService;
 
 service Commands {
-  rpc Init (Params) returns (Empty){}
+  rpc Init(Params) returns (Empty){}
+  rpc SubmitTask(Empty) returns (Empty){}
+  rpc Terminate(Empty) returns (Empty){}
 }
 
 message Empty

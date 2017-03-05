@@ -17,6 +17,11 @@ void PowerUpState::HandleState(StateContext &stateContext, CommandType commandTy
 			stateContext.SetState(unique_ptr<State>(new ProcessingState()));
             break;
         }
+		case CommandType::Terminate:
+		{
+			State::HandleTerminate();
+			break;
+		}
         defualt:
         {
             throw core::Exception(SOURCE, "Unauthorized command was received - %s", commandType.ToString().c_str());
@@ -29,3 +34,4 @@ void PowerUpState::HandleInit(const Params& params)
 	ConfigParams::Instance().Load(params);
 	ClusterManager::Instace().Init();
 }
+

@@ -6,6 +6,8 @@
 #include <utility>
 #include <memory>
 #include <mesos/scheduler.hpp>
+#include <mesos/resources.hpp>
+#include <mutex>
 #include "Core/SyncQueue.h"
 #include "Core/OrderedList.h"
 #include "Core/ConcurrentDictionary.h"
@@ -16,11 +18,15 @@
 #include "Task.h"
 
 class Task;
-
+//Scheduler provides the following capabilities:
+//1) Receiving incoming jobs.
+//2) Implementing mesos scheduler api.
+//3) Upon receiving resources from mesos - will try to tranformed stored jobs into tasks.
+//4) Keeps bookeeping upon on going tasks.
 class Scheduler: public mesos::Scheduler
 {
 public:
-	Scheduler(){}
+	Scheduler(const std::string& role):m_role(role){}
 	~Scheduler(){}
 	//Initialize will address the config data reading the cluster information, the different processing units locations
 	//indicated by thier node address (they addresses may return). the function will create an internal object representing
@@ -28,39 +34,41 @@ public:
 	//at the moment.
 	void Initialize();
 	//Mesos Scheduler API overrides
-	//registered implements the mesos scheduler "registered" routine, the function will print the address of mesos master and the
-	//given cluster manager address upon registration.
+	//registered implements the mesos scheduler "registered" routine, the function will print the address of mesos master 
+	//and the given cluster manager address upon registration.
 	void registered(mesos::SchedulerDriver* driver, const mesos::FrameworkID& frameworkId, const mesos::MasterInfo& masterInfo);
+	void reregistered(mesos::SchedulerDriver*, const mesos::MasterInfo& masterInfo) override  {}
 	//resourceOffers implements mesos scheduler "resourceOffers" interface, the function will do the following:
 	//1) Itarting across all received resources.
 	//2) for each offered resources instance it will inspect its jobs queue, if the given job qualifies for becoming a task 
-	//	it will be stored and removed from the jobs queue.
-	//3) All qualified jobs are transformed to tasks.
-	void reregistered(mesos::SchedulerDriver*, const mesos::MasterInfo& masterInfo) override  {}
+	//	(there are enough resources to satisfy the job requierments) will be stored and removed from the jobs queue.
+	//3) All qualified jobs are transformed to tasks and launched.
 	void resourceOffers(mesos::SchedulerDriver* driver, const std::vector<mesos::Offer>& offers) override;
 	void disconnected(mesos::SchedulerDriver* driver) override {}
 	void offerRescinded(mesos::SchedulerDriver* driver, const mesos::OfferID& offerId) override{}
-	void statusUpdate(mesos::SchedulerDriver* driver, const mesos::TaskStatus& status) override {}
+	void statusUpdate(mesos::SchedulerDriver* driver, const mesos::TaskStatus& status) override;
 	void frameworkMessage(mesos::SchedulerDriver* driver, const mesos::ExecutorID& executorId, const mesos::SlaveID& slaveId, const std::string& data) override {}
 	void slaveLost(mesos::SchedulerDriver* driver, const mesos::SlaveID& sid) override {}
 	void executorLost(mesos::SchedulerDriver* driver,const mesos::ExecutorID& executorID,const mesos::SlaveID& slaveID,int status) override {}
 	void error(mesos::SchedulerDriver* driver, const std::string& message) override {}
-	//
 	//AddJob adds a new job to the jobs queue.
-	void AddJob(const Job& job){ m_jobsQueue.Push(job); }
+	void AddJob(const Job& job);
 
 private:
+	//Will initiate mesos driver and connect to the master.
 	void InitializeMesos();
-	//
-	void BuildTasks(const std::list<std::pair<Job,std::pair<mesos::Resource, mesos::SlaveID>>>& jobs, std::vector<mesos::TaskInfo>& tasks);
+	//Transforms received jobs into mesos tasks.
+	void BuildTasks(const std::list<std::pair<Job,std::pair<mesos::Resources, mesos::SlaveID>>>& jobs, std::vector<mesos::TaskInfo>& tasks);
 
 private:
-	using TaskID = int;
+	using TaskID = std::string;
 private:
+	std::string m_role;
 	std::unordered_map<ConfigParams::NodeAddress, core::OrderedList<Pu>> m_processingUnits;
 	core::ConcurrentDictionary<TaskID, Task> m_activatedTasks; 
 	core::SyncQueue<Job> m_jobsQueue;
 	core::TimedAsyncExecutor m_timedAsyncExec;
 	std::unique_ptr<mesos::SchedulerDriver> m_mesosDriver;
 	mesos::ExecutorInfo m_executorInfo;
+	mutable std::mutex m_jobsMut;
 };

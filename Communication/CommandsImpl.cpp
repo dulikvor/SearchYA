@@ -1,4 +1,5 @@
 #include "CommandsImpl.h"
+#include "Core/Logger.h"
 #include "ClusterManager/ClusterManager.h"
 #include "ClusterManager/CommandType.h"
 #include "ClusterManager/Params.h"
@@ -13,3 +14,16 @@ Status CommandsImpl::Init(ServerContext* context, const ClusterService::Params* 
 	return Status::OK;
 }
 
+
+Status CommandsImpl::SubmitTask(ServerContext* context, const ClusterService::Empty* request, ClusterService::Empty* response)
+{
+	ClusterManager::Instace().NewCommand(CommandType::Process, Params());
+	return Status::OK;
+}
+
+Status CommandsImpl::Terminate(ServerContext* context, const ClusterService::Empty* request, ClusterService::Empty* response)
+{
+
+	ClusterManager::Instace().NewCommand(CommandType::Terminate, Params());
+	return Status::OK;
+}

@@ -6,9 +6,10 @@
 class TaskState
 {
 public:
+	TaskState();
     enum Enumeration
     {
-		Starting,
+		Starting = 0,
         Running,
 		Finished,
 		Failed

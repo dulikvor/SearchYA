@@ -18,7 +18,8 @@ ClusterService::Params CreateStubConfig();
 int main()
 {
 	Logger::Instance().AddListener(make_shared<FileRotationListener>(TraceSeverity::Info, string("Service"), 50 * 1024 * 1024, 20));
-    Logger::Instance().Start(TraceSeverity::Info);
+    Logger::Instance().Start(TraceSeverity::Verbose);
+	TRACE_INFO("MesosBenchMark starting");
 	ClusterManager::Instace().InitializeServer("127.0.0.1:50051");
    	ClusterManager::Instace().WaitForCompletion();
     return 0;

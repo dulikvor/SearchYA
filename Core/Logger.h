@@ -47,7 +47,7 @@ namespace core
 		template<typename... Args>
 		void Trace(TraceSeverity severity, const Source& source, const char* format, Args... args)
 		{
-			if(severity > m_severity)
+			if(severity < m_severity)
 				return;
 			std::string message = FormatMessage(source, format, args...);
 			Log(severity, message);
@@ -80,6 +80,10 @@ namespace core
 		}
 		//
 		void Log(TraceSeverity severity, const std::string& message);
+		//Flush the log.
+		void Flush();
+		//Properties
+		TraceSeverity GetSeverity() const { return m_severity; }
 
 	private:
 		Logger();
@@ -90,8 +94,15 @@ namespace core
 		std::atomic_bool m_running;
 		TraceSeverity m_severity;
 		mutable std::mutex m_mut;
+		const int Local_buffer_size = 2000;
 	};
 }
 
+#define TRACE_IMPL(severity, format, ...)\
+	if(severity >= core::Logger::Instance().GetSeverity()) \
+		core::Logger::Instance().Trace(severity, SOURCE, format, ##__VA_ARGS__)
+
 #define TRACE_INFO(format, ...) \
-	core::Logger::Instance().Trace(TraceSeverity::Info, SOURCE, format, ##__VA_ARGS__)
+	TRACE_IMPL(TraceSeverity::Info, format, ##__VA_ARGS__)
+#define TRACE_VERBOSE(format, ...) \
+	TRACE_IMPL(TraceSeverity::Verbose, format, ##__VA_ARGS__)

@@ -4,6 +4,6 @@
 
 struct Job
 {
-	std::string coreCount;	
+	float coresCount;	
 	int id;
 };

@@ -1,19 +1,17 @@
 #include "Scheduler.h"
-#include "Core/Logger.h"
 #include <mesos/resources.hpp>
+#include "Core/Logger.h"
+#include "TaskState.h"
 
 using namespace std;
 
 void Scheduler::Initialize()
 {
-	for(const ConfigParams::NodePUMap::value_type& pair : ConfigParams::Instance().GetProcessingUnitsMap())
+	for(const ConfigParams::NodePUMap::value_type& pair : 
+			ConfigParams::Instance().GetProcessingUnitsMap())
 	{
 		for(int id : pair.second)
 			m_processingUnits[pair.first].PushBack(Pu(id));
-	}
-	for(const std::unordered_map<ConfigParams::NodeAddress, core::OrderedList<Pu>>::value_type& pair : m_processingUnits)
-	{
-		m_processingUnits[pair.first].Sort();
 	}
 	InitializeMesos();
 }
@@ -28,30 +26,54 @@ void Scheduler::resourceOffers(mesos::SchedulerDriver* driver, const vector<meso
 {
 	for(const mesos::Offer& offer : offers)
 	{
+		for(const mesos::Resource& resource : offer.resources())
+		{
+			TRACE_VERBOSE("Offer - %s Resource: Name - %s Type - %d Count - %f, Role - %s", 
+					offer.id().value().c_str() ,resource.name().c_str(), resource.type(), 
+					resource.scalar().value(), resource.role().c_str());
+		}
 		mesos::Resources resources = offer.resources();
 		list<Job> noneQualifiedJobs;
-		list<pair<Job, pair<mesos::Resource, mesos::SlaveID>>> qualifiedJobs;
+		list<pair<Job, pair<mesos::Resources, mesos::SlaveID>>> qualifiedJobs;
 		Job job;
-		while(m_jobsQueue.TryAndPop(job))
 		{
-			mesos::Resource taskResource = mesos::Resources::parse("cpus", job.coreCount, "*").get();
-			if(resources.contains(taskResource) == true)
+			lock_guard<mutex> lock(m_jobsMut);	
+			while(m_jobsQueue.TryAndPop(job))
 			{
-				qualifiedJobs.push_back({job,{taskResource, offer.slave_id()}});
-				resources -= taskResource;
-				//Check to see if resources is empty, if it is its safe to stop the resource check, another condition
-				//is if the resource is out of atleast one physical core.
-				if(resources.empty() == true || resources.contains(mesos::Resources::parse("cpus", "1", "*").get()) == false)
-					break;
+				mesos::Resources taskResources = mesos::Resources::parse(string("cpus:") + 
+						to_string(job.coresCount) + ";").get();
+				taskResources.allocate(m_role);
+				for(const mesos::Resource& resource : taskResources.flatten())
+				{
+					TRACE_VERBOSE("Task Resource - ID - %d Name - %s Type - %d Count - %f Role - %s", (int)job.id, resource.name().c_str(), resource.type(), 
+							resource.scalar().value(), resource.role().c_str());
+				}
+				if(resources.flatten().contains(taskResources) == true)
+				{
+					qualifiedJobs.push_back({job,{taskResources, offer.slave_id()}});
+					resources -= taskResources;
+				}
+				else
+					noneQualifiedJobs.push_back(job);
 			}
-			else
-				noneQualifiedJobs.push_back(job);
+			m_jobsQueue.Push(noneQualifiedJobs);
 		}
-		m_jobsQueue.Push(noneQualifiedJobs);
 		vector<mesos::TaskInfo> tasks;
 		BuildTasks(qualifiedJobs, tasks);
 		driver->launchTasks(offer.id(), tasks);
 	}
+}
+
+void Scheduler::statusUpdate(mesos::SchedulerDriver* driver, const mesos::TaskStatus& status)
+{
+	TRACE_INFO("Task - %s status - %d", status.task_id().value().c_str(), (int)status.state());
+	if(status.state() == mesos::TaskState::TASK_FINISHED)
+		m_activatedTasks.RemoveValue(status.task_id().value());
+}
+void Scheduler::AddJob(const Job& job)
+{
+	lock_guard<mutex> lock(m_jobsMut);	
+	m_jobsQueue.Push(job); 
 }
 
 void Scheduler::InitializeMesos()
@@ -78,17 +100,23 @@ void Scheduler::InitializeMesos()
 }
 
 
-void Scheduler::BuildTasks(const list<pair<Job,pair<mesos::Resource, mesos::SlaveID>>>& taskedJobs, vector<mesos::TaskInfo>& tasks)
+void Scheduler::BuildTasks(const list<pair<Job,pair<mesos::Resources, mesos::SlaveID>>>& taskedJobs, vector<mesos::TaskInfo>& tasks)
 {
-	for(const pair<Job, pair<mesos::Resource, mesos::SlaveID>>& taskedJob : taskedJobs)
+	for(const pair<Job, pair<mesos::Resources, mesos::SlaveID>>& taskedJob : taskedJobs)
 	{
+		TRACE_INFO("Task %d to be submmited at - %s", taskedJob.first.id, taskedJob.second.second.value().c_str()); 
 		tasks.push_back(mesos::TaskInfo());
-		tasks.back().set_name(string("Task-") + to_string(taskedJob.first.id));
+		string taskID = string("Task-") + to_string(taskedJob.first.id);
+		tasks.back().set_name(taskID);
 		tasks.back().mutable_task_id()->set_value(to_string(taskedJob.first.id));
 		tasks.back().mutable_slave_id()->MergeFrom(taskedJob.second.second);
-		tasks.back().mutable_executor()->MergeFrom(m_executorInfo);
+		//tasks.back().mutable_executor()->MergeFrom(m_executorInfo);
+		mesos::CommandInfo command;
+		command.set_shell(true);
+		command.set_value("echo 'Hello World'");
+		tasks.back().mutable_command()->MergeFrom(command);
 		tasks.back().mutable_resources()->MergeFrom(mesos::Resources(taskedJob.second.first));
 		
-		m_activatedTasks.AddValue(taskedJob.first.id, Task());
+		m_activatedTasks.AddValue(taskID, Task());
 	}	
 }

@@ -15,7 +15,6 @@ using namespace spdlog;
 using namespace spdlog::sinks;
 using namespace spdlog::level;
 
-#define LOCAL_BUFFER_SIZE 2000
 namespace core
 {
 	Logger& Logger::Instance()
@@ -57,6 +56,11 @@ namespace core
 		m_logger->log((level_enum)severity, message.c_str());
 	}
 
+	void Logger::Flush()
+	{
+		m_logger->flush();
+	}
+
 	void Logger::AddListener(const shared_ptr<TraceListener>& listener)
 	{
 		lock_guard<mutex> lock(m_mut);
@@ -67,23 +71,25 @@ namespace core
 	{
 		va_list arguments;
 		va_start(arguments, format);
-		
-		char buf[LOCAL_BUFFER_SIZE] = "";
-		int size = snprintf(buf, LOCAL_BUFFER_SIZE, "%s:%s:%d\t", source.file, 
+		string result;
+
+		char buf[Local_buffer_size] = "";
+		int size = snprintf(buf, Local_buffer_size, "%s:%s:%d\t", source.file, 
 			source.function, source.line);
-		ASSERT(size < LOCAL_BUFFER_SIZE);
-		size += vsnprintf(buf + size, LOCAL_BUFFER_SIZE - size, format, arguments);
-		string result = buf;
-		if(size < 0 || size >= LOCAL_BUFFER_SIZE) //Not enough space on buffer, go to the heap
+		ASSERT(size < Local_buffer_size);
+		size += vsnprintf(buf + size, Local_buffer_size - size, format, arguments);
+		if(size < Local_buffer_size)
+			result = buf;
+		else //message was trunced or operation failed
 		{
 			int bufferSize = max(size, 32 * 1024);
 			vector<char> largerBuf;
-			largerBuf.reserve(bufferSize);
+			largerBuf.resize(bufferSize);
 			int largerSize = snprintf(&largerBuf[0], bufferSize, "%s:%s:%d\t", source.file, 
 				source.function, source.line);
 			ASSERT(largerSize < bufferSize);
 			vsnprintf(&largerBuf[largerSize], bufferSize - largerSize, format, arguments);
-			result = move(string(largerBuf.begin(), largerBuf.end()));
+			result = string(largerBuf.begin(), largerBuf.end());
 		}
 
 		va_end(arguments);
