@@ -1,7 +1,9 @@
 # MesosBenchMark
-A small mesos bench mark intended to run with a lightweight framework consits with a - Cluster manager, N Node BackEnds and a minimal client.
-The project goals will do the followings:
-1) Measuring mesos perfomance under heterogeneous and none heterogeneous task enviorement.
-2) Measuring various metrics with n instances of the given FrameWork.
-3) All data will be analysed and displayed with Kibana by analyzing the benchmark logs.
- the project is written in C++, include ProtoBuf+GRPC for inter communication with in the disterbuted framework outside of mesos.
+A simple textual search engine build upon mesos and redis. the search engine includes the following:
+1) Two frameworks - Index FW and Search FW.
+2) A scheduler for each FW.
+3) Each FW BE is written as a mesos executor.
+4) A core and communication layer.
+5) Communication to each FW scheduler is done via grpc.
+6) All FW internal messaging is done via mesos.
+7) Logging infra structure is based upon spdlog.
