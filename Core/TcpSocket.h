@@ -2,7 +2,7 @@
 
 #include <string>
 #include <atomic>
-#include <vector>
+#include <utility>
 
 namespace core
 {
@@ -37,12 +37,12 @@ namespace core
 		//to send the received buffer to the host. if success a count of how many bytes
 		//were successfuly sent will be returned. the command will not permit SIGPIPE signal
 		//to be commenced, and errno will be returned instead.
-		int Send(const std::vector<char>& buf);
+		int Send(char* buf, size_t bufSize);
 		//Receive will try to retrieve requested buffer size from and underlined socket. if
 		//succesfull the read buffer will be returned. if 0 is returned there are two options -
 		//the user request 0 sized buffer to be returned and this operation is valid, 
 		//the connection to the host is not presented any more and nothing was read.
-		std::vector<char> Receive(int sizeToRead);
+		std::pair<char*, ssize_t> Receive(size_t sizeToRead);
 		//If on server tole and not already connected will attempt to "name" a newly created
 		//socket with a received address.
 		void Bind(const std::string& host, int port);

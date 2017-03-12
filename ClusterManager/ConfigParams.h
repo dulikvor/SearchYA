@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <list>
 
-class Params;
+class GeneralParams;
 
 class ConfigParams
 {
@@ -15,8 +15,10 @@ public:
 public:
 	static ConfigParams& Instance();
 	~ConfigParams(){}
-
-	void Load(const Params& configParams);
+	//Will fill all internal members using a received general param instance.
+	//each member equivilant node name with in the general param is known and
+	//hard written. the class is imutable passed this point.
+	void Load(const GeneralParams& configParams);
 	//Accessors
 	const NodePUMap& GetProcessingUnitsMap() const { return m_processingUnitsMap; }
 	int GetRecoveryTime() const { return m_recoveryTime; }

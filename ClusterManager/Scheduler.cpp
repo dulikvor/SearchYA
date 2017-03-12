@@ -79,11 +79,13 @@ void Scheduler::AddJob(const Job& job)
 void Scheduler::InitializeMesos()
 {
 	m_executorInfo.mutable_executor_id()->set_value("Executor");
-	m_executorInfo.mutable_command()->set_value(ConfigParams::Instance().GetExecDir() + "/Executor");
+	m_executorInfo.mutable_command()->set_value(ConfigParams::Instance().GetExecDir() + 
+			"/IndexBuilder");
+	m_executorInfo.mutable_command()->set_shell(false);
 	m_executorInfo.set_name("Stub Executor");
-	mesos::DiscoveryInfo* discoveryInfo = m_executorInfo.mutable_discovery();
-	discoveryInfo->set_visibility(mesos::DiscoveryInfo_Visibility::DiscoveryInfo_Visibility_FRAMEWORK);
-	discoveryInfo->set_version("0.1");
+	//mesos::DiscoveryInfo* discoveryInfo = m_executorInfo.mutable_discovery();
+	//discoveryInfo->set_visibility(mesos::DiscoveryInfo_Visibility::DiscoveryInfo_Visibility_FRAMEWORK);
+	//discoveryInfo->set_version("0.1");
 	//Labels missing from executor info???
 	//appc::spec::ImageManifest_Label* label = m_executorInfo.mutable_labels()->Add();
 	//Add a label which depicts where the ClusterManager will try to resolve the GRPC communication.
@@ -110,11 +112,11 @@ void Scheduler::BuildTasks(const list<pair<Job,pair<mesos::Resources, mesos::Sla
 		tasks.back().set_name(taskID);
 		tasks.back().mutable_task_id()->set_value(to_string(taskedJob.first.id));
 		tasks.back().mutable_slave_id()->MergeFrom(taskedJob.second.second);
-		//tasks.back().mutable_executor()->MergeFrom(m_executorInfo);
-		mesos::CommandInfo command;
-		command.set_shell(true);
-		command.set_value("echo 'Hello World'");
-		tasks.back().mutable_command()->MergeFrom(command);
+		tasks.back().mutable_executor()->MergeFrom(m_executorInfo);
+		//mesos::CommandInfo command;
+		//command.set_shell(true);
+		//command.set_value("echo 'Hello World'");
+		//tasks.back().mutable_command()->MergeFrom(command);
 		tasks.back().mutable_resources()->MergeFrom(mesos::Resources(taskedJob.second.first));
 		
 		m_activatedTasks.AddValue(taskID, Task());

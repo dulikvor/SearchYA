@@ -8,7 +8,7 @@
 using namespace std;
 using namespace core;
 
-void ProcessingState::HandleState(StateContext& stateContext, CommandType commandType, const Params& params)
+void ProcessingState::HandleState(StateContext& stateContext, CommandType commandType, const GeneralParams& params)
 {
     switch(commandType)
     {
@@ -29,7 +29,7 @@ void ProcessingState::HandleState(StateContext& stateContext, CommandType comman
     }
 }
 
-void ProcessingState::HandleProcess(const Params& params)
+void ProcessingState::HandleProcess(const GeneralParams& params)
 {
 	static atomic_int id(0);
 	Job job = {0.1, id++};

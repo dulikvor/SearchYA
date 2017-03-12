@@ -35,13 +35,12 @@ namespace core
 		/*A deteministic entry point to the thread, providing the capability to initiate its desire entry point (the one
 		received at the constructor) and to catch various exceptions (it will be best if this will be the only catch
 		in the scope of the entire all the stack frames from this point.*/
-		void EntryPoint();
+		void EntryPoint(void);
 		//Cleanup is a specific cancallation handler.
 		static void Cleanup(void*);
 
 	private:
 		std::string m_name;
-		std::atomic_bool m_running;
 		std::function<void(void)> m_requestedPoint;
 		std::unique_ptr<std::thread> m_thread;
 	};

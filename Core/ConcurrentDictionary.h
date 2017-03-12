@@ -38,7 +38,7 @@ namespace core
 		}
 		//operator [] will try to return a specific value designated by a received key, if the value dosn't not exits
 		//it will be added and returned, else - just returned.
-		Value& operator[](const Key& key) const
+		Value& operator[](const Key& key) 
 		{
 			std::unique_lock<std::mutex> localLock(m_mutex);
 			return m_dictionary[key];

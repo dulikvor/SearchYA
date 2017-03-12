@@ -20,7 +20,7 @@ ClusterManager& ClusterManager::Instace()
 }
 
 ClusterManager::ClusterManager()
-    :m_state(State::RUNNING)
+    :m_state(RunningState::RUNNING)
 {
 }
 
@@ -42,7 +42,7 @@ void ClusterManager::InitializeServer(const string& serverListeningPoint)
 	TRACE_INFO("GRPC Server is up at - %s", serverListeningPoint.c_str());
 }
 
-void ClusterManager::NewCommand(CommandType commandType, const Params &params)
+void ClusterManager::NewCommand(CommandType commandType, const GeneralParams &params)
 {
 	Command command(commandType, params);
 	AsyncTask asyncTask(bind(&ClusterManager::HandleCommand, this, cref(command)));
@@ -53,14 +53,13 @@ void ClusterManager::NewCommand(CommandType commandType, const Params &params)
 void ClusterManager::WaitForCompletion()
 {
     unique_lock<mutex> localLock(m_mutex);
-    m_conditionVar.wait(localLock, [&]{return m_state == State::TERMINATED;});
+    m_conditionVar.wait(localLock, [&]{return m_state == RunningState::TERMINATED;});
 }
 
 void ClusterManager::Terminate()
 {
     unique_lock<mutex> localLock(m_mutex);
-	Logger::Instance().Flush();
-    m_state = State::TERMINATED;
+    m_state = RunningState::TERMINATED;
     m_conditionVar.notify_one();
 }
 

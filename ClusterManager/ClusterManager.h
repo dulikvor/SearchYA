@@ -9,16 +9,19 @@
 
 struct Command;
 class GrpcServer;
+class GeneralParams;
 
 class ClusterManager
 {
 public:
     static ClusterManager& Instace();
     virtual ~ClusterManager();
-	//NewCommand will divert the newly received GRPC command handling from the GRPC thread to the ClusterManager internal
-	//async executor thread pool, the operation is done in sync manner.
-    void NewCommand(CommandType commandType, const Params& params);
-	//WaitForCompletion will block the calling thread under condition the ClusterManager state didn't reached terminate.
+	//NewCommand will divert the newly received GRPC command handling from the GRPC thread 
+	//to the ClusterManager internal async executor thread pool, the operation is done 
+	//in sync manner.
+    void NewCommand(CommandType commandType, const GeneralParams& params);
+	//WaitForCompletion will block the calling thread under condition the ClusterManager 
+	//state didn't reached terminate.
     void WaitForCompletion();
     void Terminate();
 	//Init routine will do the followings:
@@ -32,22 +35,23 @@ public:
 	GrpcServer& GetServer(){ return *m_server; }
 
 public:
-    enum class State
+    enum class RunningState
     {
         RUNNING,
         TERMINATED
     };
 
 private:
-	//HandleCommand will handle a newly received GRPC command, the function will address the ClusterManager
-	//state machine, providing it the responsibility to handle the newly received command under the current state.
+	//HandleCommand will handle a newly received GRPC command, the function will address 
+	//the ClusterManager state machine, providing it the responsibility to handle 
+	//the newly received command under the current state.
     void HandleCommand(const Command& command);
     ClusterManager();
 
 private:
 	core::AsyncExecutor m_asyncExecutor;
     StateContext m_stateMachine;
-    State m_state;
+    RunningState m_state;
 	std::unique_ptr<Scheduler> m_scheduler;
 	std::unique_ptr<GrpcServer> m_server;
     mutable std::condition_variable m_conditionVar;

@@ -113,22 +113,16 @@ class Param<TypesCollection<Arg...>>
 {
 public:
     Param():m_rawBuffer(nullptr){}
-    ~Param(){ ParamHelper<Arg...>::Destroy(m_typeID, m_rawBuffer); }
+    ~Param(){ ParamHelper<Arg...>::Destroy(
+			m_typeID, m_rawBuffer); }
 
     void operator = (const Param& rhs) = delete;
 
-    void Load(const ClusterService::Param& param)
-    {
-		if(param.type() == ClusterService::Param::Primitive)
-			SetPrimitive(param);
-		else //String list is the only second option as of now
-			SetStringCollection(param);
-    }
-	
 	Param(const Param& obj):m_rawBuffer(nullptr), m_typeID(-1)
 	{
 		m_typeID = obj.GetTypeID();
-		ParamHelper<Arg...>::Copy(m_typeID, m_rawBuffer, obj.GetBuffer());
+		ParamHelper<VariantHelper<TypesCollection<Arg...>>, Arg...>::Copy(
+				m_typeID, m_rawBuffer, obj.GetBuffer());
 	}
 
     Param(Param&& obj):m_rawBuffer(nullptr), m_typeID(-1)
@@ -168,61 +162,8 @@ public:
 		return oldBuffer;
 	}
     //Accessor
-
     int GetTypeID() const {return m_typeID;}
 	char* const GetBuffer() const { return m_rawBuffer; }
-
-private:
-	void SetPrimitive(const ClusterService::Param& param)
-	{
-		switch(param.valueOneOf_case())
-		{
-			case ClusterService::Param::ValueOneOfCase::kValueInt :
-				{
-					Set(param.valueint());
-					break;
-				}
-			case ClusterService::Param::ValueOneOfCase::kValueLong:
-				{
-					Set(param.valuelong());
-					break;
-				}
-			case ClusterService::Param::ValueOneOfCase::kValueBool:
-				{
-					Set(param.valuebool());
-					break;
-				}
-			case ClusterService::Param::ValueOneOfCase::kValueFloat:
-				{
-					Set(param.valuefloat());
-					break;
-				}
-			case ClusterService::Param::ValueOneOfCase::kValueDouble:
-				{
-					Set(param.valuedouble());
-					break;
-				}
-			case ClusterService::Param::ValueOneOfCase::kValueString:
-				{
-					Set(param.valuestring());
-					break;
-				}
-			defualt:
-			{
-				throw core::Exception(SOURCE, "None supported generic value type was provided");
-			}
-		}
-	}
-
-	void SetStringCollection(const ClusterService::Param& param)
-	{
-		std::list<std::string> stringCollection;
-		for(int index = 0; index < param.valuestringcollection_size(); index++)
-		{
-			stringCollection.push_back(param.valuestringcollection(index));		
-		}
-		Set(stringCollection);
-	}
 
 private:
 	char* m_rawBuffer;
@@ -230,4 +171,3 @@ private:
 };
 
 
-typedef Param<GeneralTypesCollection> GeneralParam;

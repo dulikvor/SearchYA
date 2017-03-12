@@ -96,24 +96,23 @@ namespace core
 		m_fd = Invalid_Socket;
 	}
 
-	int TCPSocket::Send(const vector<char>& buf)
+	int TCPSocket::Send(char* buf, size_t bufSize)
 	{
 		ASSERT(m_role == SocketRole::Client);
 		VERIFY(m_connected == true, "Socket is not connected");
 		ssize_t bytesCount;
-		LINUX_VERIFY(bytesCount = ::send(m_fd, buf.data(), buf.size(), MSG_NOSIGNAL) != -1);
+		LINUX_VERIFY(bytesCount = ::send(m_fd, (const void*)buf, bufSize, MSG_NOSIGNAL) != -1);
 		return (int)bytesCount;	
 	}
 
-	vector<char> TCPSocket::Receive(int sizeToRead)
+	pair<char*, ssize_t> TCPSocket::Receive(size_t sizeToRead)
 	{
 		ASSERT(m_role == SocketRole::Client);
 		VERIFY(m_connected == true, "Socket is not connected");
 		ssize_t bytesCount;
-		vector<char> buffer(sizeToRead, 0);
-		LINUX_VERIFY(bytesCount = ::recv(m_fd, const_cast<char*>(buffer.data()), 
-					sizeToRead, 0) != -1); 
-		return buffer;
+		char* buf = (char*)malloc(sizeof(char) * sizeToRead);
+		LINUX_VERIFY(bytesCount = ::recv(m_fd, (void*)buf, sizeToRead, 0) != -1); 
+		return {buf, bytesCount};
 	}
 
 	void TCPSocket::Bind(const string& host, int port)
@@ -152,7 +151,7 @@ namespace core
 			memset(&serverAddress, 0, sizeof(serverAddress));
 			LINUX_VERIFY(::getsockname(m_fd, (struct sockaddr*)&serverAddress, 
 						&addressSize) != -1);
-			m_port = (int)::ntohs(serverAddress.sin_port);
+			m_port = (int)ntohs(serverAddress.sin_port);
 		}
 	}
 

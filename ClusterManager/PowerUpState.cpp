@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void PowerUpState::HandleState(StateContext &stateContext, CommandType commandType, const Params &params)
+void PowerUpState::HandleState(StateContext &stateContext, CommandType commandType, const GeneralParams &params)
 {
     switch(commandType)
     {
@@ -29,7 +29,7 @@ void PowerUpState::HandleState(StateContext &stateContext, CommandType commandTy
     }
 }
 
-void PowerUpState::HandleInit(const Params& params)
+void PowerUpState::HandleInit(const GeneralParams& params)
 {
 	ConfigParams::Instance().Load(params);
 	ClusterManager::Instace().Init();

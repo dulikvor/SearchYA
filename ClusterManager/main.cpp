@@ -3,12 +3,13 @@
 #include "Core/Logger.h"
 #include "Core/TraceListener.h"
 #include "ClusterManager/CommandType.h"
-#include "ClusterManager/Params.h"
-#include "ClusterManager/Param.h"
+#include "Communication/GeneralParams.h"
+#include "Communication/Param.h"
 #include "ClusterManager/ClusterManager.h"
 #include "Communication/GeneretedFiles/ClusterService.pb.h"
 #include "Core/TimedAsyncExecutor.h"
 #include "Core/AsyncTask.h"
+#include "Core/Enviorment.h"
 
 using namespace core;
 using namespace std;
@@ -17,11 +18,13 @@ ClusterService::Params CreateStubConfig();
 
 int main()
 {
+	Enviorment::Instance().Init();
 	Logger::Instance().AddListener(make_shared<FileRotationListener>(TraceSeverity::Info, string("Service"), 50 * 1024 * 1024, 20));
-    Logger::Instance().Start(TraceSeverity::Verbose);
+    Logger::Instance().Start(TraceSeverity::Info);
 	TRACE_INFO("MesosBenchMark starting");
 	ClusterManager::Instace().InitializeServer("127.0.0.1:50051");
    	ClusterManager::Instace().WaitForCompletion();
+	Logger::Instance().Flush();
     return 0;
 }
 

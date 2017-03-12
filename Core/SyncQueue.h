@@ -28,7 +28,7 @@ namespace core
 
 		void Push(const T& element)
 		{
-			std::unique_lock<std::mutex>(m_mutex);
+			std::unique_lock<std::mutex> localLock(m_mutex);
 			m_queue.push(element);
 			m_conditionVar.notify_one();
 		}
@@ -49,7 +49,7 @@ namespace core
 		T Pop()
 		{
 			std::unique_lock<std::mutex> localLock(m_mutex);
-			m_conditionVar.wait(localLock, [this]{return m_queue.empty() == false;});
+			m_conditionVar.wait(localLock, [this]()->bool{return m_queue.empty() == false;});
 			T ret = m_queue.front();
 			m_queue.pop();
 			return ret;
