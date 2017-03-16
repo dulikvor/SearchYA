@@ -7,6 +7,9 @@
 #include "Core/Exception.h"
 #include "GeneretedFiles/ClusterService.pb.h"
 #include "Param.h"
+#include "Serializor.h"
+
+using namespace core;
 
 typedef Param<GeneralTypesCollection> GeneralParam;
 
@@ -49,9 +52,35 @@ public:
         typedef std::pair<std::string, GeneralParam> ParamPair;
         auto comparator = [&key](const ParamPair& pair) -> bool {return pair.first == key;}; //redundancy from above, but never mind :)
         std::list<ParamPair>::const_iterator it = std::find_if(m_values.begin(), m_values.end(), comparator);
-        ASSERT(it != m_values.end());
+        if(it == m_values.end())
+		   throw Exception(SOURCE, "None existing parameter was requested %s", key.c_str());
         return it->second;
     }
+
+	std::string Serialize(Serializor& serializeContext)
+	{
+		Serializor::Serialize(serializeContext, 
+				VariantHelper<GeneralTypesCollection>::GetTypeID<int>(),(int)m_values.size());
+		for(const std::pair<std::string, GeneralParam>& param : m_values)
+		{
+			int typeID = VariantHelper<GeneralTypesCollection>::GetTypeID<std::string>();
+			Serializor::Serialize(serializeContext, typeID, param.first);
+			param.second.Serialize(serializeContext);
+		}
+		return serializeContext.GetBuffer();
+	}
+
+	void Deserialize(Serializor& serializor)
+	{
+		int numOfValues = Serializor::DeserializeInt(serializor);
+		for(int index = 0; index < numOfValues; index++)
+		{
+			int type = Serializor::DeserializeInt(serializor);
+			std::string key = Serializor::DeserializeString(serializor);
+			GeneralParam param(DeserializeParam(serializor));
+			m_values.emplace_back(key, param);
+		}
+	}
 
 private:
 
@@ -112,6 +141,53 @@ private:
 			stringCollection.push_back(param.valuestringcollection(index));		
 		}
 		generalParam.Set(stringCollection);
+	}
+
+	GeneralParam DeserializeParam(Serializor& serializeContext)
+	{
+		int type = Serializor::DeserializeInt(serializeContext);
+		GeneralParam param;
+		if(type == VariantHelper<GeneralTypesCollection>::GetTypeID<bool>())
+		{
+			bool value = Serializor::DeserializeBool(serializeContext);
+			param.Set(value);
+		}
+		else if(type == VariantHelper<GeneralTypesCollection>::GetTypeID<short>())
+		{
+			short value = Serializor::DeserializeShort(serializeContext);
+			param.Set(value);
+		}
+		else if(type == VariantHelper<GeneralTypesCollection>::GetTypeID<int>())
+		{
+			int value = Serializor::DeserializeInt(serializeContext);
+			param.Set(value);
+		}
+		else if(type == VariantHelper<GeneralTypesCollection>::GetTypeID<long>())
+		{
+			long value = Serializor::DeserializeLong(serializeContext);
+			param.Set(value);
+		}
+		else if(type == VariantHelper<GeneralTypesCollection>::GetTypeID<float>())
+		{
+			float value = Serializor::DeserializeFloat(serializeContext);
+			param.Set(value);
+		}
+		else if(type == VariantHelper<GeneralTypesCollection>::GetTypeID<double>())
+		{
+			double value = Serializor::DeserializeDouble(serializeContext);
+			param.Set(value);
+		}
+		else if(type == VariantHelper<GeneralTypesCollection>::GetTypeID<std::string>())
+		{
+			std::string value = Serializor::DeserializeString(serializeContext);
+			param.Set(value);
+		}
+		else if(type == VariantHelper<GeneralTypesCollection>::GetTypeID<std::list<std::string>>())
+		{
+			std::list<std::string> value = Serializor::DeserializeListString(serializeContext);
+			param.Set(value);
+		}
+		return param;
 	}
 private:
     std::list<std::pair<std::string, GeneralParam>> m_values;

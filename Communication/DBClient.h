@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <utility>
+#include <tuple>
 
 struct redisContext;
 
@@ -15,7 +15,7 @@ public:
 	void Connect(const std::string& hostAddress);
 	
 	bool SetHashFields(const std::string& key, 
-			const std::vector<std::pair<std::string, const std::vector<char>>>& fieldsValues);
+			const std::vector<std::tuple<const std::string&, char*, int>>& fieldsValues);
 	bool DelHashFields(const std::string& key, const std::vector<std::string>& fields);
 	//std::vector<std::vector<char>> GetHashValues(const std::string& key, 
 	//		const std::vector<std::string>& fields);

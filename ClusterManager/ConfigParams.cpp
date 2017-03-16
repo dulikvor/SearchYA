@@ -11,13 +11,7 @@ ConfigParams& ConfigParams::Instance()
 
 void ConfigParams::Load(const GeneralParams& configParams)
 {
-	list<NodeAddress> processingUnitsAddresses = {"127.0.0.1"}; //configParams.GetValue("Processing units address");
-	int logicalProcessingUnitID = 0;
-	//Addresses may return (more than one processing process per node)
-	for(const NodeAddress& address : processingUnitsAddresses)
-	{
-		m_processingUnitsMap[address].push_back(logicalProcessingUnitID);
-	}
+	m_clusterNodesAddresses  = {"127.0.0.1"}; //configParams.GetValue("Processing units address");
 	m_recoveryTime = 0; //configParams.GetValue("Recovery Time");
 	m_hostAddress = "127.0.0.1"; //StringConverter::Convert(configParams.GetValue("Host Address"));
 	m_mesosMasterAddress = "127.0.0.1"; //StringConverter::Convert(configParams.GetValue("Mesos Host Address"));

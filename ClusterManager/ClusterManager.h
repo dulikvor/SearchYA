@@ -30,6 +30,8 @@ public:
 	//Will create and set grpc build server with a received listening point.
 	//The server will be subscribed with needed services and start.
 	void InitializeServer(const std::string& serverListeningPoint);
+	//
+	void HandleMesosMessage(const Scheduler::MessageSource& source, const std::string& data);
 	//Accessors
 	Scheduler& GetScheduler(){ return *m_scheduler; }
 	GrpcServer& GetServer(){ return *m_server; }

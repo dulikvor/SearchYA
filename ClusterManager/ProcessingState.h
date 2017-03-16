@@ -16,4 +16,5 @@ private:
 	//The handling routine to the processing command type of the given state.
 	//will create a new job and add it to the scheduler jobs queue.
     void HandleProcess(const GeneralParams& params);
+	void HandleDiscovery(const GeneralParams& params);
 };

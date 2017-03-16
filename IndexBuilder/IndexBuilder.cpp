@@ -5,6 +5,9 @@
 #include "Core/AsyncTask.h"
 #include "Communication/GeneralParams.h"
 #include "Communication/DBClient.h"
+#include "Communication/Serializor.h"
+#include "Communication/MessageType.h"
+#include "ConfigParams.h"
 #include "Command.h"
 
 using namespace core;
@@ -50,8 +53,10 @@ void IndexBuilder::HandleCommand(const Command& command)
     m_stateMachine.HandleState(command.commandType, command.params);
 }
 
-void IndexBuilder::Init()
+void IndexBuilder::Init(const GeneralParams& params)
 {
+	ConfigParams::Instance().Load(params);
+	m_dbClient.Connect(ConfigParams::Instance().GetRedisHostAddress());
 }
 
 

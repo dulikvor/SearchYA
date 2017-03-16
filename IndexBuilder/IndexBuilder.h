@@ -4,6 +4,7 @@
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
+#include "Communication/DBClient.h"
 #include "Core/TimedAsyncExecutor.h"
 #include "StateContext.h"
 #include "ProcessingManager.h"
@@ -19,7 +20,7 @@ public:
 	//Waits indefinitely till the instance running state will be changed to false.
 	void NewCommand(CommandType commandType, const GeneralParams &params);
 	void WaitForCompletion();
-	void Init();
+	void Init(const GeneralParams& params);
 	void Terminate();
 	void Processing(const GeneralParams& params);
 	void InitializeMesos();
@@ -47,7 +48,7 @@ private:
 	StateContext m_stateMachine;
 	ProcessingManager m_processingManager;
 	core::AsyncExecutor m_asyncExecutor;
-	std::unique_ptr<DBClient> m_dbClient;
+	DBClient m_dbClient;
 	RunningState m_state;
     mutable std::condition_variable m_conditionVar;
 	mutable std::mutex m_mutex;

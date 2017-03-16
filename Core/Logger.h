@@ -101,6 +101,9 @@ namespace core
 	if(severity >= core::Logger::Instance().GetSeverity()) \
 		core::Logger::Instance().Trace(severity, SOURCE, format, ##__VA_ARGS__)
 
+
+#define TRACE_ERROR(format, ...) \
+	TRACE_IMPL(TraceSeverity::Fatal, format, ##__VA_ARGS__)
 #define TRACE_INFO(format, ...) \
 	TRACE_IMPL(TraceSeverity::Info, format, ##__VA_ARGS__)
 #define TRACE_VERBOSE(format, ...) \

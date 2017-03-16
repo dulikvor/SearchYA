@@ -9,6 +9,7 @@
 #include "Core/Exception.h"
 #include "Communication/GeneretedFiles/ClusterService.pb.h"
 #include "Communication/ParamValueType.h"
+#include "Serializor.h"
 
 template<typename... Arg>
 struct TypesCollection{
@@ -60,7 +61,7 @@ struct ParamHelper{};
 template<typename X>
 struct ParamHelper<X>
 {
-	static void Copy(int& typeID, char*& myBuffer, char* const objBuffer)
+	static void Copy(const int& typeID, char*& myBuffer, char* const objBuffer)
 	{
 		if(typeID == VariantHelper<GeneralTypesCollection>::GetTypeID<X>())
 		{
@@ -70,11 +71,19 @@ struct ParamHelper<X>
 			delete reinterpret_cast<X*>(temp);
 		}
 	}
-	static void Destroy(int& typeID, char* rawBuffer)
+	static void Destroy(const int& typeID, char* rawBuffer)
 	{
 		if(typeID == VariantHelper<GeneralTypesCollection>::GetTypeID<X>())
 		{
 			delete reinterpret_cast<X*>(rawBuffer);
+		}
+	}
+
+	static void Serialize(Serializor& serializeContext, const int& typeID, char* rawBuffer)
+	{
+		if(typeID == VariantHelper<GeneralTypesCollection>::GetTypeID<X>())
+		{
+			Serializor::Serialize(serializeContext, typeID, *reinterpret_cast<X*>(rawBuffer));
 		}
 	}
 };
@@ -82,7 +91,7 @@ struct ParamHelper<X>
 template<typename X, typename... Arg>
 struct ParamHelper<X, Arg...>
 {
-	static void Copy(int& typeID, char*& myBuffer, char* const objBuffer)
+	static void Copy(const int& typeID, char*& myBuffer, char* const objBuffer)
 	{
 		if(typeID == VariantHelper<GeneralTypesCollection>::GetTypeID<X>())
 		{
@@ -94,7 +103,7 @@ struct ParamHelper<X, Arg...>
 		else
 			ParamHelper<Arg...>::Copy(typeID, myBuffer, objBuffer);
 	}
-	static void Destroy(int& typeID, char* rawBuffer)
+	static void Destroy(const int& typeID, char* rawBuffer)
 	{
 		if(typeID == VariantHelper<GeneralTypesCollection>::GetTypeID<X>())
 		{
@@ -102,6 +111,16 @@ struct ParamHelper<X, Arg...>
 		}
 		else
 			ParamHelper<Arg...>::Destroy(typeID, rawBuffer);
+	}
+
+	static void Serialize(Serializor& serializeContext, const int& typeID, char* rawBuffer)
+	{
+		if(typeID == VariantHelper<GeneralTypesCollection>::GetTypeID<X>())
+		{
+			Serializor::Serialize(serializeContext, typeID, *reinterpret_cast<X*>(rawBuffer));
+		}
+		else
+			ParamHelper<Arg...>::Serialize(serializeContext, typeID, rawBuffer);
 	}
 };
 
@@ -121,7 +140,7 @@ public:
 	Param(const Param& obj):m_rawBuffer(nullptr), m_typeID(-1)
 	{
 		m_typeID = obj.GetTypeID();
-		ParamHelper<VariantHelper<TypesCollection<Arg...>>, Arg...>::Copy(
+		ParamHelper<Arg...>::Copy(
 				m_typeID, m_rawBuffer, obj.GetBuffer());
 	}
 
@@ -160,6 +179,11 @@ public:
 		char* oldBuffer = m_rawBuffer;
 		m_rawBuffer = nullptr;
 		return oldBuffer;
+	}
+
+	void Serialize(Serializor& serializeContext) const
+	{
+		ParamHelper<Arg...>::Serialize(serializeContext, m_typeID, m_rawBuffer);
 	}
     //Accessor
     int GetTypeID() const {return m_typeID;}

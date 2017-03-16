@@ -5,6 +5,8 @@
 #include "mesos/executor.hpp"
 #include "TaskState.h"
 
+class GeneralParams;
+
 class Executor : public mesos::Executor
 {
 public:
@@ -35,6 +37,11 @@ public:
 	void UpdateTaskStatus(const std::string& taskID, TaskState state);
 
 	void OnTaskComplete(const std::string& taskID);
+
+	void SendMessage(const std::string& data);
+
+private:
+	void SendWakeUpReply(const GeneralParams& params);
 
 private:
 	std::unique_ptr<mesos::MesosExecutorDriver> m_driver;

@@ -47,9 +47,13 @@ void Executor::launchTask(mesos::ExecutorDriver* driver, const mesos::TaskInfo& 
 			coresRequired += resource.scalar().value();
 	}
 	GeneralParams params;
-	params.AddParam("Core Count", (int)(coresRequired + 1));
+	params.AddParam("Core Count", (int)(coresRequired));
 	params.AddParam("Task ID", task.task_id().value());
-	IndexBuilder::Instance().NewCommand(CommandType::Process, params);
+	const mesos::Label& label = task.labels().labels(0);
+	if(label.key() == "TaskType" && label.value() == "Processing")
+		IndexBuilder::Instance().NewCommand(CommandType::Process, params);
+	else
+		SendWakeUpReply(params);
 }
 //
 void Executor::killTask(mesos::ExecutorDriver* driver, const mesos::TaskID& taskId)
@@ -79,4 +83,17 @@ void Executor::UpdateTaskStatus(const std::string& taskID, TaskState state)
 	status.mutable_task_id()->set_value(taskID);
 	status.set_state(static_cast<mesos::TaskState>((int)state));
 	m_driver->sendStatusUpdate(status);
+}
+
+void Executor::SendMessage(const std::string& message)
+{
+	m_driver->sendFrameworkMessage(message);
+}
+
+void Executor::SendWakeUpReply(const GeneralParams& params)
+{
+	Serializor serializor;
+	Serializor::Serialize(serializor, -1, (int)MessageType::Discovery);
+	SendMessage(serializor.GetBuffer());
+	UpdateTaskStatus(StringConverter::Convert(params.GetValue("Task ID")), TaskState::Finished);
 }

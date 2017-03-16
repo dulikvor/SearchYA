@@ -28,7 +28,7 @@ public:
 	int GetCoreCount() const {return m_coreCount;}
 	std::string GetID() const {return m_id;}
 	bool Failure() const {return m_failure;}
-	std::string GetREason() const {return m_reason;}
+	std::string GetReason() const {return m_reason;}
 
 
 private:

@@ -7,6 +7,8 @@
 #include "Core/AsyncTask.h"
 #include "Core/Logger.h"
 #include "Communication/CommandsImpl.h"
+#include "Communication/Serializor.h"
+#include "Communication/GeneralParams.h"
 #include "ConfigParams.h"
 #include "Command.h"
 
@@ -48,6 +50,23 @@ void ClusterManager::NewCommand(CommandType commandType, const GeneralParams &pa
 	AsyncTask asyncTask(bind(&ClusterManager::HandleCommand, this, cref(command)));
 	m_asyncExecutor.SpawnTask(&asyncTask);
 	asyncTask.Wait();
+}
+
+
+void ClusterManager::HandleMesosMessage(const Scheduler::MessageSource& source, 
+		const std::string& data)
+{
+	Serializor serializor(data.data(), data.size());
+	int stubType = Serializor::DeserializeInt(serializor);
+	MessageType messageType = (MessageType::Enumeration)Serializor::DeserializeInt(serializor);
+	GeneralParams params;
+	if(data.size() > MessageType::HeaderSize) //more than message type
+	{
+		params.Deserialize(serializor);
+	}
+	params.AddParam("Slave ID", source.SlaveID);
+	params.AddParam("Executor ID", source.ExecutorID);
+	m_stateMachine.HandleState(CommandType::FromMessageType(messageType), params);
 }
 
 void ClusterManager::WaitForCompletion()

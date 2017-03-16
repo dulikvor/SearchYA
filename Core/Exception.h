@@ -16,7 +16,8 @@ namespace core
 		Exception(const Source& source, const char* format, Args ... args)
 		{
 			m_message = Logger::Instance().FormatMessage(source, format, args...);
-			Logger::Instance().PrintStack(source, "%s", m_message.c_str());
+			TRACE_ERROR("%s", m_message.c_str());
+			//Logger::Instance().PrintStack(source, "%s", m_message.c_str());
 		}
 
 		Exception() = delete;

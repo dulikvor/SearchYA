@@ -22,6 +22,7 @@ void PowerUpState::HandleState(StateContext &stateContext, CommandType commandTy
 			State::HandleTerminate();
 			break;
 		}
+		case CommandType::Discovery:
         defualt:
         {
             throw core::Exception(SOURCE, "Unauthorized command was received - %s", commandType.ToString().c_str());

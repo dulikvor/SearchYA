@@ -28,15 +28,30 @@ void DBClient::Connect(const string& hostAddress)
 }
 
 bool DBClient::SetHashFields(const string& key, 
-		const vector<pair<string, const vector<char>>>& fieldsValues)
+		const vector<tuple<const string&, char*, int>>& fieldsValues)
 {
 	string command = string("HMSET") + " " + key;
-	for(const pair<string, const vector<char>>& fieldValuePair : fieldsValues)
+	for(const tuple<const string&, char*, int>& fieldValuePair : fieldsValues) //build ansi format
 	{
-		command += string(" ") + fieldValuePair.first + " " + 
-			string(fieldValuePair.second.begin(), fieldValuePair.second.end());
+		command += string(" ") + get<0>(fieldValuePair) + " %b";
 	}
-	redisReply* reply = (redisReply*)redisCommand(m_redisContext, command.c_str());
+	const char** argv = (const char**)malloc(sizeof(char*)*(fieldsValues.size() + 1));
+	size_t* argvlen = (size_t*)malloc(sizeof(size_t)*fieldsValues.size() + 1);
+	//Add ansi format first
+	argv[0] = command.c_str();
+	argvlen[0] = command.size();
+	int index = 1;
+	for(const tuple<const string&, char*, int>& fieldValuePair : fieldsValues)
+	{
+		argv[index] = get<1>(fieldValuePair);
+		argvlen[index] = (size_t)get<2>(fieldValuePair);
+		index++;
+	}
+	redisReply* reply = (redisReply*)redisCommandArgv(m_redisContext, 
+			(int)(fieldsValues.size() + 1), argv, argvlen);
+
+	free(argv);
+	free(argvlen);
 	if(reply == nullptr)
 	{
 		throw Exception(SOURCE, "Invalid reply was received.");
@@ -45,7 +60,8 @@ bool DBClient::SetHashFields(const string& key,
 	{
 		throw Exception(SOURCE, "Redis error - %s", m_redisContext->errstr);
 	}
-	VERIFY(reply->type == REDIS_REPLY_INTEGER, "Received redis reply dosn't match expected return type");
+	VERIFY(reply->type == REDIS_REPLY_INTEGER, 
+			"Received redis reply dosn't match expected return type");
 	return (bool)reply->integer;
 }
 

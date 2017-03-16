@@ -32,5 +32,5 @@ void PowerUpState::HandleState(StateContext &stateContext, CommandType commandTy
 
 void PowerUpState::HandleInit(const GeneralParams& params)
 {
-	IndexBuilder::Instance().Init();
+	IndexBuilder::Instance().Init(params);
 }

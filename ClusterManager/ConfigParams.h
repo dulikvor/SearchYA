@@ -10,7 +10,6 @@ class ConfigParams
 {
 public:
 	using NodeAddress = std::string;
-	using NodePUMap = std::unordered_map<NodeAddress, std::list<int>>;
 
 public:
 	static ConfigParams& Instance();
@@ -20,7 +19,7 @@ public:
 	//hard written. the class is imutable passed this point.
 	void Load(const GeneralParams& configParams);
 	//Accessors
-	const NodePUMap& GetProcessingUnitsMap() const { return m_processingUnitsMap; }
+	const std::list<NodeAddress>& GetClusterNodes() const { return m_clusterNodesAddresses; }
 	int GetRecoveryTime() const { return m_recoveryTime; }
 	const std::string& GetHostAddress() const { return m_hostAddress; }
 	const std::string& GetMesosMasterAddress() const { return m_mesosMasterAddress; }
@@ -33,7 +32,7 @@ private:
 	ConfigParams(){}
 
 private:
-	NodePUMap m_processingUnitsMap;
+	std::list<NodeAddress> m_clusterNodesAddresses;
 	int m_recoveryTime;
 	std::string m_hostAddress;
 	std::string m_mesosMasterAddress;
