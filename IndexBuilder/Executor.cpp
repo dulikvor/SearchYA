@@ -2,6 +2,7 @@
 #include <mesos/mesos.pb.h>
 #include "Core/Logger.h"
 #include "Communication/GeneralParams.h"
+#include "Communication/Serializor.h"
 #include "IndexBuilder.h"
 
 Executor::~Executor()
@@ -39,6 +40,7 @@ void Executor::disconnected(mesos::ExecutorDriver* driver)
 //
 void Executor::launchTask(mesos::ExecutorDriver* driver, const mesos::TaskInfo& task)
 {
+	TRACE_INFO("Task received %s label - %s", task.task_id().value().c_str(), task.labels().labels(0).value().c_str()); 
 	double coresRequired = 0;
 	for(int index = 0; index < task.resources_size(); index++)
 	{
@@ -47,13 +49,21 @@ void Executor::launchTask(mesos::ExecutorDriver* driver, const mesos::TaskInfo& 
 			coresRequired += resource.scalar().value();
 	}
 	GeneralParams params;
-	params.AddParam("Core Count", (int)(coresRequired));
+	if(task.data().size() > 0)
+	{
+		Serializor serializor(task.data().data(), task.data().size());
+		params.Deserialize(serializor);
+	}
+	params.AddParam("Core Count", (int)(coresRequired) + 1);
 	params.AddParam("Task ID", task.task_id().value());
 	const mesos::Label& label = task.labels().labels(0);
-	if(label.key() == "TaskType" && label.value() == "Processing")
+	if(label.key() == "Task Type" && label.value() == "Processing")
 		IndexBuilder::Instance().NewCommand(CommandType::Process, params);
-	else
-		SendWakeUpReply(params);
+	else //Init task
+	{
+		IndexBuilder::Instance().NewCommand(CommandType::Init, params);
+		SendInitAck(params);
+	}
 }
 //
 void Executor::killTask(mesos::ExecutorDriver* driver, const mesos::TaskID& taskId)
@@ -90,10 +100,10 @@ void Executor::SendMessage(const std::string& message)
 	m_driver->sendFrameworkMessage(message);
 }
 
-void Executor::SendWakeUpReply(const GeneralParams& params)
+void Executor::SendInitAck(const GeneralParams& params)
 {
 	Serializor serializor;
-	Serializor::Serialize(serializor, -1, (int)MessageType::Discovery);
+	Serializor::Serialize(serializor, -1, (int)MessageType::InitAck);
 	SendMessage(serializor.GetBuffer());
 	UpdateTaskStatus(StringConverter::Convert(params.GetValue("Task ID")), TaskState::Finished);
 }

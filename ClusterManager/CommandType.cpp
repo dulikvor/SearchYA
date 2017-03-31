@@ -5,8 +5,8 @@ using namespace std;
 using namespace core;
 
 ENUMERATION_NAMING_BEGIN(CommandType)
-	{CommandType::Enumeration::Discovery, "Discovery"},
 	{CommandType::Enumeration::Init, "Init"},
+	{CommandType::Enumeration::InitAck, "InitAck"},
 	{CommandType::Enumeration::Process, "Process"},	
 	{CommandType::Enumeration::Terminate, "Terminate"}
 ENUMERATION_NAMING_END(CommandType)
@@ -20,9 +20,9 @@ CommandType CommandType::FromMessageType(MessageType messageType)
 				return CommandType::Init;
 				break;
 			}
-		case MessageType::Discovery:
+		case MessageType::InitAck:
 			{
-				return CommandType::Discovery;
+				return CommandType::InitAck;
 				break;
 			}
 		defualt:

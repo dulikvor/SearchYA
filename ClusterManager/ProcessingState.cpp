@@ -2,7 +2,6 @@
 #include <atomic>
 #include "Core/Exception.h"
 #include "Core/Logger.h"
-#include "Communication/GeneralParams.h"
 #include "ClusterManager.h"
 #include "Job.h"
 
@@ -18,9 +17,9 @@ void ProcessingState::HandleState(StateContext& stateContext, CommandType comman
             HandleProcess(params);
             break;
         }
-		case CommandType::Discovery:
+		case CommandType::InitAck:
 		{
-			HandleDiscovery(params);
+			//Do nothing, may happen due to race condition with in mesos.
 			break;
 		}
 		case CommandType::Terminate:
@@ -38,14 +37,8 @@ void ProcessingState::HandleState(StateContext& stateContext, CommandType comman
 void ProcessingState::HandleProcess(const GeneralParams& params)
 {
 	static atomic_int id(0);
-	Job job = {0.1, id++};
+	Job job = {1, id++};
 	TRACE_INFO("New job %d was received", (int)id);
 	ClusterManager::Instace().GetScheduler().AddJob(job);
 }
 
-void ProcessingState::HandleDiscovery(const GeneralParams& params)
-{
-	string slaveID = StringConverter::Convert(params.GetValue("Slave ID"));
-	string executorID = StringConverter::Convert(params.GetValue("Executor ID"));
-	ClusterManager::Instace().GetScheduler().AddExecutor(slaveID, executorID);
-}

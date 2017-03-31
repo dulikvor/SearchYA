@@ -3,6 +3,6 @@
 #include "ProcessingState.h"
 
 StateContext::StateContext()
-    :m_currentState(new ProcessingState())
+    :m_currentState(new PowerUpState())
 {
 }

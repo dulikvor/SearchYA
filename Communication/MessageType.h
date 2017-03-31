@@ -5,12 +5,12 @@
 class MessageType
 {
 public:
-	static const int HeaderSize = sizeof(int) * 2;
+	static const int HeaderSize = sizeof(int) * 2; //Type+Enum written as int
 	MessageType();
     enum Enumeration
     {
 		Init,
-		Discovery
+		InitAck
     };
 ENUMERATION(MessageType)
 };

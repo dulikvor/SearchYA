@@ -3,6 +3,7 @@
 #include <iterator>
 #include <mesos/resources.hpp>
 #include "Core/Logger.h"
+#include "Communication/GeneralParams.h"
 #include "TaskState.h"
 #include "ClusterManager.h"
 
@@ -167,10 +168,12 @@ void Scheduler::AddExecutor(const std::string& slaveID, const std::string& execu
 
 void Scheduler::BuildWakeUpTasks(std::list<std::pair<mesos::Resources, mesos::SlaveID>>& locations, std::vector<mesos::TaskInfo>& tasks)
 {
+	GeneralParams params;
+	params.AddParam("Redis Server Address", ConfigParams::Instance().GetRedisServerAddress());
 	for(const pair<mesos::Resources, mesos::SlaveID>& location : locations)
 	{
 		static int taskID = 0;
-		TRACE_INFO("Wakeup Task to be submmited at - %s", location.second.value().c_str()); 
+		TRACE_INFO("Wakeup Task to be submmited at - %s Exec - %s", location.second.value().c_str(), m_executorInfo.command().value().c_str()); 
 		tasks.push_back(mesos::TaskInfo());
 		tasks.back().set_name(string("WATask-") + location.second.value());
 		tasks.back().mutable_task_id()->set_value("WA" + to_string(taskID++));
@@ -179,6 +182,9 @@ void Scheduler::BuildWakeUpTasks(std::list<std::pair<mesos::Resources, mesos::Sl
 		mesos::Label* label = tasks.back().mutable_labels()->add_labels();
 		label->set_key("Task Type");
 		label->set_value("Wake Up");
+		Serializor serializor;
+		params.Serialize(serializor);
+		tasks.back().set_data(serializor.GetBuffer());
 		//mesos::CommandInfo command;
 		//command.set_shell(true);
 		//command.set_value("echo 'Hello World'");

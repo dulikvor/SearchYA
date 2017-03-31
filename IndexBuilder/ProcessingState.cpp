@@ -21,6 +21,10 @@ void ProcessingState::HandleState(StateContext& stateContext, CommandType comman
 			break;
 		}
 		case CommandType::Init:
+		{
+			//Due to race condition with received init and returned reply.
+			break;
+		}
 		case CommandType::Failed:
         defualt:
         {

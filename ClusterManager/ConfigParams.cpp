@@ -15,6 +15,7 @@ void ConfigParams::Load(const GeneralParams& configParams)
 	m_recoveryTime = 0; //configParams.GetValue("Recovery Time");
 	m_hostAddress = "127.0.0.1"; //StringConverter::Convert(configParams.GetValue("Host Address"));
 	m_mesosMasterAddress = "127.0.0.1"; //StringConverter::Convert(configParams.GetValue("Mesos Host Address"));
-	m_executableDir = "/home/dudilikvornik/Projects/MesosBenchMark/IndexBuilder/bin";//StringConverter::Convert(configParams.GetValue("Execution Directory"));
+	m_executableDir = "/home/dudilikvornik/Projects/SearchYA/IndexBuilder/bin";//StringConverter::Convert(configParams.GetValue("Execution Directory"));
 	m_role = "*"; //stringConverter::Convert(configParams.GetValue("Role"));
+	m_redisServerAddress = "127.0.0.1";
 }

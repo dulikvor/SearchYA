@@ -10,16 +10,19 @@
 #include "Core/TimedAsyncExecutor.h"
 #include "Core/AsyncTask.h"
 #include "Core/Enviorment.h"
+#include "Core/CommandLine.h"
 
 using namespace core;
 using namespace std;
 
 ClusterService::Params CreateStubConfig();
 
-int main()
+int main(int argc, char** argv)
 {
+	CommandLine commandLine(argc, argv);
 	Enviorment::Instance().Init();
-	Logger::Instance().AddListener(make_shared<FileRotationListener>(TraceSeverity::Info, string("Service"), 50 * 1024 * 1024, 20));
+	string workingDir = Enviorment::Instance().GetWorkingDir() + "/" + commandLine.GetArgument("workingdir");
+	Logger::Instance().AddListener(make_shared<FileRotationListener>(TraceSeverity::Info, workingDir + "/Service", 50 * 1024 * 1024, 20));
     Logger::Instance().Start(TraceSeverity::Info);
 	TRACE_INFO("MesosBenchMark starting");
 	ClusterManager::Instace().InitializeServer("127.0.0.1:50051");

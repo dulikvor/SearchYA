@@ -10,8 +10,8 @@ public:
 	static CommandType FromMessageType(MessageType messageType);
     enum Enumeration
     {
-		Discovery,
 		Init,
+		InitAck,
         Process,
         Terminate
     };

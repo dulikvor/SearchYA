@@ -11,5 +11,5 @@ ConfigParams& ConfigParams::Instance()
 
 void ConfigParams::Load(const GeneralParams& configParams)
 {
-	m_redisHostAddress = "127.0.0.1"; //StringConverter::Convert(configParams.GetValue("Redis Host Address"));
+	m_redisHostAddress = StringConverter::Convert(configParams.GetValue("Redis Server Address"));
 }

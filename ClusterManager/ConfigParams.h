@@ -27,6 +27,7 @@ public:
 	const std::string&  GetExecDir() const { return m_executableDir; }
 	std::string GetExecDir() { return const_cast<const ConfigParams&>(*this).GetExecDir(); }
 	const std::string& GetRole() const { return m_role; }
+	const std::string& GetRedisServerAddress() const { return m_redisServerAddress; }
 
 private:
 	ConfigParams(){}
@@ -36,6 +37,7 @@ private:
 	int m_recoveryTime;
 	std::string m_hostAddress;
 	std::string m_mesosMasterAddress;
+	std::string m_redisServerAddress;
 	int m_mesosMasterPort;
 	std::string m_executableDir;
 	std::string m_role;

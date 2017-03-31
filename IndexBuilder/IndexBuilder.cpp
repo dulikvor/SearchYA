@@ -55,6 +55,7 @@ void IndexBuilder::HandleCommand(const Command& command)
 
 void IndexBuilder::Init(const GeneralParams& params)
 {
+	TRACE_INFO("Initializing IndexBuilder");
 	ConfigParams::Instance().Load(params);
 	m_dbClient.Connect(ConfigParams::Instance().GetRedisHostAddress());
 }

@@ -12,7 +12,7 @@ int main()
 {
 	Enviorment::Instance().Init();
 	Logger::Instance().AddListener(make_shared<FileRotationListener>(TraceSeverity::Info, 
-		string("/home/dudilikvornik/Projects/MesosBenchMark/IndexBuilder/bin/IndexBuilder"), 
+		string("/home/dudilikvornik/Projects/SearchYA/IndexBuilder/bin/IndexBuilder"), 
 		50 * 1024 * 1024, 20));
     Logger::Instance().Start(TraceSeverity::Verbose);
 	TRACE_INFO("Index Builder starting");

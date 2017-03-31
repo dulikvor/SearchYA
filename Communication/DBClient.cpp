@@ -14,6 +14,7 @@ DBClient::~DBClient()
 
 void DBClient::Connect(const string& hostAddress)
 {
+	unique_lock<mutex> lock(m_mutex);
 	m_redisContext = redisConnect(hostAddress.c_str(), 6379);
 	if(m_redisContext == nullptr)
 	{
@@ -27,9 +28,31 @@ void DBClient::Connect(const string& hostAddress)
 	TRACE_INFO("Connected to redis server - %s:6379", hostAddress.c_str());
 }
 
+
+bool DBClient::SetString(const std::string& key, const char* value, int size)
+{
+	unique_lock<mutex> lock(m_mutex);
+	redisReply* reply = (redisReply*)redisCommand(m_redisContext, "SET %s %b", key.c_str(),
+			value, size);
+	if(reply == nullptr)
+	{
+		throw Exception(SOURCE, "Invalid reply was received.");
+	}
+	else if(m_redisContext->err)
+	{
+		throw Exception(SOURCE, "Redis error - %s", m_redisContext->errstr);
+	}
+	VERIFY(reply->type == REDIS_REPLY_STATUS, 
+			"Received redis reply dosn't match expected return type");
+
+	TRACE_INFO("SET was done %s", reply->str);
+	return strcmp(reply->str, "OK") == 0;
+}
+
 bool DBClient::SetHashFields(const string& key, 
 		const vector<tuple<const string&, char*, int>>& fieldsValues)
 {
+	unique_lock<mutex> lock(m_mutex);
 	string command = string("HMSET") + " " + key;
 	for(const tuple<const string&, char*, int>& fieldValuePair : fieldsValues) //build ansi format
 	{
@@ -67,6 +90,7 @@ bool DBClient::SetHashFields(const string& key,
 
 bool DBClient::DelHashFields(const string& key, const vector<string>& fields)
 {
+	unique_lock<mutex> lock(m_mutex);
 	string command = string("HDEL") + " " + key;
 	for(const string& field : fields)
 	{

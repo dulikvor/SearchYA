@@ -41,7 +41,7 @@ public:
 	void SendMessage(const std::string& data);
 
 private:
-	void SendWakeUpReply(const GeneralParams& params);
+	void SendInitAck(const GeneralParams& params);
 
 private:
 	std::unique_ptr<mesos::MesosExecutorDriver> m_driver;

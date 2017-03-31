@@ -72,6 +72,7 @@ public:
 
 	void Deserialize(Serializor& serializor)
 	{
+		int numOfValuesType = Serializor::DeserializeInt(serializor);
 		int numOfValues = Serializor::DeserializeInt(serializor);
 		for(int index = 0; index < numOfValues; index++)
 		{

@@ -16,4 +16,5 @@ private:
 	//The response to init command, will delegate the work to the cluster manager
 	//init routine.
     void HandleInit(const GeneralParams& params);
+    void HandleInitAck(const GeneralParams& params);
 };

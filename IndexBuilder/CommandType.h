@@ -7,7 +7,6 @@
 class CommandType
 {
 public:
-	static CommandType FromMessageType(MessageType messageType);
     enum Enumeration
     {
 		Init,
