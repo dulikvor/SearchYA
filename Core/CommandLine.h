@@ -9,13 +9,13 @@ namespace core
 	class CommandLine
 	{
 	public:
-		CommandLine(int argc, char** argv);
+		CommandLine(int argc, char const** argv);
 		~CommandLine(){}
 		
 		std::string& GetArgument(const std::string& argumentName);
 
 	private:
-		void Parse(int argc, char** argv);
+		void Parse(int argc, char const** argv);
 		bool ParseArgument(const char* argument, std::string& argName, std::string& argValue);
 
 	private:

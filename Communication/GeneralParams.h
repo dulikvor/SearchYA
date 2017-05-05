@@ -59,8 +59,7 @@ public:
 
 	std::string Serialize(Serializor& serializeContext)
 	{
-		Serializor::Serialize(serializeContext, 
-				VariantHelper<GeneralTypesCollection>::GetTypeID<int>(),(int)m_values.size());
+		Serializor::Serialize(serializeContext, (int)m_values.size());
 		for(const std::pair<std::string, GeneralParam>& param : m_values)
 		{
 			int typeID = VariantHelper<GeneralTypesCollection>::GetTypeID<std::string>();
@@ -72,7 +71,6 @@ public:
 
 	void Deserialize(Serializor& serializor)
 	{
-		int numOfValuesType = Serializor::DeserializeInt(serializor);
 		int numOfValues = Serializor::DeserializeInt(serializor);
 		for(int index = 0; index < numOfValues; index++)
 		{

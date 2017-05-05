@@ -6,7 +6,7 @@
 using namespace std;
 using namespace core;
 
-CommandLine::CommandLine(int argc, char** argv)
+CommandLine::CommandLine(int argc, char const** argv)
 {
 	Parse(argc, argv);
 }
@@ -20,7 +20,7 @@ string& CommandLine::GetArgument(const string& argumentName)
 	return (*it).second;
 }
 
-void CommandLine::Parse(int argc, char** argv)
+void CommandLine::Parse(int argc, char const** argv)
 {
 	for(int index = 0; index < argc; index++)
 	{
@@ -33,9 +33,9 @@ void CommandLine::Parse(int argc, char** argv)
 
 bool CommandLine::ParseArgument(const char* argument, string& argName, string& argValue)
 {
-	if(argument[0] != '-' || argument[1] != '-')
+	if(argument[0] != '-')
 		return false;
-	int index = 2;
+	int index = 1;
 	int count = 0;
 	while(argument[count + index] != '=' && argument[count + index] != '\0')
 	{

@@ -1,13 +1,13 @@
 MASTER_ADDRESS=${1-"127.0.0.1"}
 WORKING_AREA_DIR=${2-"MesosWA"}
-REDIS_LOC=${3-"../redis/src"}
+REDIS_LOC=${3-"Third_Party/redis/src"}
 RED_COLOR=`tput setaf 1`
 NO_COLOR=`tput sgr0`
 
 #Open all processes in tabs
 initiateAll()
 {
-	gnome-terminal --tab -e "sh -c \"./ClusterManager/bin/ClusterManager --workingdir= \"" --tab -e "sh -c \"grpcc -p ./Communication/IDL/ClusterService.proto -a $MASTER_ADDRESS:50051 -i\"" --tab -e "sh -c \"mesos master --ip=$MASTER_ADDRESS --work_dir=$WORKING_AREA_DIR\"" --tab -e "sh -c \"mesos agent --master=$MASTER_ADDRESS:5050 --work_dir=$WORKING_AREA_DIR \"" --tab -e "sh -c \"$REDIS_LOC/redis-server\""
+	gnome-terminal --tab -e "sh -c \"./ClusterManager/bin/ClusterManager --workingdir= \"" --tab -e "sh -c \"grpcc -p ./Communication/IDL/ClusterService.proto -a $MASTER_ADDRESS:50051 -i\"" --tab -e "sh -c \"mesos master --ip=$MASTER_ADDRESS --work_dir=$WORKING_AREA_DIR\"" --tab -e "sh -c \"mesos agent --master=$MASTER_ADDRESS:5050 --work_dir=$WORKING_AREA_DIR \"" --tab -e "sh -c \"$REDIS_LOC/redis-server --loadmodule ./RedisSearchModule/bin/libSearchModule.so -workingdir=../../../RedisSearchModule/bin\""
 }
 
 killAll()

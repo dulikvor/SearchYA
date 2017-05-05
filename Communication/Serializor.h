@@ -20,6 +20,13 @@ public:
 	static void Serialize(Serializor& context, int type, const double& value);
 	static void Serialize(Serializor& context, int type, const std::string& value);
 	static void Serialize(Serializor& context, int type, const std::list<std::string>& value);
+	static void Serialize(Serializor& context, const bool& value);
+	static void Serialize(Serializor& context, const short& value);
+	static void Serialize(Serializor& context, const int& value);
+	static void Serialize(Serializor& context, const long& value);
+	static void Serialize(Serializor& context, const float& value);
+	static void Serialize(Serializor& context, const double& value);
+	static void Serialize(Serializor& context, const std::string& value);
 	static int DeserializeInt(Serializor& context);
 	static short DeserializeShort(Serializor& context);
 	static long DeserializeLong(Serializor& context);

@@ -61,6 +61,44 @@ void Serializor::Serialize(Serializor& context, int type, const list<string>& va
 	VERIFY(false, "Invalid type, not supported by Serializor");
 }
 
+
+void Serializor::Serialize(Serializor& context, const bool& value)
+{
+	context.Write(reinterpret_cast<const char*>(&value), sizeof(bool));
+}
+
+void Serializor::Serialize(Serializor& context, const short& value)
+{
+	context.Write(reinterpret_cast<const char*>(&value), sizeof(short));
+}
+
+void Serializor::Serialize(Serializor& context, const int& value)
+{
+	context.Write(reinterpret_cast<const char*>(&value), sizeof(int));
+}
+
+void Serializor::Serialize(Serializor& context, const long& value)
+{
+	context.Write(reinterpret_cast<const char*>(&value), sizeof(long));
+}
+
+void Serializor::Serialize(Serializor& context, const float& value)
+{
+	context.Write(reinterpret_cast<const char*>(&value), sizeof(float));
+}
+
+void Serializor::Serialize(Serializor& context, const double& value)
+{
+	context.Write(reinterpret_cast<const char*>(&value), sizeof(double));
+}
+
+void Serializor::Serialize(Serializor& context, const string& value)
+{
+	int stringSize = value.size();
+	context.Write(reinterpret_cast<const char*>(&stringSize), sizeof(int));
+	context.Write(value.data(), stringSize);
+}
+
 int Serializor::DeserializeInt(Serializor& context)
 {
 	int val;
