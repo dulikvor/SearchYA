@@ -4,6 +4,7 @@
 #include <vector>
 #include <tuple>
 #include <mutex>
+#include "DBClientReply.h"
 
 struct redisContext;
 
@@ -14,7 +15,7 @@ public:
 	~DBClient();
 	//Attempts to establish a connection to redis server designated by a received host address.
 	void Connect(const std::string& hostAddress);
-	
+	DBClientReply CustomCommand(const std::string& command, const std::vector<std::pair<const char*, int>>& arguments);
 	bool SetString(const std::string& key, const char* value, int size);
 	bool SetHashFields(const std::string& key, 
 			const std::vector<std::tuple<const std::string&, char*, int>>& fieldsValues);

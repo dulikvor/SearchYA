@@ -28,6 +28,7 @@ public:
 	//Accessors
  	ProcessingManager& GetProcessingManager() {return m_processingManager;}
 	Executor& GetExecutor() {return m_executor;}
+	DBClient& GetDBClient() {return m_dbClient;}
 
 private:
     enum class RunningState

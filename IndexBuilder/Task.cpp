@@ -2,6 +2,7 @@
 #include <functional>
 #include "Core/AsyncTask.h"
 #include "Core/Logger.h"
+#include "Communication/DBClient.h"
 #include "ProcessingManager.h"
 #include "IndexBuilder.h"
 
@@ -45,6 +46,9 @@ void Task::OnProcessing(int id)
 	TRACE_INFO("Task-%s processing task %d", m_id.c_str(), id);
 	try
 	{
+		static int documentNumber = 0;
+		string documentName(to_string(documentNumber++));
+		IndexBuilder::Instance().GetDBClient().CustomCommand("Search.AddDocument", {make_pair(documentName.c_str(), documentName.size()), make_pair("Hello", 5), make_pair("World", 5)});
 	}
 	catch(Exception& e)
 	{
