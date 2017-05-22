@@ -38,7 +38,7 @@ void PowerUpState::HandleState(StateContext &stateContext, CommandType commandTy
 void PowerUpState::HandleInit(const GeneralParams& params)
 {
 	ConfigParams::Instance().Load(params);
-	ClusterManager::Instace().Init();
+	ClusterManager::Instace().HandleInit();
 }
 
 void PowerUpState::HandleInitAck(const GeneralParams& params)

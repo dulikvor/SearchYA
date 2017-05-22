@@ -17,10 +17,13 @@ extern "C"
 {
 	int AddDocument(RedisModuleCtx *ctx, RedisModuleString **argv, int argc)
 	{
-		VERIFY(argc == 1, "AddDocument arg list cannot be larger than 1");
+        TRACE_INFO("Add Document Command was received");
+		//command name + document serialized data
+		VERIFY(argc == 2, "AddDocument arg list cannot be larger than 2");
 		size_t stringLength = 0;
-		const char* binaryData = RedisModule_StringPtrLen(argv[0], &stringLength);
+		const char* binaryData = RedisModule_StringPtrLen(argv[1], &stringLength);
 		Document receivedDocument = std::move(Document::Deserialize(binaryData, (int)stringLength));
+		TRACE_INFO("Adding new document - %s", receivedDocument.GetName().c_str());
 		DocumentsIndexer::Instance().AddDocument(receivedDocument);
 		RedisModule_ReplyWithSimpleString(ctx,"OK");
 		return REDISMODULE_OK;

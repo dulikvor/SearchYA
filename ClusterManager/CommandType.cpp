@@ -7,7 +7,7 @@ using namespace core;
 ENUMERATION_NAMING_BEGIN(CommandType)
 	{CommandType::Enumeration::Init, "Init"},
 	{CommandType::Enumeration::InitAck, "InitAck"},
-	{CommandType::Enumeration::Process, "Process"},	
+	{CommandType::Enumeration::Index, "Indexing"},	
 	{CommandType::Enumeration::Terminate, "Terminate"}
 ENUMERATION_NAMING_END(CommandType)
 

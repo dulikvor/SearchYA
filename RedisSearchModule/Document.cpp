@@ -30,6 +30,13 @@ Document& Document::operator=(const Document&& obj)
 	return *this;
 }
 
+void Document::AddWord(const std::string &word) {
+    if(m_words.find(word) == m_words.end())
+        m_words[word] = 1;
+    else
+        m_words[word]++;
+}
+
 string Document::Serialize(Document& document)
 {
 	Serializor serializeContext;
@@ -52,8 +59,9 @@ Document Document::Deserialize(const char *data, int length)
 	words.reserve(wordsCount);
 	for(int index = 0; index < wordsCount; index++)
 	{
-		words.emplace_back(Serializor::DeserializeString(serializeContext), 
-				Serializor::DeserializeInt(serializeContext));
+        string word = Serializor::DeserializeString(serializeContext);
+		int wordCount = Serializor::DeserializeInt(serializeContext);
+		words.emplace_back(word, wordCount);
 	}
 	return Document(name, words);
 }

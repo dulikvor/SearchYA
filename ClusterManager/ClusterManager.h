@@ -2,6 +2,7 @@
 
 #include <condition_variable>
 #include <mutex>
+#include "Communication/ITextualSearchService.h"
 #include "Core/AsyncExecutor.h"
 #include "Communication/GrpcServer.h"
 #include "StateContext.h"
@@ -11,11 +12,14 @@ struct Command;
 class GrpcServer;
 class GeneralParams;
 
-class ClusterManager
+class ClusterManager : public ITextualSearchService
 {
 public:
     static ClusterManager& Instace();
     virtual ~ClusterManager();
+   	void Init(const GeneralParams& params) override;
+   	void IndexDocument(const GeneralParams& params) override;
+   	void Terminate() override;
 	//NewCommand will divert the newly received GRPC command handling from the GRPC thread 
 	//to the ClusterManager internal async executor thread pool, the operation is done 
 	//in sync manner.
@@ -23,15 +27,15 @@ public:
 	//WaitForCompletion will block the calling thread under condition the ClusterManager 
 	//state didn't reached terminate.
     void WaitForCompletion();
-    void Terminate();
-	//Init routine will do the followings:
-	//1) Initializing the scheduler.
-	void Init();
 	//Will create and set grpc build server with a received listening point.
 	//The server will be subscribed with needed services and start.
 	void InitializeServer(const std::string& serverListeningPoint);
 	//
 	void HandleMesosMessage(const Scheduler::MessageSource& source, const std::string& data);
+    void HandleTerminate();
+	//Init routine will do the followings:
+	//1) Initializing the scheduler.
+	void HandleInit();
 	//Accessors
 	Scheduler& GetScheduler(){ return *m_scheduler; }
 	GrpcServer& GetServer(){ return *m_server; }

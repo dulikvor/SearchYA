@@ -17,6 +17,7 @@ public:
 	~WordsTrieTreeNode();
 	WordsTrieTreeNode* AddNode(char letter);
 	void AddDocument(const WordCountInDoc& wordCountInDoc);
+	WordsTrieTreeNode* const GetNode(char letter) const;
 
 private:
 	static bool DocumentWordAppearCompare(const WordCountInDoc& obj1, const WordCountInDoc& obj2) { return obj1.second < obj2.second; }
@@ -26,6 +27,4 @@ private:
 	std::unordered_map<char, WordsTrieTreeNode*> m_nodes;
 	char m_letter;
 	std::unique_ptr<DocumentRanking> m_documentsRanking; 
-
-
 };

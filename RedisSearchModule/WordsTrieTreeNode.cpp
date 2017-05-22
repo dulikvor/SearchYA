@@ -27,3 +27,12 @@ void WordsTrieTreeNode::AddDocument(const WordCountInDoc& wordCountInDoc)
 {
 	m_documentsRanking->push(wordCountInDoc);
 }
+
+WordsTrieTreeNode* const WordsTrieTreeNode::GetNode(char letter) const {
+
+	auto it = m_nodes.find(letter);
+	if(it != m_nodes.end())
+		return it->second;
+	else
+		return nullptr;
+}

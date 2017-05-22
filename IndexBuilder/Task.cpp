@@ -1,8 +1,7 @@
 #include "Task.h"
-#include <functional>
 #include "Core/AsyncTask.h"
 #include "Core/Logger.h"
-#include "Communication/DBClient.h"
+#include "RedisSearchModule/Document.h"
 #include "ProcessingManager.h"
 #include "IndexBuilder.h"
 
@@ -15,58 +14,54 @@ Task::~Task()
 		delete activity;
 }
 
-void Task::Run()
+void Task::Run(std::function<void()> *const specificOnInit)
 {
-	TRACE_INFO("Task run begin %s", m_id.c_str());
-	AsyncTask* initTask = new AsyncTask(bind(&Task::OnInit, this));
+	TRACE_INFO("Task-%s started to run", m_id.c_str());
+	AsyncTask* initTask = new AsyncTask(*specificOnInit);
 	m_taskActivities.push_back(initTask);
 	m_manager.SubmitTaskActivity(initTask);
 }
 
-void Task::OnInit()
+void Task::OnInit(std::vector<std::function<void()>> *const specificOnProcessingList)
 {
-	TRACE_INFO("Task-%s init task", m_id.c_str());
-	//Do something to init
-	list<AsyncTask*> tasksList;
-	for(int index  = 0; index < 2; index++)
-	{	
-		AsyncTask* task = new AsyncTask(bind(&Task::OnProcessing, this, index));
-		tasksList.push_back(task);
+	TRACE_INFO("Task-%s OnInit", m_id.c_str());
+	vector<AsyncTask*> tasksList;
+	for(auto& onProcessingFunctor : *specificOnProcessingList)
+	{
+		tasksList.push_back(new AsyncTask(onProcessingFunctor));
 		m_processingTaskCount++;
 	}
 	m_manager.SubmitProcessingActivities(tasksList, m_coreCount);
-	m_taskActivities.splice(m_taskActivities.end(), tasksList);
+	m_taskActivities.insert(m_taskActivities.end(), tasksList.begin(), tasksList.end());
 	
 	m_state = TaskState::Running;
 	IndexBuilder::Instance().GetExecutor().UpdateTaskStatus(m_id ,m_state);
 }
 
-void Task::OnProcessing(int id)
+void Task::OnProcessing(int subTaskID, std::function<void()> *const processingFunction)
 {
-	TRACE_INFO("Task-%s processing task %d", m_id.c_str(), id);
+	TRACE_INFO("Task-%s onProcessing sub task - %d", m_id.c_str(), subTaskID);
 	try
 	{
-		static int documentNumber = 0;
-		string documentName(to_string(documentNumber++));
-		IndexBuilder::Instance().GetDBClient().CustomCommand("Search.AddDocument", {make_pair(documentName.c_str(), documentName.size()), make_pair("Hello", 5), make_pair("World", 5)});
+		(*processingFunction)();
 	}
 	catch(Exception& e)
 	{
 		m_failure = true;
 		m_reason = string("Failure");
 	}
-	AsyncTask* finishTask = new AsyncTask(bind(&Task::OnFinished, this, id));
+	AsyncTask* finishTask = new AsyncTask(bind(&Task::OnFinished, this, subTaskID));
 	m_taskActivities.push_back(finishTask);
 	m_manager.SubmitTaskActivity(finishTask);
 }
 
-void Task::OnFinished(int id)
+void Task::OnFinished(int subTaskID)
 {
-	TRACE_INFO("Task-%s processing finished %d", m_id.c_str(), id);
+	TRACE_INFO("Task-%s OnFinished sub task - %d", m_id.c_str(), subTaskID);
 	m_processingTaskCount--;
 	if(m_processingTaskCount == 0) //all is finished
 	{
-		if(m_failure == false) //all is well
+		if(!m_failure) //all is well
 			m_state = TaskState::Finished;
 		else
 			m_state = TaskState::Failed;

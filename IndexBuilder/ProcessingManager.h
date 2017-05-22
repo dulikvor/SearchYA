@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <list>
 #include <mutex>
 #include "Core/AsyncExecutor.h"
@@ -29,7 +30,7 @@ public:
 	//along will be also added a core count, depicting the resource requierment of the received
 	//activities. they will be use to increase the utilization of the computation 
 	//async executor.
-	void SubmitProcessingActivities(std::list<core::AsyncTask*> activities,
+	void SubmitProcessingActivities(std::vector<core::AsyncTask*> activities,
 		   int coreCount);
 	//Will inform the processing manager with the completion of a given task.
 	//due to race condition with various processing activities of many diffrent tasks,

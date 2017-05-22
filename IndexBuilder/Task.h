@@ -1,7 +1,8 @@
 #pragma
 
-#include <list>
 #include <string>
+#include <functional>
+#include <vector>
 #include "TaskState.h"
 #include "StateContext.h"
 
@@ -20,9 +21,9 @@ public:
 	Task(ProcessingManager& manager, const std::string& id,  int coreCount):
 		m_state(TaskState::Starting), m_manager(manager), m_id(id), m_coreCount(coreCount),
 		m_failure(false){}
-	~Task();
+	virtual ~Task();
 	//Task entry point, from here the task will initiate its run.
-	void Run();
+	virtual void Run(std::function<void(void)>* const specificOnInit = nullptr);
 	//Properties
 	TaskState GetState() const {return m_state;}
 	int GetCoreCount() const {return m_coreCount;}
@@ -31,17 +32,17 @@ public:
 	std::string GetReason() const {return m_reason;}
 
 
-private:
+protected:
 	//Task init state hander, will inform the executor with the transition to running state.
 	//will submit created processing tasks to the processing manager.
-	void OnInit();
+	virtual void OnInit(std::vector<std::function<void(void)>>* const specificOnProcessingList = nullptr);
 	//Task processing state handler. will handle all needed processing and transit to the next
 	//stage upon completion. calls are bound to the processing async executor, state transition
 	//to the regular single threaded async executor.
-	void OnProcessing(int id);
+	virtual void OnProcessing(int subTaskID, std::function<void(void)>* const processingFunction = nullptr);
 	//Will be called upon every completed processing task, if the given processing task is the
 	//last one, an update to mesos will be conducted and a transition to deletion will be made.
-	void OnFinished(int id);
+	void OnFinished(int subTaskID);
 
 
 private:

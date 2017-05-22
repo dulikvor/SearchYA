@@ -12,7 +12,7 @@ public:
     {
 		Init,
 		InitAck,
-        Process,
+        Index,
         Terminate
     };
 ENUMERATION(CommandType)

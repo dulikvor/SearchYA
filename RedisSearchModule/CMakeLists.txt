@@ -12,8 +12,11 @@ set(CMAKE_CXX_FLAGS  "-std=c++11 -g -pthread -fPIC -I/usr/local/include ")
 #Add all needed files
 include_directories(. ..  ${PROJECT_3RD_LOC} ${REDIS_LOC}/src)
 set(MYSources SearchModule.cpp Document.cpp DocumentsIndexer.cpp WordsTrieTree.cpp WordsTrieTreeNode.cpp)
+
+add_library(objlib OBJECT ${MYSources})
 #Compile staticly
-add_library(SearchModule SHARED ${MYSources})
+add_library(SearchModule SHARED $<TARGET_OBJECTS:objlib>)
+add_library(SearchModule_s STATIC $<TARGET_OBJECTS:objlib>)
 #Add project dependencies
 add_subdirectory(${PROJECT_DIR}/../Core ${PROJECT_DIR}/Core) 
 add_subdirectory(${PROJECT_DIR}/../Communication ${PROJECT_DIR}/Communication)

@@ -6,9 +6,9 @@
 #include "Core/Assert.h"
 #include "Core/AsyncTask.h"
 #include "Core/Logger.h"
-#include "Communication/CommandsImpl.h"
 #include "Communication/Serializor.h"
 #include "Communication/GeneralParams.h"
+#include "Communication/TextualSearchServiceImpl.h"
 #include "ConfigParams.h"
 #include "Command.h"
 
@@ -30,7 +30,21 @@ ClusterManager::~ClusterManager()
 {
 }
 
-void ClusterManager::Init()
+void ClusterManager::Init(const GeneralParams& params)
+{
+    NewCommand(CommandType::Init, params);
+}
+
+void ClusterManager::IndexDocument(const GeneralParams& params)
+{
+    NewCommand(CommandType::Index, params);
+}
+void ClusterManager::Terminate()
+{
+    NewCommand(CommandType::Terminate, GeneralParams());
+}
+
+void ClusterManager::HandleInit()
 {
 	m_scheduler.reset(new Scheduler(ConfigParams::Instance().GetRole()));
 	m_scheduler->Initialize();
@@ -39,7 +53,7 @@ void ClusterManager::Init()
 void ClusterManager::InitializeServer(const string& serverListeningPoint)
 {
 	m_server.reset(new GrpcServer(serverListeningPoint));
-	m_server->AddService(unique_ptr<grpc::Service>(new CommandsImpl()));
+	m_server->AddService(unique_ptr<grpc::Service>(new TextualSearchServiceImpl(*this)));
 	m_server->Start();
 	TRACE_INFO("GRPC Server is up at - %s", serverListeningPoint.c_str());
 }
@@ -75,7 +89,7 @@ void ClusterManager::WaitForCompletion()
     m_conditionVar.wait(localLock, [&]{return m_state == RunningState::TERMINATED;});
 }
 
-void ClusterManager::Terminate()
+void ClusterManager::HandleTerminate()
 {
     unique_lock<mutex> localLock(m_mutex);
     m_state = RunningState::TERMINATED;

@@ -1,10 +1,8 @@
 #include "ProcessingManager.h"
-#include <functional>
-#include "Core/Exception.h"
 #include "Core/AsyncTask.h"
 #include "Core/Enviorment.h"
 #include "Communication/GeneralParams.h"
-#include "Task.h"
+#include "IndexingTask.h"
 
 using namespace std;
 using namespace core;
@@ -33,7 +31,7 @@ void ProcessingManager::SubmitNewTask(const string& taskID, int coreCount)
 	if(m_tasks.ContainsKey(taskID) == true)
 		throw Exception(SOURCE, "Received task already exists - %s", taskID.c_str());
 	
-	Task* task = new Task(*this, taskID, coreCount);
+	Task* task = new IndexingTask(*this, taskID, coreCount);
 	m_tasks[taskID] = task;
 	task->Run();
 }
@@ -43,7 +41,7 @@ void ProcessingManager::SubmitTaskActivity(AsyncTask* activity)
 	m_executor.SpawnTask(activity);
 }
 
-void ProcessingManager::SubmitProcessingActivities(list<AsyncTask*> activities, int coreCount)
+void ProcessingManager::SubmitProcessingActivities(vector<AsyncTask*> activities, int coreCount)
 {
 	while(coreCount-- > 0)
 		m_computationAsyncExecutor->IncActiveThreads();

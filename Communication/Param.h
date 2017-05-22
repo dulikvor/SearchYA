@@ -7,7 +7,7 @@
 #include <algorithm>
 #include "Core/Assert.h"
 #include "Core/Exception.h"
-#include "Communication/GeneretedFiles/ClusterService.pb.h"
+#include "Communication/GeneretedFiles/TextualSearchService.pb.h"
 #include "Communication/ParamValueType.h"
 #include "Serializor.h"
 

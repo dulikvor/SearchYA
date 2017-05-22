@@ -12,11 +12,11 @@ set(MESOS_3RD_PARTY "~/Downloads/mesos/")
 set(CMAKE_CXX_FLAGS  "-std=c++11 -g -pthread -I/usr/local/include ")
 #Add all needed files
 include_directories(. .. ${PROJECT_3RD_LOC})
-set(MYSources main.cpp IndexBuilder.cpp CommandType.cpp PowerUpState.cpp ProcessingState.cpp State.cpp StateContext.cpp Executor.cpp TaskState.cpp ProcessingManager.cpp Task.cpp ConfigParams.cpp)
+set(MYSources main.cpp IndexBuilder.cpp CommandType.cpp PowerUpState.cpp ProcessingState.cpp State.cpp StateContext.cpp Executor.cpp TaskState.cpp ProcessingManager.cpp Task.cpp ConfigParams.cpp IndexingTask.cpp)
 add_executable(IndexBuilder ${MYSources})
 #Add project dependencies
 add_subdirectory(${PROJECT_DIR}/../Core ${PROJECT_DIR}/Core) 
 add_subdirectory(${PROJECT_DIR}/../Communication ${PROJECT_DIR}/Communication)
 #Link final product
-set(TO_LINK_LIBS protobuf mesos ${EXECUTABLE_OUTPUT_PATH}/libhiredis.a)
+set(TO_LINK_LIBS protobuf mesos ${EXECUTABLE_OUTPUT_PATH}/libhiredis.a ${PROJECT_DIR}/../RedisSearchModule/bin/libSearchModule_s.a)
 target_link_libraries(IndexBuilder Communication Core ${TO_LINK_LIBS})

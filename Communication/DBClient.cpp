@@ -52,15 +52,11 @@ bool DBClient::SetString(const std::string& key, const char* value, int size)
 DBClientReply DBClient::CustomCommand(const std::string& command, const std::vector<std::pair<const char*, int>>& arguments)
 {
 	unique_lock<mutex> lock(m_mutex);
-	string clientCommand = command;
-	for(int argumentsCount = arguments.size(); argumentsCount >= 0; argumentsCount--) //build ansi format
-		clientCommand += " %b";
-
 	const char** argv = (const char**)malloc(sizeof(char*)*(arguments.size() + 1));
 	size_t* argvlen = (size_t*)malloc(sizeof(size_t)*arguments.size() + 1);
 	//Add ansi format first
-	argv[0] = clientCommand.c_str();
-	argvlen[0] = clientCommand.size();
+	argv[0] = command.c_str();
+	argvlen[0] = command.size();
 	int index = 1;
 	for(auto& argument : arguments)
 	{

@@ -12,9 +12,9 @@ void ProcessingState::HandleState(StateContext& stateContext, CommandType comman
 {
     switch(commandType)
     {
-		case CommandType::Process:
+		case CommandType::Index:
         {
-            HandleProcess(params);
+            HandleIndex(params);
             break;
         }
 		case CommandType::InitAck:
@@ -34,7 +34,7 @@ void ProcessingState::HandleState(StateContext& stateContext, CommandType comman
     }
 }
 
-void ProcessingState::HandleProcess(const GeneralParams& params)
+void ProcessingState::HandleIndex(const GeneralParams& params)
 {
 	static atomic_int id(0);
 	Job job = {1, id++};

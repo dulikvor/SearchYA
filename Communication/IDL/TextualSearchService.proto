@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package ClusterService;
+package TextualSearchService;
 
-service Commands {
+service TextualSearch {
   rpc Init(Params) returns (Empty){}
-  rpc SubmitTask(Empty) returns (Empty){}
+  rpc IndexDocument(Empty) returns (Empty){}
   rpc Terminate(Empty) returns (Empty){}
 }
 

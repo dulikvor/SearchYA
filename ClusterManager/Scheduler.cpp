@@ -1,10 +1,6 @@
 #include "Scheduler.h"
-#include <atomic>
-#include <iterator>
-#include <mesos/resources.hpp>
 #include "Core/Logger.h"
 #include "Communication/GeneralParams.h"
-#include "TaskState.h"
 #include "ClusterManager.h"
 
 using namespace std;
@@ -108,6 +104,7 @@ void Scheduler::AddJob(const Job& job)
 void Scheduler::InitializeMesos()
 {
 	m_executorInfo.mutable_executor_id()->set_value("Executor");
+    m_executorInfo.set_type(mesos::ExecutorInfo::CUSTOM);
 	m_executorInfo.mutable_command()->set_value(ConfigParams::Instance().GetExecDir() + 
 			"/IndexBuilder");
 	m_executorInfo.mutable_command()->set_shell(false);

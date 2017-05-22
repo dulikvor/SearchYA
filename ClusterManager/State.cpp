@@ -3,6 +3,6 @@
 
 void State::HandleTerminate()
 {
-	ClusterManager::Instace().Terminate();
+	ClusterManager::Instace().HandleTerminate();
 }
 

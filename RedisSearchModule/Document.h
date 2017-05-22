@@ -15,7 +15,7 @@ public:
 	Document(const Document&& obj);
 	Document& operator=(const Document&& obj);
 
-	void AddWord(const std::string& words);
+	void AddWord(const std::string& word);
 	//Properties
 	const std::string& GetName() const {return m_name;}
 	const std::unordered_map<std::string, int>& GetWords() const {return m_words;}

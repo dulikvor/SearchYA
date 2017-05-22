@@ -2,7 +2,7 @@ project(Communication CXX)
 cmake_minimum_required(VERSION 2.8)
 #Add all needed files
 include_directories(. .. ${MESOS_3RD_PARTY}/boost-1.53.0 ${PROJECT_3RD_LOC})
-set(MYSources CommandsImpl.cpp DBClient.cpp GrpcServer.cpp Serializor.cpp MessageType.cpp Serializor.cpp ./GeneretedFiles/ClusterService.grpc.pb.cc ./GeneretedFiles/ClusterService.pb.cc)
+set(MYSources TextualSearchServiceImpl.cpp DBClient.cpp GrpcServer.cpp Serializor.cpp MessageType.cpp Serializor.cpp ./GeneretedFiles/TextualSearchService.grpc.pb.cc ./GeneretedFiles/TextualSearchService.pb.cc)
 message(STATUS "CXX files - ${MYSources}")
 add_library(Communication STATIC ${MYSources})
 #Pre link step

@@ -5,7 +5,7 @@
 #include <algorithm>
 #include "Core/Assert.h"
 #include "Core/Exception.h"
-#include "GeneretedFiles/ClusterService.pb.h"
+#include "GeneretedFiles/TextualSearchService.pb.h"
 #include "Param.h"
 #include "Serializor.h"
 
@@ -20,7 +20,7 @@ public:
     ~GeneralParams(){}
 
 
-    void Load(const ClusterService::Params& params)
+    void Load(const TextualSearchService::Params& params)
     {
         for(int index = 0; index < params.genericparams_size(); index++)
         {
@@ -81,44 +81,44 @@ public:
 
 private:
 
-    void Load(const ClusterService::Param& param, GeneralParam& generalParam)
+    void Load(const TextualSearchService::Param& param, GeneralParam& generalParam)
     {
-		if(param.type() == ClusterService::Param::Primitive)
+		if(param.type() == TextualSearchService::Param::Primitive)
 			SetPrimitive(param, generalParam);
 		else //String list is the only second option as of now
 			SetStringCollection(param, generalParam);
     }
 
-	void SetPrimitive(const ClusterService::Param& param, GeneralParam& generalParam)
+	void SetPrimitive(const TextualSearchService::Param& param, GeneralParam& generalParam)
 	{
 		switch(param.valueOneOf_case())
 		{
-			case ClusterService::Param::ValueOneOfCase::kValueInt :
+			case TextualSearchService::Param::ValueOneOfCase::kValueInt :
 				{
 					generalParam.Set(param.valueint());
 					break;
 				}
-			case ClusterService::Param::ValueOneOfCase::kValueLong:
+			case TextualSearchService::Param::ValueOneOfCase::kValueLong:
 				{
 					generalParam.Set(param.valuelong());
 					break;
 				}
-			case ClusterService::Param::ValueOneOfCase::kValueBool:
+			case TextualSearchService::Param::ValueOneOfCase::kValueBool:
 				{
 					generalParam.Set(param.valuebool());
 					break;
 				}
-			case ClusterService::Param::ValueOneOfCase::kValueFloat:
+			case TextualSearchService::Param::ValueOneOfCase::kValueFloat:
 				{
 					generalParam.Set(param.valuefloat());
 					break;
 				}
-			case ClusterService::Param::ValueOneOfCase::kValueDouble:
+			case TextualSearchService::Param::ValueOneOfCase::kValueDouble:
 				{
 					generalParam.Set(param.valuedouble());
 					break;
 				}
-			case ClusterService::Param::ValueOneOfCase::kValueString:
+			case TextualSearchService::Param::ValueOneOfCase::kValueString:
 				{
 					generalParam.Set(param.valuestring());
 					break;
@@ -130,7 +130,7 @@ private:
 		}
 	}
 
-	void SetStringCollection(const ClusterService::Param& param, GeneralParam& generalParam)
+	void SetStringCollection(const TextualSearchService::Param& param, GeneralParam& generalParam)
 	{
 		std::list<std::string> stringCollection;
 		for(int index = 0; index < param.valuestringcollection_size(); index++)

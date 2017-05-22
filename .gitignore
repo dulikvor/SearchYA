@@ -28,10 +28,20 @@
 *.out
 *.app
 bin/
+#Vim
+*.swp
+#Clion
+**/.idea
+#Mesos
+**/MesosWA
+#Generated files protobuf
+**/GeneretedFiles
+*.cbp
 # Cmake
 CMakeCache.txt
 *.cmake
 CMakeFiles/
+Makefile
 #ctags
 tags
 ctags.bash
