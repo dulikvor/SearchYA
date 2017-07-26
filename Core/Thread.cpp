@@ -1,6 +1,7 @@
 #include "Thread.h"
 #include <iostream>
 #include "Assert.h"
+#include "Logger.h"
 
 using namespace std;
 
@@ -30,6 +31,10 @@ namespace core
 		}
 		catch(const Exception& e)
 		{
+		}
+		catch(std::exception& e)
+		{
+			TRACE_ERROR("%s", e.what());
 		}
 	}
 }

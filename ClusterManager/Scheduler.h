@@ -6,6 +6,7 @@
 #include <mesos/scheduler.hpp>
 #include <mesos/resources.hpp>
 #include <mutex>
+#include <vector>
 #include "Core/SyncQueue.h"
 #include "Core/OrderedList.h"
 #include "Core/ConcurrentDictionary.h"
@@ -54,7 +55,7 @@ public:
 	void executorLost(mesos::SchedulerDriver* driver,const mesos::ExecutorID& executorID,const mesos::SlaveID& slaveID,int status) override {}
 	void error(mesos::SchedulerDriver* driver, const std::string& message) override {}
 	//AddJob adds a new job to the jobs queue.
-	void AddJob(const Job& job);
+	void AddJob(std::unique_ptr<Job> job);
 	//
 	void SendMessage(std::string& data){}
 	//
@@ -72,20 +73,23 @@ public:
 	};
 
 private:
+	using JobAllocatedResources = std::pair<std::unique_ptr<Job>, std::pair<mesos::Resources, mesos::SlaveID>>;
+	using InitJobResources = std::pair<mesos::Resources, mesos::SlaveID>;
 	//Will initiate mesos driver and connect to the master.
 	void InitializeMesos();
 	//Transforms received jobs into mesos tasks.
-	void BuildTasks(const std::list<std::pair<Job,std::pair<mesos::Resources, mesos::SlaveID>>>& jobs, std::vector<mesos::TaskInfo>& tasks);
-	void BuildWakeUpTasks(std::list<std::pair<mesos::Resources, mesos::SlaveID>>& locations, 
-			std::vector<mesos::TaskInfo>& tasks);
+	void BuildTasks(const std::vector<JobAllocatedResources>& jobsAndResources, std::vector<mesos::TaskInfo>& tasks);
 	bool ISExecutorValid(const std::string& slaveID, const std::string& executorID);
-
+	void AllocateQualifiedProcessingJobsResources(mesos::Resources& offeredResources, const mesos::SlaveID& slaveIDi,
+        std::vector<JobAllocatedResources>& allocatedJobs);
+	void AllocateInitJobResources(mesos::Resources &offeredResources,
+          const mesos::SlaveID &slaveID, std::vector<JobAllocatedResources>& allocatedJobs);
 private:
 	core::ConcurrentDictionary<std::pair<SlaveID, ExecutorID>, Executor> m_executors;
 	mesos::ExecutorInfo m_executorInfo;
 	std::string m_role;
 	core::ConcurrentDictionary<TaskID, Task> m_activatedTasks; 
-	core::SyncQueue<Job> m_jobsQueue;
+	core::SyncQueue<Job*> m_jobsQueue;
 	core::TimedAsyncExecutor m_timedAsyncExec;
 	std::unique_ptr<mesos::SchedulerDriver> m_mesosDriver;
 	mutable std::mutex m_mutex;

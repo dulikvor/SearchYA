@@ -54,6 +54,7 @@ namespace core
 
 	AsyncExecutor::~AsyncExecutor()
 	{
+        Logger::Instance().PrintStack();
 		for(int index = 0; index < (int)m_threadPool.size(); index++)
 		{
 			m_taskQueue.Push(nullptr);

@@ -11,8 +11,8 @@ public:
     enum Enumeration
     {
 		Init,
-		InitAck,
         Index,
+		GetTopK,
         Terminate
     };
 ENUMERATION(CommandType)

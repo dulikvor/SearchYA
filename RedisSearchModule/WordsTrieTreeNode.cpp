@@ -1,5 +1,7 @@
 #include "WordsTrieTreeNode.h"
 
+using namespace std;
+
 WordsTrieTreeNode::WordsTrieTreeNode(char letter):m_letter(letter)
 {
 	m_documentsRanking.reset(new DocumentRanking(&WordsTrieTreeNode::DocumentWordAppearCompare));
@@ -26,6 +28,20 @@ WordsTrieTreeNode* WordsTrieTreeNode::AddNode(char letter)
 void WordsTrieTreeNode::AddDocument(const WordCountInDoc& wordCountInDoc)
 {
 	m_documentsRanking->push(wordCountInDoc);
+}
+
+vector<WordsTrieTreeNode::WordCountInDoc> WordsTrieTreeNode::GetTopKDocuments(int k) {
+	vector<WordCountInDoc> topDocuments;
+	while(k-- && m_documentsRanking->size() > 0)
+	{
+		topDocuments.emplace_back(m_documentsRanking->top());
+		m_documentsRanking->pop();
+	}
+
+	for(const WordsTrieTreeNode::WordCountInDoc& documentNameScore : topDocuments)
+		m_documentsRanking->emplace(documentNameScore);
+
+	return topDocuments;
 }
 
 WordsTrieTreeNode* const WordsTrieTreeNode::GetNode(char letter) const {

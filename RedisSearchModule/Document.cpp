@@ -3,8 +3,8 @@
 
 using namespace std;
 
-Document::Document(const string& name, vector<pair<string, int>>& words)
-	:m_name(name)
+Document::Document(const string& name, const string& path, vector<pair<string, int>>& words)
+	:m_name(name), m_path(path)
 {
 	for(auto& vecPair : words)
 	{
@@ -37,10 +37,11 @@ void Document::AddWord(const std::string &word) {
         m_words[word]++;
 }
 
-string Document::Serialize(Document& document)
+string Document::Serialize(const Document& document)
 {
 	Serializor serializeContext;
 	Serializor::Serialize(serializeContext, document.GetName());
+	Serializor::Serialize(serializeContext, document.GetPath());
 	Serializor::Serialize(serializeContext, (int)document.GetWords().size());
 	for(auto& hashPair : document.GetWords())
 	{
@@ -54,6 +55,7 @@ Document Document::Deserialize(const char *data, int length)
 {
 	Serializor serializeContext(data, length);
 	string name = Serializor::DeserializeString(serializeContext);
+	string path = Serializor::DeserializeString(serializeContext);
 	int wordsCount = Serializor::DeserializeInt(serializeContext);
 	vector<pair<string, int>> words;
 	words.reserve(wordsCount);
@@ -63,5 +65,5 @@ Document Document::Deserialize(const char *data, int length)
 		int wordCount = Serializor::DeserializeInt(serializeContext);
 		words.emplace_back(word, wordCount);
 	}
-	return Document(name, words);
+	return Document(name, path, words);
 }

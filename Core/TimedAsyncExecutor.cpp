@@ -1,5 +1,4 @@
 #include "TimedAsyncExecutor.h"
-#include <utility>
 
 using namespace std;
 using namespace std::chrono;
@@ -26,16 +25,15 @@ namespace core
 		SpawnTimedTask(task, system_clock::now());
 	}
 
-	void TimedAsyncExecutor::SpawnTimedTask(AsyncTask* task, system_clock::time_point dueTime)
-	{
+	void TimedAsyncExecutor::SpawnTimedTask(AsyncTask* task, system_clock::time_point dueTime) {
 		unique_lock<mutex> lock(m_mut);
 		//Verify the next min time to wait for
-		auto currentMinTime = m_upcomingTasks.size() == 0 ? system_clock::time_point::max() : m_upcomingTasks.begin()->first;
-	   m_upcomingTasks.insert(make_pair(dueTime, task));
-	  if(dueTime < currentMinTime)
-	  {
-		  m_cv.notify_one();
-	  } 
+		auto currentMinTime =
+				m_upcomingTasks.size() == 0 ? system_clock::time_point::max() : m_upcomingTasks.begin()->first;
+		m_upcomingTasks.insert(make_pair(dueTime, task));
+		if (dueTime < currentMinTime) {
+			m_cv.notify_one();
+		}
 	}
 
 	void TimedAsyncExecutor::TasksPublisher()

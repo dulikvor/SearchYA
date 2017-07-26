@@ -38,8 +38,10 @@ public:
 
 	void Write(const char* data, int size);
 	void Read(char* buffer, int size);
+	void Clean();
 	//Accessors
 	std::string GetBuffer(){return m_buffer.str();}
+
 private:
 	std::stringstream m_buffer;
 };

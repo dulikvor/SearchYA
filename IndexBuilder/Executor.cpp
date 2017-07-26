@@ -1,9 +1,13 @@
 #include "Executor.h"
+#include <string>
 #include <mesos/mesos.pb.h>
 #include "Core/Logger.h"
 #include "Communication/GeneralParams.h"
-#include "Communication/Serializor.h"
 #include "IndexBuilder.h"
+#include "TasksFactoryContainer.h"
+
+using namespace std;
+using namespace core;
 
 Executor::~Executor()
 {
@@ -35,7 +39,7 @@ void Executor::reregistered(mesos::ExecutorDriver* driver,
 void Executor::disconnected(mesos::ExecutorDriver* driver)
 {
 	TRACE_INFO("Disconnected from mesos slave");
-	IndexBuilder::Instance().NewCommand(CommandType::Terminate, GeneralParams());
+	IndexBuilder::Instance().Terminate();
 }
 //
 void Executor::launchTask(mesos::ExecutorDriver* driver, const mesos::TaskInfo& task)
@@ -48,22 +52,9 @@ void Executor::launchTask(mesos::ExecutorDriver* driver, const mesos::TaskInfo& 
 		if(resource.name() == "cpus")
 			coresRequired += resource.scalar().value();
 	}
-	GeneralParams params;
-	if(task.data().size() > 0)
-	{
-		Serializor serializor(task.data().data(), task.data().size());
-		params.Deserialize(serializor);
-	}
-	params.AddParam("Core Count", (int)(coresRequired) + 1);
-	params.AddParam("Task ID", task.task_id().value());
-	const mesos::Label& label = task.labels().labels(0);
-	if(label.key() == "Task Type" && label.value() == "Processing")
-		IndexBuilder::Instance().NewCommand(CommandType::Process, params);
-	else //Init task
-	{
-		IndexBuilder::Instance().NewCommand(CommandType::Init, params);
-		SendInitAck(params);
-	}
+	string taskType = GetLabelValue("Task Type", task.labels());
+	IndexBuilder::Instance().GetProcessingManager().SubmitNewTask(TaskType::FromString(taskType),
+	task.task_id().value(), coresRequired, task.data().c_str(), task.data().length());
 }
 //
 void Executor::killTask(mesos::ExecutorDriver* driver, const mesos::TaskID& taskId)
@@ -72,15 +63,12 @@ void Executor::killTask(mesos::ExecutorDriver* driver, const mesos::TaskID& task
 //
 void Executor::frameworkMessage(mesos::ExecutorDriver* driver, const std::string& data)
 {
-//	AsyncTask task(bind(&IndexBuilder::OnNewMessage, this));
-//	m_asyncExecutor.SpawnTask(&task);
-//	task.Wait();
 }
 //
 void Executor::shutdown(mesos::ExecutorDriver* driver)
 {
 	TRACE_INFO("Shutdown was received");
-	IndexBuilder::Instance().NewCommand(CommandType::Terminate, GeneralParams());
+	IndexBuilder::Instance().Terminate();
 }
 //
 void Executor::error(mesos::ExecutorDriver* driver, const std::string& message)
@@ -100,10 +88,11 @@ void Executor::SendMessage(const std::string& message)
 	m_driver->sendFrameworkMessage(message);
 }
 
-void Executor::SendInitAck(const GeneralParams& params)
-{
-	Serializor serializor;
-	Serializor::Serialize(serializor, -1, (int)MessageType::InitAck);
-	SendMessage(serializor.GetBuffer());
-	UpdateTaskStatus(StringConverter::Convert(params.GetValue("Task ID")), TaskState::Finished);
+string Executor::GetLabelValue(const string& labelName, const mesos::Labels& labels){
+	for(int index = 0; index < labels.labels_size(); index++){
+		const mesos::Label& label = labels.labels(index);
+		if(label.key() == labelName)
+			return label.value();
+	}
+	throw Exception(SOURCE, "Requested label wasn't received - %s", labelName.c_str());
 }

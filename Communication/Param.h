@@ -75,7 +75,8 @@ struct ParamHelper<X>
 	{
 		if(typeID == VariantHelper<GeneralTypesCollection>::GetTypeID<X>())
 		{
-			delete reinterpret_cast<X*>(rawBuffer);
+		    reinterpret_cast<X*>(rawBuffer)->~X();
+			delete[] rawBuffer;
 		}
 	}
 
@@ -98,7 +99,8 @@ struct ParamHelper<X, Arg...>
 			char* temp = (char*)malloc(sizeof(char)*sizeof(X));
 			new (temp) X(*reinterpret_cast<X*>(objBuffer));
 			std::swap(myBuffer, temp);
-			delete reinterpret_cast<X*>(temp);
+            reinterpret_cast<X*>(temp)->~X();
+			delete[] temp;
 		}
 		else
 			ParamHelper<Arg...>::Copy(typeID, myBuffer, objBuffer);
@@ -107,6 +109,8 @@ struct ParamHelper<X, Arg...>
 	{
 		if(typeID == VariantHelper<GeneralTypesCollection>::GetTypeID<X>())
 		{
+			reinterpret_cast<X*>(rawBuffer)->~X();
+			delete[] rawBuffer;
 			delete reinterpret_cast<X*>(rawBuffer);
 		}
 		else

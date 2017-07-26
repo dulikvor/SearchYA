@@ -27,7 +27,9 @@ namespace core
 		//Properties
 		void ChangeState(AsyncTaskState newState){std::unique_lock<std::mutex>(m_mutex); m_state = newState;}
 		void SetFailureReason(const std::string failureReason){m_failureReason = failureReason;}
-
+		AsyncTaskState GetState() const {
+			return m_state;
+		}
 		void Start();
 		void Wait();
 		void NotifyOnFailure();

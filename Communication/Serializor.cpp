@@ -1,6 +1,5 @@
 #include "Serializor.h"
 #include "Param.h"
-#include "GeneralParams.h"
 #include "Core/Assert.h"
 
 using namespace std;
@@ -166,5 +165,9 @@ void Serializor::Read(char* data, int size)
 {
 	m_buffer.read(data, size);
 //	VERIFY(size == ,"Ran out of characters to read");
+}
+
+void Serializor::Clean() {
+	m_buffer.str(string());
 }
 

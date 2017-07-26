@@ -15,19 +15,16 @@ void PowerUpState::HandleState(StateContext &stateContext, CommandType commandTy
 		case CommandType::Init:
         {
             HandleInit(params);
-            break;
-        }
-		case CommandType::InitAck:
-		{
-            HandleInitAck(params);
 			stateContext.SetState(unique_ptr<State>(new ProcessingState()));
             break;
-		}
+        }
 		case CommandType::Terminate:
 		{
 			State::HandleTerminate();
 			break;
 		}
+		case CommandType::GetTopK:
+		case CommandType::Index:
         defualt:
         {
             throw core::Exception(SOURCE, "Unauthorized command was received - %s", commandType.ToString().c_str());
@@ -39,11 +36,4 @@ void PowerUpState::HandleInit(const GeneralParams& params)
 {
 	ConfigParams::Instance().Load(params);
 	ClusterManager::Instace().HandleInit();
-}
-
-void PowerUpState::HandleInitAck(const GeneralParams& params)
-{
-	string slaveID = StringConverter::Convert(params.GetValue("Slave ID"));
-	string executorID = StringConverter::Convert(params.GetValue("Executor ID"));
-	ClusterManager::Instace().GetScheduler().AddExecutor(slaveID, executorID);
 }

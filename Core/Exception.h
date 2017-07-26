@@ -17,8 +17,8 @@ namespace core
 		{
 			m_message = Logger::Instance().FormatMessage(source, format, args...);
 			TRACE_ERROR("%s", m_message.c_str());
+			Logger::Instance().PrintStack();
 			Logger::Instance().Flush();
-			//Logger::Instance().PrintStack(source, "%s", m_message.c_str());
 		}
 
 		Exception() = delete;

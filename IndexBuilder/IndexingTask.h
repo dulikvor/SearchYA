@@ -4,7 +4,6 @@
 #include <string>
 #include "Task.h"
 #include "TaskState.h"
-#include "StateContext.h"
 
 class ProcessingManager;
 namespace core
@@ -18,19 +17,9 @@ namespace core
 class IndexingTask : public Task
 {
 public:
-	IndexingTask(ProcessingManager& manager, const std::string& id,  int coreCount):
-		Task(manager, id, coreCount){}
+	IndexingTask(const std::string& id,  float coreCount, const char* data, int length):
+		Task(id, coreCount){}
 	virtual ~IndexingTask(){}
 	//Task entry point, from here the task will initiate its run.
-	void Run(std::function<void(void)>* const specificOnInit) override;
-
-private:
-	//Task init state hander, will inform the executor with the transition to running state.
-	//will submit created processing tasks to the processing manager.
-	void OnInit(std::vector<std::function<void(void)>>* const specificOnProcessingList) override;
-	//Task processing state handler. will handle all needed processing and transit to the next
-	//stage upon completion. calls are bound to the processing async executor, state transition
-	//to the regular single threaded async executor.
-	void OnProcessing(int subTaskID, std::function<void(void)>* const processingFunctio) override;
-	void IndexDocument();
+	void Run() override;
 };

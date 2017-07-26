@@ -23,25 +23,19 @@ public:
 	//Will try to initiate a termination task in order to end the process (won't stand living
 	//with out mesos :( ).
   	void disconnected(mesos::ExecutorDriver* driver) override;
-	//
 	void launchTask(mesos::ExecutorDriver* driver, const mesos::TaskInfo& task) override;
-	//
 	void killTask(mesos::ExecutorDriver* driver, const mesos::TaskID& taskId) override;
-	//
   	void frameworkMessage(mesos::ExecutorDriver* driver, const std::string& data) override;
 	//Will try to initiate a termination task in order to end the process.
 	void shutdown(mesos::ExecutorDriver* driver) override;
-	//
   	void error(mesos::ExecutorDriver* driver, const std::string& message) override;
 	//Will inform mesos with the current state of a given task.
 	void UpdateTaskStatus(const std::string& taskID, TaskState state);
-
 	void OnTaskComplete(const std::string& taskID);
-
 	void SendMessage(const std::string& data);
 
 private:
-	void SendInitAck(const GeneralParams& params);
+	std::string GetLabelValue(const std::string& labelName, const mesos::Labels& labels);
 
 private:
 	std::unique_ptr<mesos::MesosExecutorDriver> m_driver;

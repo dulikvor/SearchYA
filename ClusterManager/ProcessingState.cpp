@@ -3,7 +3,7 @@
 #include "Core/Exception.h"
 #include "Core/Logger.h"
 #include "ClusterManager.h"
-#include "Job.h"
+#include "JobFactoryContainer.h"
 
 using namespace std;
 using namespace core;
@@ -17,9 +17,9 @@ void ProcessingState::HandleState(StateContext& stateContext, CommandType comman
             HandleIndex(params);
             break;
         }
-		case CommandType::InitAck:
+		case CommandType::GetTopK:
 		{
-			//Do nothing, may happen due to race condition with in mesos.
+			HandleGetTopK(params);
 			break;
 		}
 		case CommandType::Terminate:
@@ -27,6 +27,7 @@ void ProcessingState::HandleState(StateContext& stateContext, CommandType comman
 			State::HandleTerminate();
 			break;
 		}
+		case CommandType::Init:
         defualt:
         {
             throw core::Exception(SOURCE, "Unauthorized command was received - %s", commandType.ToString().c_str());
@@ -37,8 +38,15 @@ void ProcessingState::HandleState(StateContext& stateContext, CommandType comman
 void ProcessingState::HandleIndex(const GeneralParams& params)
 {
 	static atomic_int id(0);
-	Job job = {1, id++};
-	TRACE_INFO("New job %d was received", (int)id);
-	ClusterManager::Instace().GetScheduler().AddJob(job);
+	unique_ptr<Job> job = JobFactoryContainer::Instance().Create(JobType::DocumentIndexing, id++);
+	TRACE_INFO("New Indexing job %d was received", (int)id);
+	ClusterManager::Instace().GetScheduler().AddJob(move(job));
+}
+
+void ProcessingState::HandleGetTopK(const GeneralParams &params) {
+	static atomic_int id(0);
+	unique_ptr<Job> job = JobFactoryContainer::Instance().Create(JobType::GetTopK, id++);
+	TRACE_INFO("New GetTopK job %d was received", (int)id);
+	ClusterManager::Instace().GetScheduler().AddJob(move(job));
 }
 

@@ -1,13 +1,18 @@
 #include "Logger.h"
 #include <stdarg.h>
+#include <cxxabi.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
 #include <vector>
+#include <regex>
 #include "spdlog/spdlog.h"
 #include "spdlog/async_logger.h"
 #include "Assert.h"
 #include "Exception.h"
 #include "TraceListener.h"
+#include "Process.h"
+#include "Enviorment.h"
 
 using namespace std;
 using namespace core;
@@ -35,6 +40,37 @@ namespace core
 
 	}
 
+	tuple<Logger::FileName, Logger::Line, Logger::FunctionName> Logger::GetFunctionAndLine(char* mangledSymbol){
+		int status;
+        static regex functionManglingPattern("\\((.*)\\+(0x[0-9a-f]*)\\)\\s*\\[(0x[0-9a-f]*)\\]");
+		cmatch functionMangaledMatch;
+		if(regex_search(mangledSymbol, functionMangaledMatch, functionManglingPattern)) {
+			unique_ptr<char, void (*)(void *)> unMangledName(
+					abi::__cxa_demangle(functionMangaledMatch[1].str().c_str(), nullptr, 0, &status), &std::free);
+
+			//Get file and line
+			ChildProcess childProcess = Process::SpawnChildProcess("addr2line", "addr2line", (string("--exe=") + Enviorment::Instance().GetProcessPath().c_str()
+                 + Enviorment::Instance().GetProcessName().c_str()).c_str(), functionMangaledMatch[3].str().c_str(), (const char*)NULL);
+
+            char buffer[1024] = {0};
+            LINUX_VERIFY(read(childProcess.GetStdOutPipe().GetReadDescriptor(),
+                                          buffer, 1024) != -1);
+			static regex fileNameLinePattern("([a-zA-Z0-9]*.[a-zA-Z0-9]*):([0-9]*)");
+			cmatch fileNameLineMatch;
+			ASSERT(regex_search(buffer, fileNameLineMatch, fileNameLinePattern));
+
+			static regex functionPattern("([a-zA-Z]*::[a-zA-Z]*)");
+			cmatch functionMatch;
+			if(unMangledName.get() != nullptr)
+				ASSERT(regex_search(unMangledName.get(), functionMatch, functionPattern));
+
+			return make_tuple(fileNameLineMatch[1].str(), fileNameLineMatch[2].str(), functionMatch.size() >= 1 ?
+                      functionMatch[1].str() : "???????");
+
+		}
+        return make_tuple("???????", "???????", "???????");
+	};
+
 	void Logger::Start(TraceSeverity severity)
 	{
 		ASSERT(!m_running.exchange(true));
@@ -54,6 +90,7 @@ namespace core
 	void Logger::Log(TraceSeverity severity, const string& message)
 	{
 		m_logger->log((level_enum)severity, message.c_str());
+        Flush();
 	}
 
 	void Logger::Flush()

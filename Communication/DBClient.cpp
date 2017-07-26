@@ -1,8 +1,10 @@
 #include "DBClient.h"
 #include <limits>
+#include <functional>
 #include "hiredis-0.13.3/hiredis.h"
 #include "Core/Exception.h"
 #include "Core/Logger.h"
+#include "Core/Deleter.h"
 #include "Core/Assert.h"
 
 using namespace std;
@@ -34,19 +36,18 @@ bool DBClient::SetString(const std::string& key, const char* value, int size)
 	unique_lock<mutex> lock(m_mutex);
 	redisReply* reply = (redisReply*)redisCommand(m_redisContext, "SET %s %b", key.c_str(),
 			value, size);
+	auto deleterFunc = [](redisReply *reply)->void{freeReplyObject(reply);};
+	Deleter<redisReply> deleter(reply, deleterFunc);
 	if(reply == nullptr)
-	{
 		throw Exception(SOURCE, "Invalid reply was received.");
-	}
-	else if(m_redisContext->err)
-	{
-		throw Exception(SOURCE, "Redis error - %s", m_redisContext->errstr);
-	}
-	VERIFY(reply->type == REDIS_REPLY_STATUS, 
-			"Received redis reply dosn't match expected return type");
+	else if(reply->type == REDIS_REPLY_ERROR)
+		throw Exception(SOURCE, "Redis error - %s", reply->str);
 
 	TRACE_INFO("SET was done %s", reply->str);
-	return strcmp(reply->str, "OK") == 0;
+	VERIFY(reply->type == REDIS_REPLY_STRING,
+		   "Received redis reply dosn't match expected return type");
+	bool success = strcmp(reply->str, "OK") == 0;
+	return success;
 }
 
 DBClientReply DBClient::CustomCommand(const std::string& command, const std::vector<std::pair<const char*, int>>& arguments)
@@ -66,9 +67,15 @@ DBClientReply DBClient::CustomCommand(const std::string& command, const std::vec
 	}
 	redisReply* reply = (redisReply*)redisCommandArgv(m_redisContext, 
 			(int)(arguments.size() + 1), argv, argvlen);
-	VERIFY(reply->type != REDIS_REPLY_ARRAY, "Not supported reply type");
+	constexpr auto deleterFunc = [](redisReply *reply){freeReplyObject(reply);};
+	Deleter<redisReply> deleter(reply, deleterFunc);
+
 	VERIFY(reply->type == REDIS_REPLY_INTEGER && reply->integer <= numeric_limits<int>::max(), "reply long long value is too large for an int");
-	return DBClientReply(reply->type == REDIS_REPLY_INTEGER ? reinterpret_cast<const char*>(&reply->integer) : reply->str, reply->len, reply->type);
+	if(reply->type == REDIS_REPLY_INTEGER || reply->type == REDIS_REPLY_STRING)
+		return DBClientReply(reply->type == REDIS_REPLY_INTEGER ? reinterpret_cast<const char*>(&reply->integer) : reply->str, reply->len, reply->type);
+	else
+		return DBClientReply(reply->element, reply->elements);
+
 
 }
 
@@ -94,18 +101,17 @@ bool DBClient::SetHashFields(const string& key,
 	}
 	redisReply* reply = (redisReply*)redisCommandArgv(m_redisContext, 
 			(int)(fieldsValues.size() + 1), argv, argvlen);
-
+	constexpr auto deleterFunc = [](redisReply *reply){freeReplyObject(reply);};
+	Deleter<redisReply> deleter(reply, deleterFunc);
 	free(argv);
 	free(argvlen);
+
 	if(reply == nullptr)
-	{
 		throw Exception(SOURCE, "Invalid reply was received.");
-	}
 	else if(m_redisContext->err)
-	{
 		throw Exception(SOURCE, "Redis error - %s", m_redisContext->errstr);
-	}
-	VERIFY(reply->type == REDIS_REPLY_INTEGER, 
+
+	VERIFY(reply->type == REDIS_REPLY_INTEGER,
 			"Received redis reply dosn't match expected return type");
 	return (bool)reply->integer;
 }
@@ -119,14 +125,14 @@ bool DBClient::DelHashFields(const string& key, const vector<string>& fields)
 		clientCommand += string(" ") + field;
 	}
 	redisReply* reply = (redisReply*)redisCommand(m_redisContext, clientCommand.c_str());
+	function<void(redisReply*)> deleterFunc = [](redisReply *reply){freeReplyObject(reply);};
+	Deleter<redisReply> deleter(reply, deleterFunc);
+
 	if(reply == nullptr)
-	{
 		throw Exception(SOURCE, "Invalid reply was received.");
-	}
 	else if(m_redisContext->err)
-	{
 		throw Exception(SOURCE, "Redis error - %s", m_redisContext->errstr);
-	}
+
 	VERIFY(reply->type == REDIS_REPLY_INTEGER, "Received redis reply dosn't match expected return type");
 	return (bool)reply->integer;
 }

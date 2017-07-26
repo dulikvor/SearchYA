@@ -4,7 +4,7 @@
 #include <condition_variable>
 #include <mutex>
 #include <string>
-#include <list>
+#include <vector>
 
 namespace core
 {
@@ -16,7 +16,7 @@ namespace core
 		~SyncQueue(){}
 		//Push receives a list of elements of type T, copying each element into the queue and notifying
 		//upon their insertion.
-		void Push(const std::list<T>& elements)
+		void Push(const std::vector<T>& elements)
 		{
 			std::unique_lock<std::mutex>(m_mutex);
 			for(const T& element : elements)

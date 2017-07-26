@@ -6,6 +6,7 @@
 #include <vector>
 #include <functional>
 #include <memory>
+#include <string>
 
 class WordsTrieTreeNode
 {
@@ -17,6 +18,7 @@ public:
 	~WordsTrieTreeNode();
 	WordsTrieTreeNode* AddNode(char letter);
 	void AddDocument(const WordCountInDoc& wordCountInDoc);
+    std::vector<WordCountInDoc> GetTopKDocuments(int k);
 	WordsTrieTreeNode* const GetNode(char letter) const;
 
 private:

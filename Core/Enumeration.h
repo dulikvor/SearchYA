@@ -1,13 +1,27 @@
 #pragma once
 
 #include <string>
+#include <functional>
+#include <type_traits>
 #include "Exception.h"
 
 #define ENUMERATION(name) \
 public: \
     name(Enumeration e):m_currentEnum(e){} \
-    operator Enumeration(){return m_currentEnum;} \
+    operator Enumeration() const {return m_currentEnum;} \
 	const std::string ToString() const;\
+	static Enumeration FromString(const std::string& str);\
+\
+public: \
+	struct Hash{ \
+    constexpr Hash() = default; \
+    size_t operator()(const name& e) const noexcept{ \
+        return std::hash<int>{}((int)(Enumeration)e); \
+    };\
+    size_t operator()(const name* e) const noexcept{ \
+            return std::hash<int>{}((int)(Enumeration)*e); \
+    }; \
+    }; \
 \
 private: \
 	struct EnumStringPair\
@@ -18,22 +32,36 @@ private: \
 \
 private: \
     Enumeration m_currentEnum; \
-	static EnumStringPair m_enumToString[];
+	static EnumStringPair m_enumToString[]; \
+	const static int numOfEnumValues;\
 
 #define ENUMERATION_NAMING_BEGIN(name)\
 	name::EnumStringPair name::m_enumToString[]={
 
 #define ENUMERATION_NAMING_END(name)\
 	};\
+    const int name::numOfEnumValues = std::extent<decltype(name::m_enumToString)>::value;\
 	\
 	const std::string name::ToString() const\
 	{\
-		int size = sizeof(m_enumToString) / sizeof(EnumStringPair);\
-		for(int index = 0; index < size; index++)\
+		for(int index = 0; index < numOfEnumValues; index++)\
 		{\
 			if(m_enumToString[index].enumValue == m_currentEnum)\
 				return m_enumToString[index].enumStrName;\
 		}\
-		throw core::Exception(SOURCE, "%s", "Not all enum values are covered");\
-	}
+		throw core::Exception(SOURCE,"Not all enum values are covered");\
+	}\
+	\
+	name::Enumeration name::FromString(const std::string& str){\
+		for(int index = 0; index < numOfEnumValues; index++){\
+            if(m_enumToString[index].enumStrName == str) \
+                return m_enumToString[index].enumValue; \
+        }\
+        throw core::Exception(SOURCE, "requested string value is not supported - %s", str.c_str());\
+    }
+
+
+
+
+
 

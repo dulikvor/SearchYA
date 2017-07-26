@@ -39,6 +39,15 @@ void ClusterManager::IndexDocument(const GeneralParams& params)
 {
     NewCommand(CommandType::Index, params);
 }
+
+vector<Document> ClusterManager::GetTopKDocuments(const string& word, int k)
+{
+	GeneralParams params;
+	params.AddParam("Word", word);
+	params.AddParam("Top K", k);
+	NewCommand(CommandType::GetTopK, params);
+}
+
 void ClusterManager::Terminate()
 {
     NewCommand(CommandType::Terminate, GeneralParams());
@@ -74,8 +83,7 @@ void ClusterManager::HandleMesosMessage(const Scheduler::MessageSource& source,
 	int stubType = Serializor::DeserializeInt(serializor);
 	MessageType messageType = (MessageType::Enumeration)Serializor::DeserializeInt(serializor);
 	GeneralParams params;
-	if(data.size() > MessageType::HeaderSize) //more than message type
-	{
+	if(data.size() > MessageType::HeaderSize){ //more than message type
 		params.Deserialize(serializor);
 	}
 	params.AddParam("Slave ID", source.SlaveID);

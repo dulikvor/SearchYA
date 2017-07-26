@@ -13,7 +13,7 @@ set(CMAKE_CXX_FLAGS  "-std=c++11 -g -pthread -I/usr/local/include ")
 add_custom_target(PROTO_BUILD COMMAND ${PROJECT_DIR}/../Communication/IDL/BuildProto.bash ${PROJECT_DIR}/../Communication)
 #Add all needed files
 include_directories(. .. ${MESOS_3RD_PARTY}/boost-1.53.0)
-set(MYSources main.cpp ClusterManager.cpp CommandType.cpp ConfigParams.cpp PowerUpState.cpp ProcessingState.cpp Scheduler.cpp State.cpp StateContext.cpp TaskState.cpp)
+set(MYSources main.cpp ClusterManager.cpp CommandType.cpp ConfigParams.cpp PowerUpState.cpp ProcessingState.cpp Scheduler.cpp State.cpp StateContext.cpp TaskState.cpp InitJob.cpp JobFactoryContainer.cpp JobType.cpp JobType.h )
 add_executable(ClusterManager ${MYSources})
 add_dependencies(ClusterManager PROTO_BUILD)
 #Add project dependencies

@@ -12,7 +12,7 @@ set(MESOS_3RD_PARTY "~/Downloads/mesos/")
 set(CMAKE_CXX_FLAGS  "-std=c++11 -g -pthread -I/usr/local/include ")
 #Add all needed files
 include_directories(. .. ${PROJECT_3RD_LOC})
-set(MYSources main.cpp IndexBuilder.cpp CommandType.cpp PowerUpState.cpp ProcessingState.cpp State.cpp StateContext.cpp Executor.cpp TaskState.cpp ProcessingManager.cpp Task.cpp ConfigParams.cpp IndexingTask.cpp)
+set(MYSources main.cpp IndexBuilder.cpp TaskType.cpp Executor.cpp TaskState.cpp ProcessingManager.cpp IndexingTask.cpp InitTask.cpp InitTask.h TasksFactoryContainer.cpp TasksFactoryContainer.h TaskCreator.cpp TaskCreator.h)
 add_executable(IndexBuilder ${MYSources})
 #Add project dependencies
 add_subdirectory(${PROJECT_DIR}/../Core ${PROJECT_DIR}/Core) 

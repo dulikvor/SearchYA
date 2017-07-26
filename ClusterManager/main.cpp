@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 {
 	CommandLine commandLine(argc, (const char**)argv);
 	Enviorment::Instance().Init();
-	string workingDir = Enviorment::Instance().GetWorkingDir() + "/" + commandLine.GetArgument("workingdir");
+	string workingDir = Enviorment::Instance().GetProcessPath() + "/" + commandLine.GetArgument("workingdir");
 	Logger::Instance().AddListener(make_shared<FileRotationListener>(TraceSeverity::Info, workingDir + "/Service", 50 * 1024 * 1024, 20));
     Logger::Instance().Start(TraceSeverity::Info);
 	TRACE_INFO("MesosBenchMark starting");

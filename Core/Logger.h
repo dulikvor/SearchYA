@@ -5,6 +5,7 @@
 #include <atomic>
 #include <string>
 #include <mutex>
+#include <tuple>
 #include <ctime>
 #include <execinfo.h>
 #include "Source.h"
@@ -46,35 +47,39 @@ namespace core
 		template<typename... Args>
 		void Trace(TraceSeverity severity, const Source& source, const char* format, Args... args)
 		{
-			if(severity < m_severity)
-				return;
+			ValidateParams<Args...>();
 			std::string message = FormatMessage(source, format, args...);
 			Log(severity, message);
 		}
+		template<typename... Args>
+		static typename std::enable_if<sizeof...(Args) == 0>::type ValidateParams(){}
+        template<typename X, typename... Args>
+        static void ValidateParams(){
+            static_assert(std::is_same<X, std::string>::value == false, "Format only supports c-type string as type, don't use string");
+			ValidateParams<Args...>();
+        }
 
-
-		template<typename ... Args>
-		void PrintStack(const Source& source, const char* format, Args... args)
+		void PrintStack()
 		{
-			//Trace the first message:
-			Trace(TraceSeverity::Fatal, source, format, args...);
 			//Trace the entire stack frames:
 			//Get the stack frames data
-			void* stackFramesAddresses = malloc(sizeof(void*)*ORIGINAL_STACK_FRAMES_GUESS);
+			void** stackFramesAddresses = (void**)malloc(sizeof(void*)*ORIGINAL_STACK_FRAMES_GUESS);
 			int stackFramesSize = ORIGINAL_STACK_FRAMES_GUESS;
 			int readFramesCount;
-			while(stackFramesSize == (readFramesCount = backtrace(&stackFramesAddresses, stackFramesSize)))
+			while(stackFramesSize == (readFramesCount = backtrace(stackFramesAddresses, stackFramesSize)))
 			{
 				free(stackFramesAddresses);
 				stackFramesSize*=2;
-				stackFramesAddresses = malloc(sizeof(void*)*stackFramesSize);
+				stackFramesAddresses = (void**)malloc(sizeof(void*)*stackFramesSize);
 			}
 			//Get the symbols
-			char** stackFramesSymbols = backtrace_symbols(&stackFramesAddresses, readFramesCount);
-			for(int index = 0; index < readFramesCount; index++)
-			{
-				Trace(TraceSeverity::Fatal, source, "%s", std::string(stackFramesSymbols[index]).c_str());
+			char** stackFramesSymbols = backtrace_symbols(stackFramesAddresses, readFramesCount);
+			for(int index = 0; index < readFramesCount; index++){
+				auto frameInformation = GetFunctionAndLine(stackFramesSymbols[index]);
+				Trace(TraceSeverity::Fatal, SOURCE, "%s:%s:%s", std::get<0>(frameInformation).c_str(),
+					  std::get<1>(frameInformation).c_str(), std::get<2>(frameInformation).c_str());
 			}
+			free(stackFramesAddresses);
 			free(stackFramesSymbols);
 		}
 		//
@@ -85,7 +90,12 @@ namespace core
 		TraceSeverity GetSeverity() const { return m_severity; }
 
 	private:
+		using FunctionName = std::string;
+		using Line = std::string;
+		using FileName = std::string;
+
 		Logger();
+		std::tuple<FileName, Line, FunctionName> GetFunctionAndLine(char* mangledSymbol);
 
 	private:
 		std::list<std::shared_ptr<TraceListener>> m_listeners;

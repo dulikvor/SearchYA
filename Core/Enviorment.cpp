@@ -17,13 +17,15 @@ namespace core
 	{
 		ASSERT(m_initiated.exchange(true) == false);
 		LINUX_VERIFY((m_coreCount = sysconf(_SC_NPROCESSORS_ONLN)) != -1);
-		ReadWorkingDir();
+		ReadProcessLocation();
 	}
 
-	void Enviorment::ReadWorkingDir()
+	void Enviorment::ReadProcessLocation()
 	{
 		char buffer[MAX_WORKING_DIR_SIZE];
 		ssize_t byteCount = readlink("/proc/self/exe", buffer, MAX_WORKING_DIR_SIZE);
-		m_workingDir = Directory::GetDir(string(buffer, byteCount > 0 ? byteCount : 0));
+		string processFullPath = string(buffer, byteCount > 0 ? byteCount : 0);
+		m_processPath = Directory::GetDir(processFullPath);
+		m_processName = Directory::GetProcessName(processFullPath);
 	}
 }
