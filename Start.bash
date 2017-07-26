@@ -1,6 +1,6 @@
 MASTER_ADDRESS=${1-"127.0.0.1"}
 WORKING_AREA_DIR=${2-"MesosWA"}
-REDIS_LOC=${3-"Third_Party/redis/src"}
+REDIS_LOC=${3-"Third_Party/redis-4.0.0/src"}
 RED_COLOR=`tput setaf 1`
 NO_COLOR=`tput sgr0`
 
