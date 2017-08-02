@@ -17,3 +17,4 @@ endif()
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 find_package(Redis REQUIRED)
+include(installThirdParty)
