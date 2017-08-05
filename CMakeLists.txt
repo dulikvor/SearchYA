@@ -15,6 +15,8 @@ else()
 endif()
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_PREFIX_PATH ${EXTERNAL_PROJECT_DIR})
 
 find_package(Redis REQUIRED)
+find_package(HIRedis REQUIRED)
 include(installThirdParty)
