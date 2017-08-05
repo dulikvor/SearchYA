@@ -1,10 +1,10 @@
-find_library(REDIS_LIBRARY NAMES redis)
-
+find_program(REDIS_BINARY NAMES redis-server)
+find_path(REDIS_INCLUDE_PATH NAMES Redis/redismodule.h)
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(redis REQUIRED_VARS REDIS_LIBRARY)
+find_package_handle_standard_args(redis REQUIRED_VARS REDIS_BINARY REDIS_INCLUDE_PATH)
 
 if(REDIS_FOUND)
-    message(STATUS "Found libraries - ${REDIS_LIBRARY}")
+    message(STATUS "Found Redis binary - ${REDIS_BINARY}, Redis Include dir - ${REDIS_INCLUDE_PATH}")
 else(REDIS_FOUND)
-    #message(FATAL_ERROR "Redis libraries not found")
+    message(WARNING "Redis not found")
 endif(REDIS_FOUND)
