@@ -3,4 +3,5 @@ set (EXTERNAL_PROJECT_DIR ${CMAKE_BINARY_DIR}/Third_Party CACHE PATH "External p
 set_directory_properties(PROPERTIES EP_PREFIX ${EXTERNAL_PROJECT_DIR}) #Sets the prefix(dir) for all installations commands
 include(InstallRedis)
 include(InstallHiRedis)
+include(InstallSpdLog)
 
