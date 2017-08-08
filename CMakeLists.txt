@@ -19,4 +19,6 @@ list(APPEND CMAKE_PREFIX_PATH ${EXTERNAL_PROJECT_DIR})
 
 find_package(Redis REQUIRED)
 find_package(HIRedis REQUIRED)
+find_package(SpdLog REQUIRED)
+find_package(ProtoBuf REQUIRED)
 include(installThirdParty)
