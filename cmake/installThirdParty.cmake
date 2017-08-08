@@ -4,4 +4,5 @@ set_directory_properties(PROPERTIES EP_PREFIX ${EXTERNAL_PROJECT_DIR}) #Sets the
 include(InstallRedis)
 include(InstallHiRedis)
 include(InstallSpdLog)
+include(InstallProtoBuf)
 

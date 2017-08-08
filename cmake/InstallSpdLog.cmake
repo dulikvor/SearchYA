@@ -17,7 +17,7 @@ if (NOT SPDLOG_FOUND)
     ExternalProject_Get_Property(SpdLog INSTALL_DIR)
 
     set (SPDLOG_ROOT_DIR          ${INSTALL_DIR})
-    set (SPDLOG_INCLUDE_PATH      ${SPDLOG_ROOT_DIR}/include)
+    set (SPDLOG_INCLUDE_DIR       ${SPDLOG_ROOT_DIR}/include)
     set (SPDLOG_FOUND             YES)
 
     #    mark_as_advanced(GLOG_LIBRARY GLOG_INCLUDE_PATH)

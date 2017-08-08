@@ -1,0 +1,10 @@
+find_library(PROTOBUF_LIBRARY_DIR NAMES protobuf)
+find_program(PROTOBUF_BINARY_DIR NAMES protoc)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(protobuf REQUIRED_VARS PROTOBUF_LIBRARY_DIR PROTOBUF_BINARY_DIR)
+
+if(PROTOBUF_FOUND)
+    message(STATUS "Found Protobuf binary - ${PROTOBUF_BINARY_DIR}, Protobuf library dir - ${PROTOBUF_LIBRARY_DIR}")
+else()
+    message(WARNING "Protobuf not found")
+endif()

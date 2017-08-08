@@ -12,7 +12,7 @@ if (NOT HIREDIS_FOUND)
     ExternalProject_Get_Property(HIRedis INSTALL_DIR)
 
     set (HIREDIS_ROOT_DIR          ${INSTALL_DIR})
-    set (HIREDIS_INCLUDE_PATH      ${REDIS_ROOT_DIR}/include)
+    set (HIREDIS_INCLUDE_DIR       ${REDIS_ROOT_DIR}/include)
     set (HIREDIS_LIBRARY_DIR       ${REDIS_ROOT_DIR}/lib)
     set (HIREDIS_FOUND             YES)
 

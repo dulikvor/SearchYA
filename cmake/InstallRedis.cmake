@@ -18,7 +18,7 @@ if (NOT REDIS_FOUND)
     ExternalProject_Get_Property(Redis INSTALL_DIR)
 
     set (REDIS_ROOT_DIR          ${INSTALL_DIR})
-    set (REDIS_INCLUDE_PATH      ${REDIS_ROOT_DIR}/include)
+    set (REDIS_INCLUDE_DIR       ${REDIS_ROOT_DIR}/include)
     set (REDIS_FOUND             YES)
 
 #    mark_as_advanced(GLOG_LIBRARY GLOG_INCLUDE_PATH)
