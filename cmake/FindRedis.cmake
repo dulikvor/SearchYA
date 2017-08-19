@@ -1,7 +1,7 @@
 find_program(REDIS_BINARY_DIR NAMES redis-server)
 find_path(REDIS_INCLUDE_DIR NAMES Redis/redismodule.h)
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(redis REQUIRED_VARS REDIS_BINARY REDIS_INCLUDE_DIR)
+find_package_handle_standard_args(redis REQUIRED_VARS REDIS_BINARY_DIR REDIS_INCLUDE_DIR)
 
 if(REDIS_FOUND)
     message(STATUS "Found Redis binary - ${REDIS_BINARY_DIR}, Redis Include dir - ${REDIS_INCLUDE_DIR}")
