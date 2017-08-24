@@ -6,4 +6,5 @@ include(InstallGRPC)
 include(InstallProtoBuf)
 include(InstallHiRedis)
 include(InstallSpdLog)
+include(InstallMesos)
 

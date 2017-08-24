@@ -1,0 +1,11 @@
+find_path(MESOS_INCLUDE_DIR NAMES mesos/mesos.hpp)
+find_library(MESOS_LIBRARY_DIR NAMES mesos)
+find_program(MESOS_BINARY_DIR NAMES mesos)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(mesos REQUIRED_VARS MESOS_INCLUDE_DIR MESOS_BINARY_DIR MESOS_LIBRARY_DIR)
+
+if(MESOS_FOUND)
+    message(STATUS "Found mesos binary - ${MESOS_BINARY_DIR}, mesos Include dir - ${MESOS_INCLUDE_DIR}, mesos Library dir - ${MESOS_LIBRARY_DIR}")
+else()
+    message(WARNING "mesos not found")
+endif()
