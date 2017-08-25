@@ -1,7 +1,7 @@
 #include "DBClient.h"
 #include <limits>
 #include <functional>
-#include "hiredis-0.13.3/hiredis.h"
+#include "hiredis/hiredis.h"
 #include "Core/Exception.h"
 #include "Core/Logger.h"
 #include "Core/Deleter.h"

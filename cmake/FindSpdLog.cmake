@@ -4,7 +4,7 @@ find_package_handle_standard_args(spdlog REQUIRED_VARS SPDLOG_INCLUDE_DIR)
 
 if(SPDLOG_FOUND)
     message(STATUS "Found SpdLog include dir - ${SPDLOG_INCLUDE_DIR}")
-else(SPDLOG_FOUND)
+else()
     message(WARNING "SpdLog not found")
 endif()
 

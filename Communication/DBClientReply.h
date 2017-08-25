@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include "Core/Assert.h"
-#include "hiredis-0.13.3/hiredis.h"
+#include "hiredis/hiredis.h"
 
 template<typename... Arg>
 struct ReturnTypesCollection{

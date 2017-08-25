@@ -32,8 +32,7 @@ void Scheduler::AllocateQualifiedProcessingJobsResources(mesos::Resources& offer
 		while(m_jobsQueue.TryAndPop(job))
 		{
 			mesos::Resources taskResources = mesos::Resources::parse(string("cpus:") +
-                 to_string(job->GetRequiredCores()) + ";").get();
-			taskResources.allocate(m_role);
+                 to_string(job->GetRequiredCores()) + ";", m_role).get();
 			if(offeredResources.flatten().contains(taskResources))
 			{
 				allocatedJobs.push_back({unique_ptr<Job>(job),{taskResources, slaveID}});
@@ -52,8 +51,7 @@ void Scheduler::AllocateInitJobResources(mesos::Resources &offeredResources,
 	static atomic_int id(0);
 	unique_ptr<Job> job = JobFactoryContainer::Instance().Create(JobType::Init, id++);
 	static mesos::Resources taskResources = mesos::Resources::parse(string("cpus:") +
-         to_string(job->GetRequiredCores()) + ";").get();
-	taskResources.allocate(m_role);
+         to_string(job->GetRequiredCores()) + ";", m_role).get();
 	if(offeredResources.flatten().contains(taskResources))
 		offeredResources -= taskResources;
 

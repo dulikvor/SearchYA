@@ -1,6 +1,5 @@
 #include "DBClientReply.h"
 #include "Core/Assert.h"
-#include "hiredis-0.13.3/hiredis.h"
 
 using namespace std;
 
