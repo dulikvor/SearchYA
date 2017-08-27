@@ -40,6 +40,7 @@ bin/
 # Cmake
 CMakeCache.txt
 *.cmake
+!cmake/*
 CMakeFiles/
 Makefile
 #ctags
@@ -48,3 +49,6 @@ ctags.bash
 .tags/
 #YouCompleteMe
 *ycm*
+#Third Party
+Third_Party/*
+!Third_Party/Patch/*
