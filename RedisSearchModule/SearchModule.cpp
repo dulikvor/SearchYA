@@ -10,6 +10,8 @@
 #include "Core/Deleter.h"
 #include "Communication/Serializor.h"
 #include "DocumentsIndexer.h"
+#define REDIS_EXTERN
+#include "Redis/redismodule.h"
 
 using namespace std;
 using namespace core;
@@ -63,7 +65,7 @@ extern "C"
 
 		Enviorment::Instance().Init();
 		string workingDir = Enviorment::Instance().GetProcessPath() + "/" + commandLine.GetArgument("workingdir");
-		Logger::Instance().AddListener(make_shared<FileRotationListener>(TraceSeverity::Info, workingDir + "/SearchModule", 50 * 1024 * 1024, 20));
+		Logger::Instance().AddListener(make_shared<FileRotationListener>(TraceSeverity::Info, workingDir + "SearchModule", 50 * 1024 * 1024, 20));
 		Logger::Instance().Start(TraceSeverity::Info);
 
 		if(RedisModule_CreateCommand(ctx, "Search.AddDocument", &AddDocument, "", 0, 0, 0) == REDISMODULE_ERR)

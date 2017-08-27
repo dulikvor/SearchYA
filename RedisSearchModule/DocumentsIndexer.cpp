@@ -1,8 +1,7 @@
 #include "DocumentsIndexer.h"
 #include "Core/Assert.h"
 #include "Core/Logger.h"
-#define REDIS_EXTERN
-#include "redismodule.h"
+#include "Redis/redismodule.h"
 
 using namespace std;
 using namespace core;

@@ -15,6 +15,12 @@ if (NOT REDIS_FOUND)
             DEPENDEES   install
             )
 
+
+    ExternalProject_Add_Step(Redis Redis_Patch_Header
+            COMMAND     sh -c "cp <INSTALL_DIR>/Patch/redismodule.h <SOURCE_DIR>/src"
+            DEPENDEES  download
+            )
+
     ExternalProject_Get_Property(Redis INSTALL_DIR)
 
     set (REDIS_ROOT_DIR          ${INSTALL_DIR})
