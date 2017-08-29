@@ -7,4 +7,5 @@ include(InstallGRPC)
 include(InstallMesos)
 include(InstallHiRedis)
 include(InstallSpdLog)
+include(InstallGrpcc)
 

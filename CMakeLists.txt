@@ -25,6 +25,7 @@ find_package(SpdLog REQUIRED)
 find_package(ProtoBuf REQUIRED)
 find_package(Grpc REQUIRED)
 find_package(Mesos REQUIRED)
+find_package(Grpcc REQUIRED)
 include(installThirdParty)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

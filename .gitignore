@@ -39,7 +39,7 @@ bin/
 *.cbp
 # Cmake
 CMakeCache.txt
-*.cmake
+!*.cmake
 !cmake/*
 CMakeFiles/
 Makefile

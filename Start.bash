@@ -6,7 +6,7 @@ NO_COLOR=`tput sgr0`
 #Open all processes in tabs
 initiateAll()
 {
-	gnome-terminal --tab -e "sh -c \"./bin/ClusterManager -workingdir= \"" --tab -e "sh -c \"./Third_Party/sbin/mesos-master --ip=$MASTER_ADDRESS --work_dir=$WORKING_AREA_DIR\"" --tab -e "sh -c \"./Third_Party/sbin/mesos-agent --master=$MASTER_ADDRESS:5050 --work_dir=$WORKING_AREA_DIR \"" --tab -e "sh -c \"./Third_Party/bin/redis-server --loadmodule ./bin/libSearchModule.so -workingdir=.\"" #--tab -e "sh -c \"grpcc -p ./Communication/IDL/TextualSearchService.proto -a $MASTER_ADDRESS:50051 -i\""
+	gnome-terminal --tab -e "sh -c \"./bin/ClusterManager -workingdir= \"" --tab -e "sh -c \"./Third_Party/sbin/mesos-master --ip=$MASTER_ADDRESS --work_dir=$WORKING_AREA_DIR\"" --tab -e "sh -c \"./Third_Party/sbin/mesos-agent --master=$MASTER_ADDRESS:5050 --work_dir=$WORKING_AREA_DIR \"" --tab -e "sh -c \"./Third_Party/bin/redis-server --loadmodule ./bin/libSearchModule.so -workingdir=.\"" --tab -e "sh -c \"./Third_Party/src/node_modules/grpcc/bin/grpcc.js -p ./Communication/IDL/TextualSearchService.proto -a $MASTER_ADDRESS:50051 -i\""
 }
 
 killAll()
