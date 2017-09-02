@@ -68,15 +68,20 @@ struct ParamHelper<X>
 			char* temp = (char*)malloc(sizeof(char)*sizeof(X));
 			new (temp) X(*reinterpret_cast<X*>(objBuffer));
 			std::swap(myBuffer, temp);
-			delete reinterpret_cast<X*>(temp);
+			if(temp != nullptr) {
+				reinterpret_cast<X*>(temp)->~X();
+				delete[] temp;
+			}
 		}
 	}
 	static void Destroy(const int& typeID, char* rawBuffer)
 	{
 		if(typeID == VariantHelper<GeneralTypesCollection>::GetTypeID<X>())
 		{
-		    reinterpret_cast<X*>(rawBuffer)->~X();
-			delete[] rawBuffer;
+			if(rawBuffer != nullptr) {
+				reinterpret_cast<X *>(rawBuffer)->~X();
+				delete[] rawBuffer;
+			}
 		}
 	}
 
@@ -99,8 +104,10 @@ struct ParamHelper<X, Arg...>
 			char* temp = (char*)malloc(sizeof(char)*sizeof(X));
 			new (temp) X(*reinterpret_cast<X*>(objBuffer));
 			std::swap(myBuffer, temp);
-            reinterpret_cast<X*>(temp)->~X();
-			delete[] temp;
+			if(temp != nullptr) {
+				reinterpret_cast<X*>(temp)->~X();
+				delete[] temp;
+			}
 		}
 		else
 			ParamHelper<Arg...>::Copy(typeID, myBuffer, objBuffer);
@@ -109,9 +116,10 @@ struct ParamHelper<X, Arg...>
 	{
 		if(typeID == VariantHelper<GeneralTypesCollection>::GetTypeID<X>())
 		{
-			reinterpret_cast<X*>(rawBuffer)->~X();
-			delete[] rawBuffer;
-			delete reinterpret_cast<X*>(rawBuffer);
+			if(rawBuffer != nullptr) {
+				reinterpret_cast<X *>(rawBuffer)->~X();
+				delete[] rawBuffer;
+			}
 		}
 		else
 			ParamHelper<Arg...>::Destroy(typeID, rawBuffer);

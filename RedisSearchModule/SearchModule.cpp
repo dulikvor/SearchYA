@@ -61,10 +61,10 @@ extern "C"
 		VERIFY(argc == 1, "AddDocument arg list cannot be larger than 1");
 		size_t stringLength;
 		const char* binaryData = RedisModule_StringPtrLen(argv[0], &stringLength);
-		CommandLine commandLine(argc, &binaryData);
+		CommandLine::Instance().Parse(argc, &binaryData);
 
 		Enviorment::Instance().Init();
-		string workingDir = Enviorment::Instance().GetProcessPath() + "/" + commandLine.GetArgument("workingdir");
+		string workingDir = Enviorment::Instance().GetProcessPath() + "/" + CommandLine::Instance().GetArgument("workingdir");
 		Logger::Instance().AddListener(make_shared<FileRotationListener>(TraceSeverity::Info, workingDir + "SearchModule", 50 * 1024 * 1024, 20));
 		Logger::Instance().Start(TraceSeverity::Info);
 

@@ -32,7 +32,7 @@ namespace core
 	{
 	}
 
-	Logger::Logger()
+	Logger::Logger(): m_severity(TraceSeverity::NoneWorking)
 	{
 		static_assert((int)TraceSeverity::Verbose == (int)level_enum::debug, "TraceSeverity::Verbose dosn't match spdlog debug");
 		static_assert((int)TraceSeverity::Info == (int)level_enum::info, "TraceSeverity::Info dosn't match spdlog info");

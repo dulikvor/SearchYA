@@ -1,7 +1,9 @@
 #include "ConfigParams.h"
 #include "Communication/GeneralParams.h"
+#include "Core/Enviorment.h"
 
 using namespace std;
+using namespace core;
 
 ConfigParams& ConfigParams::Instance()
 {
@@ -15,7 +17,7 @@ void ConfigParams::Load(const GeneralParams& configParams)
 	m_recoveryTime = 0; //configParams.GetValue("Recovery Time");
 	m_hostAddress = "127.0.0.1"; //StringConverter::Convert(configParams.GetValue("Host Address"));
 	m_mesosMasterAddress = "127.0.0.1"; //StringConverter::Convert(configParams.GetValue("Mesos Host Address"));
-	m_executableDir = "/home/dudilikvornik/Projects/SearchYA/IndexBuilder/bin";//StringConverter::Convert(configParams.GetValue("Execution Directory"));
+	m_executableDir = Enviorment::Instance().GetProcessPath();//StringConverter::Convert(configParams.GetValue("Execution Directory"));
 	m_role = "*"; //stringConverter::Convert(configParams.GetValue("Role"));
 	m_redisServerAddress = "127.0.0.1";
 }

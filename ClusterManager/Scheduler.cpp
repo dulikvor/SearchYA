@@ -1,5 +1,6 @@
 #include "Scheduler.h"
 #include "Core/Logger.h"
+#include "Core/CommandLine.h"
 #include "Communication/GeneralParams.h"
 #include "ClusterManager.h"
 #include "JobFactoryContainer.h"
@@ -110,6 +111,12 @@ void Scheduler::InitializeMesos()
 	m_executorInfo.mutable_command()->set_value(ConfigParams::Instance().GetExecDir() + 
 			"/IndexBuilder");
 	m_executorInfo.mutable_command()->set_shell(false);
+	mesos::Environment_Variable* envVar = m_executorInfo.mutable_command()->mutable_environment()->add_variables();
+	envVar->set_name("LD_LIBRARY_PATH");
+	envVar->set_value(ConfigParams::Instance().GetExecDir() + "/../Third_Party/lib");
+	m_executorInfo.mutable_command()->mutable_arguments()->Add(
+			string("-workingdir=") + CommandLine::Instance().GetArgument("workingdir"));
+
 	m_executorInfo.set_name("Stub Executor");
 	mesos::FrameworkInfo frameWorkInfo;
 	frameWorkInfo.set_user("");

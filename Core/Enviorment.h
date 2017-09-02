@@ -24,6 +24,5 @@ namespace core
 		std::string m_processPath;
 		std::string m_processName;
 		std::atomic_bool m_initiated;
-
 	};
 }

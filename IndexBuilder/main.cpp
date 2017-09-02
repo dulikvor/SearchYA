@@ -1,20 +1,22 @@
 #include <memory>
-#include <string>
+#include <Core/Enviorment.h>
+#include "Core/Logger.h"
+#include "Core/CommandLine.h"
 #include "Core/Logger.h"
 #include "Core/TraceListener.h"
-#include "Core/Enviorment.h"
 #include "IndexBuilder.h"
 
 using namespace core;
 using namespace std;
 
-int main()
+int main(int argc, char** argv)
 {
-	Logger::Instance().AddListener(make_shared<FileRotationListener>(TraceSeverity::Info,
-		string("/home/dudilikvornik/Projects/SearchYA/IndexBuilder/bin/IndexBuilder"), 
-		50 * 1024 * 1024, 20));
-    Logger::Instance().Start(TraceSeverity::Verbose);
-	Enviorment::Instance().Init();
+	//CommandLine::Instance().Parse(argc, const_cast<const char**>(argv));
+	//const string& workinDir = CommandLine::Instance().GetArgument("workingdir");
+    Enviorment::Instance().Init();
+	Logger::Instance().AddListener(make_shared<FileRotationListener>(TraceSeverity::Info,"./IndexBuilder", 50 * 1024 * 1024, 20));
+	Logger::Instance().Start(TraceSeverity::Info);
+	TRACE_INFO("args - %d, %s", argc, argv[0]);
 	TRACE_INFO("Index Builder starting");
 	IndexBuilder::Instance().InitializeMesos();
 	IndexBuilder::Instance().WaitForCompletion();

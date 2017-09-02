@@ -23,7 +23,8 @@ enum TraceSeverity
 {
 	Verbose = 1,
 	Info,
-	Fatal = 4
+	Fatal = 4,
+	NoneWorking = 5
 };
 
 const int ORIGINAL_STACK_FRAMES_GUESS = 20; //20 is arbitrary

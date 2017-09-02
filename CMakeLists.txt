@@ -42,4 +42,5 @@ add_subdirectory(${PROJECT_DIR}/Core)
 add_subdirectory(${PROJECT_DIR}/Communication)
 add_subdirectory(${PROJECT_DIR}/ClusterManager)
 add_subdirectory(${PROJECT_DIR}/RedisSearchModule)
+add_subdirectory(${PROJECT_DIR}/IndexBuilder)
 
