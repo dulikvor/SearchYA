@@ -9,6 +9,7 @@
 #include "Communication/Serializor.h"
 #include "Communication/GeneralParams.h"
 #include "Communication/TextualSearchServiceImpl.h"
+#include "RedisSearchModule/Document.h"
 #include "ConfigParams.h"
 #include "Command.h"
 
@@ -43,9 +44,10 @@ void ClusterManager::IndexDocument(const GeneralParams& params)
 vector<Document> ClusterManager::GetTopKDocuments(const string& word, int k)
 {
 	GeneralParams params;
-	params.AddParam("Word", word);
-	params.AddParam("Top K", k);
+	params.AddParam("Word", string("hello"));
+	params.AddParam("Top K", 1);
 	NewCommand(CommandType::GetTopK, params);
+	return vector<Document>();
 }
 
 void ClusterManager::Terminate()

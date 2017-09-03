@@ -11,12 +11,11 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	//CommandLine::Instance().Parse(argc, const_cast<const char**>(argv));
-	//const string& workinDir = CommandLine::Instance().GetArgument("workingdir");
+	CommandLine::Instance().Parse(argc, const_cast<const char**>(argv));
+	const string& workinDir = CommandLine::Instance().GetArgument("workingdir");
     Enviorment::Instance().Init();
-	Logger::Instance().AddListener(make_shared<FileRotationListener>(TraceSeverity::Info,"./IndexBuilder", 50 * 1024 * 1024, 20));
+	Logger::Instance().AddListener(make_shared<FileRotationListener>(TraceSeverity::Info, workinDir + "/IndexBuilder", 50 * 1024 * 1024, 20));
 	Logger::Instance().Start(TraceSeverity::Info);
-	TRACE_INFO("args - %d, %s", argc, argv[0]);
 	TRACE_INFO("Index Builder starting");
 	IndexBuilder::Instance().InitializeMesos();
 	IndexBuilder::Instance().WaitForCompletion();

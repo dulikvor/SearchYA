@@ -117,7 +117,7 @@ struct ParamHelper<X, Arg...>
 		if(typeID == VariantHelper<GeneralTypesCollection>::GetTypeID<X>())
 		{
 			if(rawBuffer != nullptr) {
-				reinterpret_cast<X *>(rawBuffer)->~X();
+				reinterpret_cast<X*>(rawBuffer)->~X();
 				delete[] rawBuffer;
 			}
 		}
