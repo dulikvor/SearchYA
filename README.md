@@ -19,6 +19,7 @@ A simple start.bash script is provided, the script only supports 3 commands:
 1) initiate.
 2) kill.
 3) help.
+
 use those to bring up the cluster and the interactive client.
 ```
 source ./Start.sh
