@@ -5,7 +5,7 @@
 class IndexingJob : public Job
 {
 public:
-    IndexingJob(int id): Job(id, 0.1){}
+    IndexingJob(int id, GeneralParams const * const params): Job(id, 0.1){}
     virtual ~IndexingJob(){}
     const char* GetLabel() const override{
         return "Indexing";

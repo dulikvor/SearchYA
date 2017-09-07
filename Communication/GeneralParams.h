@@ -53,7 +53,7 @@ public:
         auto comparator = [&key](const ParamPair& pair) -> bool {return pair.first == key;}; //redundancy from above, but never mind :)
         std::list<ParamPair>::const_iterator it = std::find_if(m_values.begin(), m_values.end(), comparator);
         if(it == m_values.end())
-		   throw Exception(SOURCE, "None existing parameter was requested %s", key.c_str());
+		   throw Exception(SOURCE, "Non existing parameter was requested %s", key.c_str());
         return it->second;
     }
 

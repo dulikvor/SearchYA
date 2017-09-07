@@ -26,10 +26,10 @@ JobFactoryContainer::JobFactoryContainer() {
     m_factoryContainer.insert(make_pair(JobType::GetTopK, new JobCreator<GetTopKJob>()));
 }
 
-unique_ptr<Job> JobFactoryContainer::Create(JobType jobType, int id) {
+unique_ptr<Job> JobFactoryContainer::Create(JobType jobType, int id, GeneralParams const * const params) {
     auto it = m_factoryContainer.find(jobType);
     if(it != m_factoryContainer.end())
-        return it->second->Create(id);
+        return it->second->Create(id, params);
     else
         throw Exception(SOURCE, "None supported job type - %s was requested", jobType.ToString().c_str());
 }

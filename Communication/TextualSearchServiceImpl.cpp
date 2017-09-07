@@ -26,7 +26,7 @@ Status TextualSearchServiceImpl::IndexDocument(ServerContext* context, const Tex
 
 Status TextualSearchServiceImpl::GetTopKDocuments(ServerContext* context, const TextualSearchService::TopKDocumentsPerWordRequest* request, TextualSearchService::TopKDocumentsReply* response)
 {
-    vector<Document> topKDocuments = m_service.GetTopKDocuments(request->word(), request->k());
+    vector<Document> topKDocuments = m_service.GetTopKDocuments("Hello", 1);//request->word(), request->k());
     for(const Document& doc : topKDocuments) {
         response->add_documentname(doc.GetName());
     }

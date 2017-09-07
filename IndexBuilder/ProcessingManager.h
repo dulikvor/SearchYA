@@ -30,10 +30,11 @@ public:
 private:
 	void RunNewTask(Task* task);
 	void OnTaskCompletion(Task* task);
+	std::shared_ptr<core::AsyncTask> CreateAsyncTask(TaskType taskType, std::unique_ptr<Task> task);
 
 private:
 	mutable std::mutex m_completionMut;
 	Executor& m_executor;
-	std::list<core::AsyncTask*> m_completedAsyncTasks;
+	std::list<std::shared_ptr<core::AsyncTask>> m_runningAsyncTasks;
 	core::AsyncExecutor m_asyncExecutor;
 };

@@ -44,8 +44,8 @@ void ClusterManager::IndexDocument(const GeneralParams& params)
 vector<Document> ClusterManager::GetTopKDocuments(const string& word, int k)
 {
 	GeneralParams params;
-	params.AddParam("Word", string("hello"));
-	params.AddParam("Top K", 1);
+	params.AddParam("Word", word);
+	params.AddParam("Top K", k);
 	NewCommand(CommandType::GetTopK, params);
 	return vector<Document>();
 }

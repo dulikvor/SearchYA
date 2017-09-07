@@ -45,7 +45,7 @@ void ProcessingState::HandleIndex(const GeneralParams& params)
 
 void ProcessingState::HandleGetTopK(const GeneralParams &params) {
 	static atomic_int id(0);
-	unique_ptr<Job> job = JobFactoryContainer::Instance().Create(JobType::GetTopK, id++);
+	unique_ptr<Job> job = JobFactoryContainer::Instance().Create(JobType::GetTopK, id++, &params);
 	TRACE_INFO("New GetTopK job %d was received", (int)id);
 	ClusterManager::Instace().GetScheduler().AddJob(move(job));
 }

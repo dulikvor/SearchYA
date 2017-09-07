@@ -5,11 +5,13 @@
 #include "JobCreator.h"
 #include "JobType.h"
 
+class GeneralParams;
+
 class JobFactoryContainer {
 public:
     static JobFactoryContainer& Instance();
     ~JobFactoryContainer();
-    std::unique_ptr<Job> Create(JobType jobType, int id);
+    std::unique_ptr<Job> Create(JobType jobType, int id, GeneralParams const * const params = nullptr);
 
 
 private:

@@ -1,7 +1,9 @@
 #include "ProcessingManager.h"
 #include "Core/AsyncTask.h"
 #include "Core/Enviorment.h"
+#include "Core/Promise.h"
 #include "Communication/GeneralParams.h"
+#include "RedisSearchModule/Document.h"
 #include "TasksFactoryContainer.h"
 #include "Executor.h"
 
@@ -19,13 +21,22 @@ void ProcessingManager::SubmitNewTask(TaskType taskType,
 	TRACE_INFO("Task-%s: Creating", taskID.c_str());
 	unique_ptr<Task> executorTask = TasksFactoryContainer::Instance().Create(
 			taskType, taskID, coreCount, data, length);
-
-	AsyncTask* task = new AsyncTask(bind(&ProcessingManager::RunNewTask, this, executorTask.release()));
+	shared_ptr<AsyncTask> asyncTask = CreateAsyncTask(taskType, move(executorTask));
 	{
 		unique_lock<mutex> lock(m_completionMut);
-		m_completedAsyncTasks.push_back(task);
+		m_runningAsyncTasks.push_back(asyncTask);
 	}
-	m_asyncExecutor.SpawnTask(task);
+	m_asyncExecutor.SpawnTask(asyncTask.get());
+}
+
+shared_ptr<AsyncTask> ProcessingManager::CreateAsyncTask(TaskType taskType, unique_ptr<Task> task) {
+	function<void(void)> taskFunctor = bind(&ProcessingManager::RunNewTask, this, task.release());
+	if(taskType == TaskType::GetTopK){
+		ConcretePromise<vector<Document>> promise;
+		return promise.GetTask(taskFunctor);
+	}
+	else
+		return make_shared<AsyncTask>(taskFunctor);
 }
 
 void ProcessingManager::RunNewTask(Task *task) {
@@ -34,12 +45,12 @@ void ProcessingManager::RunNewTask(Task *task) {
 	if(task != nullptr) {
 		try {
 			task->Run();
+			m_executor.UpdateTaskStatus(task->GetID(), TaskState::Finished);
 		}
 		catch (Exception &e) {
 			m_executor.UpdateTaskStatus(task->GetID(), TaskState::Failed);
 		}
 	}
-	m_executor.UpdateTaskStatus(task->GetID(), TaskState::Finished);
 	OnTaskCompletion(task);
 }
 
@@ -48,11 +59,10 @@ void ProcessingManager::OnTaskCompletion(Task* task)
 	delete task;
 	{
 		unique_lock<mutex> lock(m_completionMut);
-		auto it = m_completedAsyncTasks.begin();
-		while(it != m_completedAsyncTasks.end()){
+		auto it = m_runningAsyncTasks.begin();
+		while(it != m_runningAsyncTasks.end()){
 			if((*it)->GetState() == AsyncTask::AsyncTaskState::COMPLETED) {
-				delete *it;
-				it = m_completedAsyncTasks.erase(it);
+				it = m_runningAsyncTasks.erase(it);
 			}
 			else
 				it++;

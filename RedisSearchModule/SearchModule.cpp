@@ -21,7 +21,7 @@ extern "C"
 	int GetWordTopKDocument(RedisModuleCtx* ctx, RedisModuleString** argv, int argc)
 	{
 		//command name + word + k == 3
-		VERIFY(argc == 3, "AddDocument arg list cannot be larger than 2");
+		VERIFY(argc == 3, "GetWordTopKDocument arg list cannot be larger than 2");
 		size_t binaryDataLength = 0;
 		const char* word = RedisModule_StringPtrLen(argv[1], &binaryDataLength);
 
