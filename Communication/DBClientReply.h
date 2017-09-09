@@ -55,13 +55,13 @@ public:
 	using BulkStringVector = std::vector<std::string>;
 public:
 	DBClientReply(const char* rawBuffer, int length, int typeID);
-	DBClientReply(redisReply **replyNodes, int length);
+	DBClientReply(redisReply **replyNodes, int length, int typeID);
 	~DBClientReply();
 	
 	template<typename T>
 	operator T() const
 	{
-		VERIFY(m_typeID == VerifyHelper<GeneralReturnTypesCollection>::GetTypeID<T>(), 
+		VERIFY(m_typeID == VerifyHelper<GeneralReturnTypesCollection>::GetTypeID<T>(),
 				"Requested type and handed type dosn't match");
 		return m_typeID == REDIS_REPLY_INTEGER ? *(reinterpret_cast<T*>(m_rawBuffer.back().first)) :
 			std::string(m_rawBuffer.back().first, m_rawBuffer.back().second);

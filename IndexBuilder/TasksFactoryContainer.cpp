@@ -3,6 +3,7 @@
 #include "Core/Exception.h"
 #include "InitTask.h"
 #include "IndexingTask.h"
+#include "TopKTask.h"
 
 using namespace std;
 using namespace core;
@@ -22,6 +23,7 @@ TasksFactoryContainer& TasksFactoryContainer::Instance() {
 TasksFactoryContainer::TasksFactoryContainer() {
     m_factoryContainer.insert(make_pair(TaskType::Init, new TaskCreator<InitTask>()));
     m_factoryContainer.insert(make_pair(TaskType::Indexing, new TaskCreator<IndexingTask>()));
+    m_factoryContainer.insert(make_pair(TaskType::GetTopK, new TaskCreator<TopKTask>()));
 }
 
 unique_ptr<Task> TasksFactoryContainer::Create(TaskType taskType,

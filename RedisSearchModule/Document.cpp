@@ -15,18 +15,16 @@ Document::Document(const string& name, const string& path, vector<pair<string, i
 
 Document::Document(const Document&& obj)
 {
-	string tempName(move(obj.GetName()));
-	unordered_map<string, int> tempWords(move(obj.GetWords()));
-	m_name = move(tempName);
-	m_words = move(tempWords);
+	m_name = move(obj.GetName());
+	m_path = move(obj.GetPath());
+	m_words = move(obj.GetWords());
 }
 
 Document& Document::operator=(const Document&& obj)
 {
-	string tempName(move(obj.GetName()));
-	unordered_map<string, int> tempWords(move(obj.GetWords()));
-	m_name = move(tempName);
-	m_words = move(tempWords);
+	m_name = move(obj.GetName());
+	m_path = move(obj.GetPath());
+	m_words = move(obj.GetWords());
 	return *this;
 }
 

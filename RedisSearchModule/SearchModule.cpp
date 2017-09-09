@@ -20,15 +20,19 @@ extern "C"
 {
 	int GetWordTopKDocument(RedisModuleCtx* ctx, RedisModuleString** argv, int argc)
 	{
+		TRACE_INFO("Command - {Get Top K} was received");
 		//command name + word + k == 3
 		VERIFY(argc == 3, "GetWordTopKDocument arg list cannot be larger than 2");
 		size_t binaryDataLength = 0;
-		const char* word = RedisModule_StringPtrLen(argv[1], &binaryDataLength);
+		const char* wordRawBuffer = RedisModule_StringPtrLen(argv[1], &binaryDataLength);
+		Serializor wordSerializor(wordRawBuffer, binaryDataLength);
+		string word = Serializor::DeserializeString(wordSerializor);
 
-		const char* k = RedisModule_StringPtrLen(argv[2], &binaryDataLength);
-        Serializor serializor(k, binaryDataLength);
-		vector<Document> topKDocuments = DocumentsIndexer::Instance().GetTopKDocumentsPerWord(ctx, string(word),
-             Serializor::DeserializeInt(serializor));
+		const char* kRawBuffer = RedisModule_StringPtrLen(argv[2], &binaryDataLength);
+        Serializor kSerializor(kRawBuffer, binaryDataLength);
+		int k = Serializor::DeserializeInt(kSerializor)	;
+		TRACE_INFO("%d - %s", k, word.c_str());
+		vector<Document> topKDocuments = DocumentsIndexer::Instance().GetTopKDocumentsPerWord(ctx, word, k);
 
 		RedisModule_ReplyWithArray(ctx, REDISMODULE_POSTPONED_ARRAY_LEN);
 		for(const auto& document : topKDocuments)
@@ -42,13 +46,12 @@ extern "C"
 
 	int AddDocument(RedisModuleCtx *ctx, RedisModuleString **argv, int argc)
 	{
-        TRACE_INFO("Add Document Command was received");
+        TRACE_INFO("Command - {Add Document} was received");
 		//command name + document serialized data == 2
 		VERIFY(argc == 2, "AddDocument arg list cannot be larger than 2");
 		size_t stringLength = 0;
 		const char* binaryData = RedisModule_StringPtrLen(argv[1], &stringLength);
 		Document receivedDocument = std::move(Document::Deserialize(binaryData, (int)stringLength));
-		TRACE_INFO("Adding new document - %s", receivedDocument.GetName().c_str());
 		DocumentsIndexer::Instance().AddDocument(ctx, receivedDocument);
 		RedisModule_ReplyWithSimpleString(ctx,"OK");
 		return REDISMODULE_OK;
@@ -65,11 +68,13 @@ extern "C"
 
 		Enviorment::Instance().Init();
 		string workingDir = Enviorment::Instance().GetProcessPath() + "/" + CommandLine::Instance().GetArgument("workingdir");
-		Logger::Instance().AddListener(make_shared<FileRotationListener>(TraceSeverity::Info, workingDir + "SearchModule", 50 * 1024 * 1024, 20));
+		Logger::Instance().AddListener(make_shared<FileRotationListener>(TraceSeverity::Info, workingDir + "/SearchModule", 50 * 1024 * 1024, 20));
 		Logger::Instance().Start(TraceSeverity::Info);
 
 		if(RedisModule_CreateCommand(ctx, "Search.AddDocument", &AddDocument, "", 0, 0, 0) == REDISMODULE_ERR)
 				return REDISMODULE_ERR;
+		if(RedisModule_CreateCommand(ctx, "Search.GetTopKDocuments", &GetWordTopKDocument, "", 0, 0, 0) == REDISMODULE_ERR)
+			return REDISMODULE_ERR;
 
 
 		TRACE_INFO("Redis Search Module is up");

@@ -21,15 +21,17 @@ void TopKTask::Run() {
     vector<pair<const char*, int>> arguments;
     Serializor serializor;
     Serializor::Serialize(serializor, m_word);
-    string buffer = serializor.GetBuffer();
-    arguments.push_back(make_pair(buffer.data(), buffer.size()));
+    string wordBuffer = serializor.GetBuffer();
+    arguments.push_back(make_pair(wordBuffer.data(), wordBuffer.size()));
     serializor.Clean();
 
     Serializor::Serialize(serializor, m_k);
-    buffer = serializor.GetBuffer();
-    arguments.push_back(make_pair(buffer.data(), buffer.size()));
+    string kBuffer = serializor.GetBuffer();
+    arguments.push_back(make_pair(kBuffer.data(), kBuffer.size()));
     serializor.Clean();
 
+
+    TRACE_INFO("%d - %s", m_k, m_word.c_str());
     vector<string> documentsBuffer = IndexBuilder::Instance().GetDBClient().CustomCommand(
             "Search.GetTopKDocuments", arguments);
     vector<Document> documents;

@@ -70,11 +70,20 @@ DBClientReply DBClient::CustomCommand(const std::string& command, const std::vec
 	constexpr auto deleterFunc = [](redisReply *reply){freeReplyObject(reply);};
 	Deleter<redisReply> deleter(reply, deleterFunc);
 
+
+	if(reply == nullptr)
+		throw Exception(SOURCE, "Invalid reply was received.");
+	else if(m_redisContext->err)
+		throw Exception(SOURCE, "Redis error - %s", m_redisContext->errstr);
+	else if(reply->type == REDIS_REPLY_ERROR)
+		throw Exception(SOURCE, "%s", string(reply->str, reply->len).c_str());
+
 	VERIFY(reply->type == REDIS_REPLY_INTEGER && reply->integer <= numeric_limits<int>::max(), "reply long long value is too large for an int");
-	if(reply->type == REDIS_REPLY_INTEGER || reply->type == REDIS_REPLY_STRING)
+	if(reply->type == REDIS_REPLY_INTEGER || reply->type == REDIS_REPLY_STRING
+   	|| reply->type == REDIS_REPLY_STATUS)
 		return DBClientReply(reply->type == REDIS_REPLY_INTEGER ? reinterpret_cast<const char*>(&reply->integer) : reply->str, reply->len, reply->type);
 	else
-		return DBClientReply(reply->element, reply->elements);
+		return DBClientReply(reply->element, reply->elements, reply->type);
 
 
 }
@@ -110,6 +119,8 @@ bool DBClient::SetHashFields(const string& key,
 		throw Exception(SOURCE, "Invalid reply was received.");
 	else if(m_redisContext->err)
 		throw Exception(SOURCE, "Redis error - %s", m_redisContext->errstr);
+	else if(reply->type == REDIS_REPLY_ERROR)
+		throw Exception(SOURCE, "%s", string(reply->str, reply->len).c_str());
 
 	VERIFY(reply->type == REDIS_REPLY_INTEGER,
 			"Received redis reply dosn't match expected return type");
@@ -132,6 +143,9 @@ bool DBClient::DelHashFields(const string& key, const vector<string>& fields)
 		throw Exception(SOURCE, "Invalid reply was received.");
 	else if(m_redisContext->err)
 		throw Exception(SOURCE, "Redis error - %s", m_redisContext->errstr);
+	else if(reply->type == REDIS_REPLY_ERROR)
+		throw Exception(SOURCE, "%s", string(reply->str, reply->len).c_str());
+
 
 	VERIFY(reply->type == REDIS_REPLY_INTEGER, "Received redis reply dosn't match expected return type");
 	return (bool)reply->integer;

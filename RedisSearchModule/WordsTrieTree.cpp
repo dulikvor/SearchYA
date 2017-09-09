@@ -22,6 +22,7 @@ WordsTrieTreeNode* const WordsTrieTree::GetWordTreeNode(const std::string &word)
 	while(it != word.end() && current != nullptr)
 	{
 		current = current->GetNode(*it);
+		it++;
 	}
 	if(current == nullptr)
 		throw Exception(SOURCE, "Requested word %s was not found", word.c_str());
