@@ -12,7 +12,6 @@ namespace core
 	class AsyncTask
 	{
 	public:
-		explicit AsyncTask(const std::function<void(void)>& requestedPoint, const std::shared_ptr<Promise>& promise);
 		explicit AsyncTask(const std::function<void(void)>& requestedPoint);
 		AsyncTask():m_state(AsyncTaskState::CREATED){}
 		AsyncTask(const AsyncTask& obj);
@@ -48,6 +47,9 @@ namespace core
 		}
 		std::shared_ptr<Promise> GetPromise() const{
 			return m_promise;
+		}
+		void SetPromise(const std::shared_ptr<Promise>& promise){
+			m_promise = promise;
 		}
 		void Start();
 		void Wait();

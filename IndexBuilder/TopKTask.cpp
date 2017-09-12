@@ -31,12 +31,14 @@ void TopKTask::Run() {
     serializor.Clean();
 
 
-    TRACE_INFO("%d - %s", m_k, m_word.c_str());
+    TRACE_INFO("Requested Word - %s, K - %d", m_word.c_str(), m_k);
     vector<string> documentsBuffer = IndexBuilder::Instance().GetDBClient().CustomCommand(
             "Search.GetTopKDocuments", arguments);
     vector<Document> documents;
     for(const string& documentBuffer : documentsBuffer){
         documents.emplace_back(Document::Deserialize(documentBuffer.data(), documentBuffer.size()));
+        TRACE_INFO("Fetched document Name - %s, Path - %s", documents.back().GetName().c_str(),
+        documents.back().GetPath().c_str());
     }
 }
 

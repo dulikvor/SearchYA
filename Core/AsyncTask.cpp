@@ -7,11 +7,6 @@ using namespace std;
 
 namespace core
 {
-	AsyncTask::AsyncTask(const std::function<void(void)> &requestedPoint,
-         const std::shared_ptr<Promise>& promise): m_requestedEntryPoint(requestedPoint),
-              m_state(AsyncTaskState::CREATED), m_promise(promise){}
-
-
 	AsyncTask::AsyncTask(const std::function<void(void)> &requestedPoint): m_requestedEntryPoint(requestedPoint),
                  m_state(AsyncTaskState::CREATED){}
 

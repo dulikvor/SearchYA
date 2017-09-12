@@ -18,8 +18,8 @@ DBClientReply::DBClientReply(redisReply **replyNodes, int length, int typeID): m
     {
         redisReply*& currentReply = replyNodes[index];
         VERIFY(currentReply->type == REDIS_REPLY_STRING, "Non string type reply node is not supported");
-        m_rawBuffer.emplace_back(make_pair((char*)malloc(sizeof(char) * length), length));
-        memcpy(m_rawBuffer.back().first, currentReply->str, length);
+        m_rawBuffer.emplace_back(make_pair((char*)malloc(sizeof(char) * currentReply->len), currentReply->len));
+        memcpy(m_rawBuffer.back().first, currentReply->str, currentReply->len);
     }
 }
 
