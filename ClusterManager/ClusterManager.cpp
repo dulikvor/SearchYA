@@ -77,22 +77,6 @@ void ClusterManager::NewCommand(CommandType commandType, const GeneralParams &pa
 	asyncTask.Wait();
 }
 
-
-void ClusterManager::HandleMesosMessage(const Scheduler::MessageSource& source, 
-		const std::string& data)
-{
-	Serializor serializor(data.data(), data.size());
-	int stubType = Serializor::DeserializeInt(serializor);
-	MessageType messageType = (MessageType::Enumeration)Serializor::DeserializeInt(serializor);
-	GeneralParams params;
-	if(data.size() > MessageType::HeaderSize){ //more than message type
-		params.Deserialize(serializor);
-	}
-	params.AddParam("Slave ID", source.SlaveID);
-	params.AddParam("Executor ID", source.ExecutorID);
-	m_stateMachine.HandleState(CommandType::FromMessageType(messageType), params);
-}
-
 void ClusterManager::WaitForCompletion()
 {
     unique_lock<mutex> localLock(m_mutex);

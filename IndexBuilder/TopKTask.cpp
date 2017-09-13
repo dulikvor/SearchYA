@@ -4,6 +4,7 @@
 #include "Communication/Serializor.h"
 #include "RedisSearchModule/Document.h"
 #include "IndexBuilder.h"
+#include "Executor.h"
 
 using namespace std;
 
@@ -34,6 +35,11 @@ void TopKTask::Run() {
     TRACE_INFO("Requested Word - %s, K - %d", m_word.c_str(), m_k);
     vector<string> documentsBuffer = IndexBuilder::Instance().GetDBClient().CustomCommand(
             "Search.GetTopKDocuments", arguments);
+
+    Serializor::Serialize(serializor, documentsBuffer);
+    IndexBuilder::Instance().GetExecutor().SendMessage(serializor.GetBuffer());
+    serializor.Clean();
+
     vector<Document> documents;
     for(const string& documentBuffer : documentsBuffer){
         documents.emplace_back(Document::Deserialize(documentBuffer.data(), documentBuffer.size()));

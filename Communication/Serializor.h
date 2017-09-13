@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <list>
+#include <vector>
 
 class GeneralParams;
 
@@ -27,6 +28,7 @@ public:
 	static void Serialize(Serializor& context, const float& value);
 	static void Serialize(Serializor& context, const double& value);
 	static void Serialize(Serializor& context, const std::string& value);
+	static void Serialize(Serializor& context, const std::vector<std::string>& value);
 	static int DeserializeInt(Serializor& context);
 	static short DeserializeShort(Serializor& context);
 	static long DeserializeLong(Serializor& context);
@@ -35,6 +37,7 @@ public:
 	static double DeserializeDouble(Serializor& context);
 	static std::string DeserializeString(Serializor& context);
 	static std::list<std::string> DeserializeListString(Serializor& context);
+	static std::vector<std::string> DeserializeVectorString(Serializor& context);
 
 	void Write(const char* data, int size);
 	void Read(char* buffer, int size);

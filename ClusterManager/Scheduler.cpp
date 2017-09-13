@@ -87,8 +87,8 @@ void Scheduler::frameworkMessage(mesos::SchedulerDriver* driver,
 		const mesos::ExecutorID& executorId, const mesos::SlaveID& slaveId, 
 		const std::string& data)
 {
-
-	ClusterManager::Instace().HandleMesosMessage({slaveId.value(), executorId.value()}, data);
+    TRACE_INFO("FrameWork Message received - ExecutorID - %s, SlaveID - %s", executorId.value().c_str(),
+        slaveId.value().c_str());
 }
 
 void Scheduler::statusUpdate(mesos::SchedulerDriver* driver, const mesos::TaskStatus& status)
