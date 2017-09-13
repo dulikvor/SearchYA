@@ -1,47 +1,27 @@
 #pragma once
 
 #include <memory>
+#include "Future.h"
 
 namespace core{
 
     class AsyncTask;
 
-    class Promise{
-    public:
-        std::shared_ptr<AsyncTask> GetTask(const std::function<void(void)>& requestedPoint);
-        bool GetValueSet() const{
-            return m_valueSet;
-        }
-        Promise(const Promise&) = delete;
-        Promise& operator=(const Promise&) = delete;
-    protected:
-        Promise():m_valueSet(false){}
-        void NotifyOnPromiseSet();
-
-    protected:
-        bool m_valueSet;
-
-    private:
-        std::weak_ptr<AsyncTask> m_task;
-    };
-
     template<typename T>
-    class ConcretePromise : public Promise
+    class Promise
     {
     public:
-        ConcretePromise(){}
-        virtual ~ConcretePromise(){}
 
-        operator T() const{
-            return m_value;
-        }
         void SetValue(const T& value){
-            m_value = value;
-            m_valueSet = true;
-            NotifyOnPromiseSet();
+            static_cast<Future<T>*>(m_task.get())->SetValue(value);
+        }
+
+        std::shared_ptr<AsyncTask> GetTask(const std::function<void(void)>& requestedPoint) {
+            m_task = std::shared_ptr<AsyncTask>(new Future<T>(requestedPoint));
+            return m_task;
         }
 
     private:
-        T m_value;
+        std::shared_ptr<AsyncTask> m_task;
     };
 }

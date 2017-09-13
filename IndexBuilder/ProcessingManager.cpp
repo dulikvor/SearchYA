@@ -32,7 +32,7 @@ void ProcessingManager::SubmitNewTask(TaskType taskType,
 shared_ptr<AsyncTask> ProcessingManager::CreateAsyncTask(TaskType taskType, unique_ptr<Task> task) {
 	function<void(void)> taskFunctor = bind(&ProcessingManager::RunNewTask, this, task.release());
 	if(taskType == TaskType::GetTopK){
-		ConcretePromise<vector<Document>> promise;
+		Promise<vector<Document>> promise;
 		return promise.GetTask(taskFunctor);
 	}
 	else

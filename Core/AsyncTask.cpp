@@ -12,14 +12,12 @@ namespace core
 
 	AsyncTask::AsyncTask(const AsyncTask& obj){
 		m_requestedEntryPoint = obj.GetRequestedEntryPoint();
-		m_promise = obj.GetPromise();
 		m_state = obj.GetState();
 		m_failureReason = obj.GetFailureReason();
 	}
 
 	AsyncTask& AsyncTask::operator=(const AsyncTask& obj){
 		m_requestedEntryPoint = obj.GetRequestedEntryPoint();
-		m_promise = obj.GetPromise();
 		m_state = obj.GetState();
 		m_failureReason = obj.GetFailureReason();
 		return *this;
@@ -44,24 +42,6 @@ namespace core
 					m_state == AsyncTaskState::COMPLETED;});
 		if(m_state == AsyncTaskState::CANCELED)
 			throw Exception(SOURCE, "%s", m_failureReason.c_str());
-	}
-
-	void AsyncTask::NotifyOnPromiseSet() {
-		unique_lock<mutex> lockLocal(m_promiseMut);
-		m_promiseCv.notify_one();
-	}
-
-	const Promise& AsyncTask::Get(){
-		if((bool)m_promise == true)
-		{
-			{
-				unique_lock<std::mutex> localLock(m_waitMut);
-				m_waitCv.wait(localLock, [this]{return m_promise->GetValueSet();});
-			}
-			return *m_promise;
-		}
-		else
-			throw Exception(SOURCE, "Get was requested, but no promise was granted.");
 	}
 
 	void AsyncTask::NotifyOnFailure()
