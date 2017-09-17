@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package TextualSearchResultsService;
+
+service TextualSearchResults {
+    rpc GetTopKDocuments(TopKDocumentsPerWordRequest) returns(TopKDocumentsReply){}
+}
+
+message TopKDocumentsPerWordRequest
+{
+    int32 k = 1;
+    string word = 2;
+}
+
+message TopKDocumentsReply
+{
+    repeated string documentName = 1;
+}
+

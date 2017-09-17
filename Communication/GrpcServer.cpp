@@ -13,17 +13,25 @@ GrpcServer::GrpcServer(const string& listeningPointAddress)
 
 GrpcServer::~GrpcServer()
 {
+	delete m_completionQueue.release();
 }
 
-void GrpcServer::AddService(unique_ptr<grpc::Service> service)
+void GrpcServer::AddService(const shared_ptr<grpc::Service>& service)
 {
 	ASSERT(m_running == false);
 	m_builder.RegisterService(service.get());
-	m_services.emplace_back(service.release());
+	m_services.emplace_back(service);
+}
+
+void GrpcServer::AddAsyncService(const shared_ptr<grpc::Service>& service){
+	ASSERT(m_running == false);
+	m_builder.RegisterService(service.get());
+	m_services.emplace_back(service);
 }
 
 void GrpcServer::Start()
 {
 	ASSERT(m_running.exchange(true) == false);
+	m_completionQueue = m_builder.AddCompletionQueue();
 	m_server = m_builder.BuildAndStart();
 }

@@ -37,7 +37,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_DIR}/bin)
 set(PROJECT_3RD_LOC ${CMAKE_CURRENT_SOURCE_DIR}/Third_Party)
 set(MESOS_3RD_PARTY ${PROJECT_3RD_LOC}/src/Mesos/build/3rdparty)
 #Pre build step
-add_custom_target(PROTO_BUILD COMMAND ${PROJECT_DIR}/Communication/IDL/BuildProto.bash ${PROJECT_DIR}/Communication)
+add_custom_target(PROTO_BUILD COMMAND ALL ${PROJECT_DIR}/Communication/IDL/BuildProto.bash ${PROJECT_DIR}/Communication)
 add_subdirectory(${PROJECT_DIR}/Core)
 add_subdirectory(${PROJECT_DIR}/Communication)
 add_subdirectory(${PROJECT_DIR}/ClusterManager)

@@ -24,14 +24,14 @@ Status TextualSearchServiceImpl::IndexDocument(ServerContext* context, const Tex
 	return Status::OK;
 }
 
-Status TextualSearchServiceImpl::GetTopKDocuments(ServerContext* context, const TextualSearchService::TopKDocumentsPerWordRequest* request, TextualSearchService::TopKDocumentsReply* response)
+/*Status TextualSearchServiceImpl::GetTopKDocuments(ServerContext* context, const TextualSearchService::TopKDocumentsPerWordRequest* request, TextualSearchService::TopKDocumentsReply* response)
 {
     vector<Document> topKDocuments = m_service.GetTopKDocuments("Hello", 1);//request->word(), request->k());
     for(const Document& doc : topKDocuments) {
         response->add_documentname(doc.GetName());
     }
     return Status::OK;
-}
+}*/
 
 Status TextualSearchServiceImpl::Terminate(ServerContext* context, const TextualSearchService::Empty* request, TextualSearchService::Empty* response)
 {

@@ -5,23 +5,11 @@ package TextualSearchService;
 service TextualSearch {
   rpc Init(Params) returns (Empty){}
   rpc IndexDocument(Empty) returns (Empty){}
-  rpc GetTopKDocuments(TopKDocumentsPerWordRequest) returns(TopKDocumentsReply){}
   rpc Terminate(Empty) returns (Empty){}
 }
 
 message Empty
 {
-}
-
-message TopKDocumentsPerWordRequest
-{
-    int32 k = 1;
-    string word = 2;
-}
-
-message TopKDocumentsReply
-{
-    repeated string documentName = 1;
 }
 
 message Param
