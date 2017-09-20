@@ -4,11 +4,10 @@
 #include <memory>
 #include <atomic>
 #include <grpc++/grpc++.h>
+#include "Core/ConcurrentDictionary.h"
+#include "Core/Thread.h"
 
-namespace grpc
-{
-	class Service;
-}
+class Service;
 
 //Represents a GRPC server in the eye of the process. provides the capability to initiate
 //a server at a received end point (the server will listen for incoming calls at that address).
@@ -24,16 +23,24 @@ public:
 	//Received service is registered with grpc build server. the instance life cycle ownership
 	//is also taken by the current GRPCService instance. it is mandatory to register the service
 	//prior for the server starting point.
-	void AddService(const std::shared_ptr<grpc::Service>& service);
-	void AddAsyncService(const std::shared_ptr<grpc::Service>& service);
+	void AddService(const std::shared_ptr<Service>& service);
+	void AddAsyncService(const std::shared_ptr<Service>& service);
+	grpc::ServerCompletionQueue& GetCompletionQueue() {
+		return *m_completionQueue;
+	}
 	//Is the server starting point, notifying grpc framework with a request to initiate the underline
 	//server.
 	void Start();
 
 private:
+	void CompletionQueueWorker();
+
+private:
 	grpc::ServerBuilder m_builder;
-	std::vector<std::shared_ptr<grpc::Service>> m_services;
+	std::vector<std::shared_ptr<Service>> m_syncServices;
+	core::ConcurrentDictionary<void*, std::shared_ptr<Service>> m_asyncServices;
 	std::unique_ptr<grpc::ServerCompletionQueue> m_completionQueue;
 	std::unique_ptr<grpc::Server> m_server;
 	std::atomic_bool m_running;
+	core::Thread m_completionQueueThread;
 };

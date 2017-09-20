@@ -9,7 +9,7 @@
 #include "Communication/Serializor.h"
 #include "Communication/GeneralParams.h"
 #include "Communication/TextualSearchServiceImpl.h"
-#include "Communication/TextualSearchResultsWrapper.h"
+#include "Communication/TextualSearchResultsImpl.h"
 #include "RedisSearchModule/Document.h"
 #include "ConfigParams.h"
 #include "Command.h"
@@ -65,8 +65,8 @@ void ClusterManager::HandleInit()
 void ClusterManager::InitializeServer(const string& serverListeningPoint)
 {
 	m_server.reset(new GrpcServer(serverListeningPoint));
-	m_server->AddService(shared_ptr<grpc::Service>(new TextualSearchServiceImpl(*this)));
-	m_server->AddAsyncService(shared_ptr<grpc::Service>(new TextualSearchResultsAsyncService()));
+	m_server->AddService(shared_ptr<Service>(new TextualSearchServiceImpl(*this)));
+	m_server->AddAsyncService(shared_ptr<Service>(new TextualSearchResultsImpl(m_server->GetCompletionQueue())));
 	m_server->Start();
 	TRACE_INFO("GRPC Server is up at - %s", serverListeningPoint.c_str());
 }

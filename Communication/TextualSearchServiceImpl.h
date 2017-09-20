@@ -1,10 +1,11 @@
 #pragma once
 
 #include "GeneretedFiles/TextualSearchService.grpc.pb.h"
+#include "Service.h"
 
 class ITextualSearchService;
 
-class TextualSearchServiceImpl : public ::TextualSearchService::TextualSearch::Service
+class TextualSearchServiceImpl : public ::TextualSearchService::TextualSearch::Service, public Service
 {
 public:
 	TextualSearchServiceImpl(ITextualSearchService& service): m_service(service){}
