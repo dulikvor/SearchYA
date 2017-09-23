@@ -2,6 +2,7 @@
 
 #include <string>
 #include <memory>
+#include "Communication/TextualSearchResultsImpl.h"
 #include "Job.h"
 
 class GeneralParams;
@@ -15,9 +16,15 @@ public:
     const char* GetLabel() const override{
         return "Get Top K Documents";
     }
+    bool IsAsyncJob() const override {return true;}
+    void* const GetTag() const{
+        return m_tag;
+    }
 
 private:
+    void* m_tag;
     std::string m_word;
     int m_k;
+
 };
 

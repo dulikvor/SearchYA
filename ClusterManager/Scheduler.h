@@ -29,8 +29,19 @@ class Task;
 class Scheduler: public mesos::Scheduler
 {
 public:
+	using TaskID = std::string;
+	using ExecutorID = std::string;
+	using SlaveID = std::string;
+
+	struct MessageSource
+	{
+		std::string SlaveID;
+		std::string ExecutorID;
+	};
+
+public:
 	Scheduler(const std::string& role);
-	virtual ~Scheduler(){}
+	virtual ~Scheduler();
 	//Initialize will address the config data reading the cluster information, the different processing units locations
 	//indicated by thier node address (they addresses may return). the function will create an internal object representing
 	//each processing unit, storing each process by its location address, no need to sort the most busy processes, since they are all idle
@@ -60,17 +71,7 @@ public:
 	void SendMessage(std::string& data){}
 	//
 	void AddExecutor(const std::string& slaveID, const std::string& executorID);
-
-public:
-	using TaskID = std::string;
-	using ExecutorID = std::string;
-	using SlaveID = std::string;
-
-	struct MessageSource
-	{
-		std::string SlaveID;
-		std::string ExecutorID;
-	};
+	void AddTask(const TaskID& taskID, const Job& job);
 
 private:
 	using JobAllocatedResources = std::pair<std::unique_ptr<Job>, std::pair<mesos::Resources, mesos::SlaveID>>;
@@ -88,9 +89,8 @@ private:
 	core::ConcurrentDictionary<std::pair<SlaveID, ExecutorID>, Executor> m_executors;
 	mesos::ExecutorInfo m_executorInfo;
 	std::string m_role;
-	core::ConcurrentDictionary<TaskID, Task> m_activatedTasks; 
+	core::ConcurrentDictionary<TaskID, Task*> m_activatedTasks;
 	core::SyncQueue<Job*> m_jobsQueue;
-	core::TimedAsyncExecutor m_timedAsyncExec;
 	std::unique_ptr<mesos::SchedulerDriver> m_mesosDriver;
 	mutable std::mutex m_mutex;
 };

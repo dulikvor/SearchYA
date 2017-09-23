@@ -8,6 +8,7 @@
 #include "Core/Thread.h"
 
 class Service;
+class AsyncService;
 
 //Represents a GRPC server in the eye of the process. provides the capability to initiate
 //a server at a received end point (the server will listen for incoming calls at that address).
@@ -24,7 +25,8 @@ public:
 	//is also taken by the current GRPCService instance. it is mandatory to register the service
 	//prior for the server starting point.
 	void AddService(const std::shared_ptr<Service>& service);
-	void AddAsyncService(const std::shared_ptr<Service>& service);
+	void AddAsyncService(const std::shared_ptr<AsyncService>& service);
+	std::shared_ptr<AsyncService> GetAsyncService(void* const tag);
 	grpc::ServerCompletionQueue& GetCompletionQueue() {
 		return *m_completionQueue;
 	}
@@ -38,7 +40,7 @@ private:
 private:
 	grpc::ServerBuilder m_builder;
 	std::vector<std::shared_ptr<Service>> m_syncServices;
-	core::ConcurrentDictionary<void*, std::shared_ptr<Service>> m_asyncServices;
+	core::ConcurrentDictionary<void* const, std::shared_ptr<AsyncService>> m_asyncServices;
 	std::unique_ptr<grpc::ServerCompletionQueue> m_completionQueue;
 	std::unique_ptr<grpc::Server> m_server;
 	std::atomic_bool m_running;

@@ -1,6 +1,8 @@
 #include "GetTopKJob.h"
+#include "ClusterManager.h"
 #include "Communication/GeneralParams.h"
 #include "Communication/Serializor.h"
+#include "Communication/GrpcServer.h"
 
 using namespace std;
 
@@ -8,6 +10,7 @@ GetTopKJob::GetTopKJob(int id, GeneralParams const *const params)
     :Job(id, 0.1){
     m_word = StringConverter::Convert(params->GetValue("Word"));
     m_k = params->GetValue("Top K");
+    m_tag = params->GetValue("CallBack Tag");
 }
 
 unique_ptr<pair<const char*, int>, Job::Deleter> GetTopKJob::GenerateTaskData() const

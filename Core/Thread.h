@@ -6,7 +6,7 @@
 #include <string>
 #include <atomic>
 
-const int MAX_THREAD_NAME = 15;
+const int MAX_THREAD_NAME = 30;
 
 namespace core
 {

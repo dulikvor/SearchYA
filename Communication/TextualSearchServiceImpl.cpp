@@ -13,28 +13,19 @@ Status TextualSearchServiceImpl::Init(ServerContext* context, const ::TextualSea
 {
     GeneralParams nativeParams;
     nativeParams.Load(*request);
-    m_service.Init(nativeParams);
+    m_application.Init(nativeParams);
 	return Status::OK;
 }
 
 
 Status TextualSearchServiceImpl::IndexDocument(ServerContext* context, const TextualSearchService::Empty* request, TextualSearchService::Empty* response)
 {
-    m_service.IndexDocument(GeneralParams());
+    m_application.IndexDocument(GeneralParams());
 	return Status::OK;
 }
 
-/*Status TextualSearchServiceImpl::GetTopKDocuments(ServerContext* context, const TextualSearchService::TopKDocumentsPerWordRequest* request, TextualSearchService::TopKDocumentsReply* response)
-{
-    vector<Document> topKDocuments = m_service.GetTopKDocuments("Hello", 1);//request->word(), request->k());
-    for(const Document& doc : topKDocuments) {
-        response->add_documentname(doc.GetName());
-    }
-    return Status::OK;
-}*/
-
 Status TextualSearchServiceImpl::Terminate(ServerContext* context, const TextualSearchService::Empty* request, TextualSearchService::Empty* response)
 {
-	m_service.Terminate();
+	m_application.Terminate();
 	return Status::OK;
 }

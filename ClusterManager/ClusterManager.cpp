@@ -42,13 +42,13 @@ void ClusterManager::IndexDocument(const GeneralParams& params)
     NewCommand(CommandType::Index, params);
 }
 
-vector<Document> ClusterManager::GetTopKDocuments(const string& word, int k)
+void ClusterManager::GetTopKDocuments(const string& word, int k, void* callbackTag)
 {
 	GeneralParams params;
 	params.AddParam("Word", word);
 	params.AddParam("Top K", k);
+	params.AddParam("CallBack Tag", callbackTag);
 	NewCommand(CommandType::GetTopK, params);
-	return vector<Document>();
 }
 
 void ClusterManager::Terminate()
@@ -66,7 +66,7 @@ void ClusterManager::InitializeServer(const string& serverListeningPoint)
 {
 	m_server.reset(new GrpcServer(serverListeningPoint));
 	m_server->AddService(shared_ptr<Service>(new TextualSearchServiceImpl(*this)));
-	m_server->AddAsyncService(shared_ptr<Service>(new TextualSearchResultsImpl(m_server->GetCompletionQueue())));
+	m_server->AddAsyncService(shared_ptr<AsyncService>(new TextualSearchResultsImpl(m_server->GetCompletionQueue(), *this)));
 	m_server->Start();
 	TRACE_INFO("GRPC Server is up at - %s", serverListeningPoint.c_str());
 }

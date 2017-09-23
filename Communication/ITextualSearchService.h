@@ -12,6 +12,6 @@ public:
 	virtual ~ITextualSearchService(){}
     virtual void Init(const GeneralParams& params) = 0;
     virtual void IndexDocument(const GeneralParams& params) = 0;
-    virtual std::vector<Document> GetTopKDocuments(const std::string& word, int k) = 0;
+    virtual void GetTopKDocuments(const std::string& word, int k, void* callbackTag) = 0;
     virtual void Terminate() = 0;
 };

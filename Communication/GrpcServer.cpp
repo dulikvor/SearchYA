@@ -2,7 +2,9 @@
 #include <functional>
 #include <grpc++/impl/codegen/service_type.h>
 #include "Core/Assert.h"
+#include "Core/Exception.h"
 #include "Service.h"
+#include "AsyncService.h"
 
 using namespace std;
 using namespace core;
@@ -30,10 +32,17 @@ void GrpcServer::AddService(const shared_ptr<Service>& service)
 	m_syncServices.emplace_back(service);
 }
 
-void GrpcServer::AddAsyncService(const shared_ptr<Service>& service){
+void GrpcServer::AddAsyncService(const shared_ptr<AsyncService>& service){
 	ASSERT(m_running == false);
 	m_builder.RegisterService(service->GetService());
 	m_asyncServices.AddValue(service->GetService(), service);
+}
+
+shared_ptr<AsyncService> GrpcServer::GetAsyncService(void* const tag){
+	if(m_asyncServices.ContainsKey(tag) == true)
+		return m_asyncServices[tag];
+	else
+		throw Exception(SOURCE, "No async service matches the supplied key - %ld", (long)tag);
 }
 
 void GrpcServer::Start()
@@ -48,11 +57,11 @@ void GrpcServer::CompletionQueueWorker() {
     while(m_completionQueue->Next(&tag, &ok)){
 		GPR_CODEGEN_ASSERT(ok);
 		if(m_asyncServices.ContainsKey(tag)){
-			shared_ptr<Service>& service = m_asyncServices[tag];
-			if(service->GetState() == Service::State::NotCompleted)
-				service->SetConnected();
-			else if(service->GetState() == Service::State::Completed)
-				m_asyncServices.RemoveValue(tag);
+			shared_ptr<AsyncService>& service = m_asyncServices[tag];
+			if(service->GetState() == AsyncService::State::NotConnected)
+				service->Invoke(tag);
+			else if(service->GetState() == AsyncService::State::Completed)
+				service->Connect(tag);
 		}
 	}
 }

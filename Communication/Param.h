@@ -15,7 +15,7 @@ template<typename... Arg>
 struct TypesCollection{
 };
 
-typedef TypesCollection<short, int, long, float, double, bool, std::string, std::list<std::string>> GeneralTypesCollection;
+typedef TypesCollection<short, int, long, float, double, bool, void*, std::string, std::list<std::string>> GeneralTypesCollection;
 
 template<typename... Arg>
 struct VariantParam

@@ -1,11 +1,19 @@
 #pragma once
 
-#include "TaskState.h"
+#include <memory>
+#include <string>
+#include "Core/Exception.h"
+
+class AsyncService;
 
 class Task
 {
 public:
-	explicit Task(): m_state(TaskState::Starting){}	
-private:
-	TaskState m_state;
+	Task(void* const tag);
+	virtual	void ProcessTask(const std::string& data){
+		throw core::Exception(SOURCE, "Function is not supported");
+	}
+	virtual ~Task(){}
+protected:
+	std::shared_ptr<AsyncService> m_service;
 };

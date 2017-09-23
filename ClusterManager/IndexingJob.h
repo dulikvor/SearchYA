@@ -10,6 +10,8 @@ public:
     const char* GetLabel() const override{
         return "Indexing";
     }
+    bool IsAsyncJob() const override {return false;}
+
 };
 
 

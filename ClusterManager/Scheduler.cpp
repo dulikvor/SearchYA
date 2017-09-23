@@ -5,11 +5,19 @@
 #include "ClusterManager.h"
 #include "JobFactoryContainer.h"
 #include "TaskState.h"
+#include "GetTopKJob.h"
+#include "GetTopKTask.h"
 
 using namespace std;
 
 Scheduler::Scheduler(const std::string& role):m_role(role)
 {
+}
+
+Scheduler::~Scheduler() {
+	vector<TaskID> tasksIDs = m_activatedTasks.GetAllKeys();
+	for(const TaskID& taskID : tasksIDs)
+		delete m_activatedTasks[taskID];
 }
 
 void Scheduler::Initialize()
@@ -89,6 +97,7 @@ void Scheduler::frameworkMessage(mesos::SchedulerDriver* driver,
 {
     TRACE_INFO("FrameWork Message received - ExecutorID - %s, SlaveID - %s", executorId.value().c_str(),
         slaveId.value().c_str());
+
 }
 
 void Scheduler::statusUpdate(mesos::SchedulerDriver* driver, const mesos::TaskStatus& status)
@@ -152,7 +161,6 @@ void Scheduler::BuildTasks(const vector<JobAllocatedResources> &jobsAndResources
 		if(data->second > 0)
 			tasks.back().set_data(data->first, data->second);
 
-		m_activatedTasks.AddValue(taskID, Task());
 		AddExecutor(resourceSlavePair.second.value(), "Executor"); //only one executor at the moment per slave
 	}	
 }
@@ -163,6 +171,13 @@ void Scheduler::AddExecutor(const std::string& slaveID, const std::string& execu
 	pair<string, string> key = {slaveID, executorID};
 	if(!m_executors.ContainsKey(key))
 		m_executors.AddValue(key, Executor());
+}
+
+void Scheduler::AddTask(const TaskID& taskID, const Job &job) {
+	if(job.IsAsyncJob()){
+		const GetTopKJob& typedJob = static_cast<const GetTopKJob&>(job);
+		m_activatedTasks.AddValue(taskID, new GetTopKTask(typedJob.GetTag()));
+	}
 }
 
 bool Scheduler::ISExecutorValid(const std::string& slaveID, const std::string& executorID)

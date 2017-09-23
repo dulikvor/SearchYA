@@ -19,7 +19,7 @@ public:
     virtual ~ClusterManager();
    	void Init(const GeneralParams& params) override;
    	void IndexDocument(const GeneralParams& params) override;
-	std::vector<Document> GetTopKDocuments(const std::string& word, int k) override;
+	void GetTopKDocuments(const std::string& word, int k, void* callbackTag) override;
    	void Terminate() override;
 	//NewCommand will divert the newly received GRPC command handling from the GRPC thread 
 	//to the ClusterManager internal async executor thread pool, the operation is done 

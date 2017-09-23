@@ -166,7 +166,7 @@ list<string> Serializor::DeserializeListString(Serializor& context)
 }
 
 
-vector<std::string> DeserializeVectorString(Serializor& context)
+vector<std::string> Serializor::DeserializeVectorString(Serializor& context)
 {
 	int vectorSize;
 	context.Read(reinterpret_cast<char*>(&vectorSize), sizeof(int));

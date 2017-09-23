@@ -30,6 +30,7 @@ public:
 
 	float GetRequiredCores() const {return m_requiredCores;}
 	int GetID() const {return m_id;}
+	virtual	bool IsAsyncJob() const {throw core::Exception(SOURCE, "Non supported function");}
 
 private:
 	float m_requiredCores;

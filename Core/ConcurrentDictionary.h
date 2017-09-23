@@ -44,6 +44,15 @@ namespace core
 			return m_dictionary[key];
 		}
 
+		std::vector<Key> GetAllKeys() const{
+			std::unique_lock<std::mutex> localLock(m_mutex);
+			std::vector<Key> keys;
+			keys.reserve(m_dictionary.size());
+			for(auto const & pair : m_dictionary)
+				keys.push_back(pair.first);
+			return keys;
+		}
+
 
 	private:
 		std::map<Key, Value> m_dictionary;
