@@ -12,7 +12,7 @@ TextualSearchResultsImpl::TextualSearchResultsImpl(grpc::ServerCompletionQueue& 
 void TextualSearchResultsImpl::Connect(void* tag) {
     TextualSearchResultsAsyncService& service = static_cast<TextualSearchResultsAsyncService&>(*m_service);
     service.RequestGetTopKDocuments(&m_serverContex, &m_request, m_responder.get(), &m_completionQueue,
-        &m_completionQueue, this);
+        &m_completionQueue, tag);
     m_state = AsyncService::State ::NotConnected;
 }
 

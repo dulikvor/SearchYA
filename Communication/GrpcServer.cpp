@@ -38,7 +38,7 @@ void GrpcServer::AddAsyncService(const shared_ptr<AsyncService>& service){
 	m_asyncServices.AddValue(service->GetService(), service);
 }
 
-shared_ptr<AsyncService> GrpcServer::GetAsyncService(void* const tag){
+shared_ptr<AsyncService> GrpcServer::GetAsyncService(void* tag){
 	if(m_asyncServices.ContainsKey(tag) == true)
 		return m_asyncServices[tag];
 	else
@@ -49,6 +49,12 @@ void GrpcServer::Start()
 {
 	ASSERT(m_running.exchange(true) == false);
 	m_server = m_builder.BuildAndStart();
+
+	vector<void*> keys = m_asyncServices.GetAllKeys();
+	for(auto& key : keys){
+		const shared_ptr<AsyncService>& service = m_asyncServices[key];
+		service->Connect(service.get());
+	}
 }
 
 void GrpcServer::CompletionQueueWorker() {
@@ -61,7 +67,7 @@ void GrpcServer::CompletionQueueWorker() {
 			if(service->GetState() == AsyncService::State::NotConnected)
 				service->Invoke(tag);
 			else if(service->GetState() == AsyncService::State::Completed)
-				service->Connect(tag);
+				service->Connect(service.get());
 		}
 	}
 }
