@@ -10,7 +10,7 @@ if (NOT SPDLOG_FOUND)
             )
 
     ExternalProject_Add_Step(SpdLog SpdLog_Install_Headers
-            COMMAND     cp -r <SOURCE_DIR>/include/spdlog <INSTALL_DIR>/include/spdlog
+            COMMAND     mkdir <INSTALL_DIR>/include && cp -r <SOURCE_DIR>/include/spdlog <INSTALL_DIR>/include/spdlog
             DEPENDEES   install
             )
 

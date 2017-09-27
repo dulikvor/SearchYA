@@ -1,5 +1,4 @@
 if (NOT REDIS_FOUND)
-
     ExternalProject_Add(Redis
             DOWNLOAD_NAME       redis-4.0.0.tar.gz
             URL                 https://github.com/antirez/redis/archive/4.0.0.tar.gz
@@ -27,6 +26,4 @@ if (NOT REDIS_FOUND)
     set (REDIS_INCLUDE_DIR       ${REDIS_ROOT_DIR}/include)
     set (REDIS_FOUND             YES)
 
-#    mark_as_advanced(GLOG_LIBRARY GLOG_INCLUDE_PATH)
-
-endif ()
+endif (NOT REDIS_FOUND)
