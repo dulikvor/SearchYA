@@ -8,6 +8,17 @@ These instructions will get you a copy of the project up and running on your loc
 SearchYa is based upon c++14, its only known supported platform is Ubuntu 16.04.
 it uses posix quite frequently (the non portable part), so it might also work on diffirent unix based distributions.
 
+c-ares installation (if not exists, required version - 1.3.0):
+```
+cd download-dir
+wget https://c-ares.haxx.se/download/c-ares-1.13.0.tar.gz
+tar -xf c-ares-1.13.0.tar.gz
+cd download-dir/c-ares-1.13.0
+./configure
+make
+make install
+```
+
 ### Installing
 A very simplified install, just one command, it will fetch all needed 3rd party dependencies.
 ```
