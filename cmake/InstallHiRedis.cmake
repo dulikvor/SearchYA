@@ -16,6 +16,4 @@ if (NOT HIREDIS_FOUND)
     set (HIREDIS_LIBRARY_DIR       ${HIREDIS_ROOT_DIR}/lib)
     set (HIREDIS_FOUND             YES)
 
-    #    mark_as_advanced(GLOG_LIBRARY GLOG_INCLUDE_PATH)
-
 endif ()

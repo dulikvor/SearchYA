@@ -1,5 +1,5 @@
 #include "IndexBuilder.h"
-#include "Core/Logger.h"
+#include "Core/src/Logger.h"
 
 using namespace core;
 using namespace std;

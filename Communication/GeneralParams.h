@@ -3,8 +3,8 @@
 #include <string>
 #include <list>
 #include <algorithm>
-#include "Core/Assert.h"
-#include "Core/Exception.h"
+#include "Core/src/Assert.h"
+#include "Core/src/Exception.h"
 #include "GeneretedFiles/TextualSearchService.pb.h"
 #include "Param.h"
 #include "Serializor.h"

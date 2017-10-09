@@ -1,6 +1,6 @@
 #include "PowerUpState.h"
 #include <memory>
-#include "Core/Exception.h"
+#include "Core/src/Exception.h"
 #include "Communication/GeneralParams.h"
 #include "ConfigParams.h"
 #include "ClusterManager.h"

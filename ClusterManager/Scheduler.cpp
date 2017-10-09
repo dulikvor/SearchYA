@@ -1,6 +1,6 @@
 #include "Scheduler.h"
-#include "Core/Logger.h"
-#include "Core/CommandLine.h"
+#include "Core/src/Logger.h"
+#include "Core/src/CommandLine.h"
 #include "Communication/GeneralParams.h"
 #include "ClusterManager.h"
 #include "JobFactoryContainer.h"

@@ -1,6 +1,6 @@
 #include "ConfigParams.h"
 #include "Communication/GeneralParams.h"
-#include "Core/Enviorment.h"
+#include "Core/src/Enviorment.h"
 
 using namespace std;
 using namespace core;

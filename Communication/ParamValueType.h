@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GeneretedFiles/TextualSearchService.pb.h"
-#include "Core/Enumeration.h"
+#include "Core/src/Enumeration.h"
 
 class ParamValueType
 {

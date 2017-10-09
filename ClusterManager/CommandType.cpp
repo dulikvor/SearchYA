@@ -1,5 +1,5 @@
 #include "CommandType.h"
-#include "Core/Exception.h"
+#include "Core/src/Exception.h"
 
 using namespace std;
 using namespace core;

@@ -7,10 +7,10 @@
 #include <mesos/resources.hpp>
 #include <mutex>
 #include <vector>
-#include "Core/SyncQueue.h"
-#include "Core/OrderedList.h"
-#include "Core/ConcurrentDictionary.h"
-#include "Core/TimedAsyncExecutor.h"
+#include "Core/src/SyncQueue.h"
+#include "Core/src/OrderedList.h"
+#include "Core/src/ConcurrentDictionary.h"
+#include "Core/src/TimedAsyncExecutor.h"
 #include "Communication/MessageType.h"
 #include "ConfigParams.h"
 #include "Pu.h"

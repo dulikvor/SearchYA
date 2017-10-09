@@ -1,6 +1,6 @@
 #include "DocumentsIndexer.h"
-#include "Core/Assert.h"
-#include "Core/Logger.h"
+#include "Core/src/Assert.h"
+#include "Core/src/Logger.h"
 #include "Redis/redismodule.h"
 
 using namespace std;

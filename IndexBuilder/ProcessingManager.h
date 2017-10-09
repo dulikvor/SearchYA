@@ -3,8 +3,8 @@
 #include <vector>
 #include <list>
 #include <mutex>
-#include "Core/AsyncExecutor.h"
-#include "Core/ConcurrentDictionary.h"
+#include "Core/src/AsyncExecutor.h"
+#include "Core/src/ConcurrentDictionary.h"
 #include "TaskType.h"
 
 namespace core

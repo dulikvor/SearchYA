@@ -3,7 +3,7 @@
 #include <memory>
 #include "grpc++/grpc++.h"
 #include "GeneretedFiles/TextualSearchResultsService.grpc.pb.h"
-#include "Core/Exception.h"
+#include "Core/src/Exception.h"
 
 class AsyncService
 {

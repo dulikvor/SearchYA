@@ -1,6 +1,6 @@
 #include "JobFactoryContainer.h"
 #include <utility>
-#include "Core/Exception.h"
+#include "Core/src/Exception.h"
 #include "InitJob.h"
 #include "IndexingJob.h"
 #include "GetTopKJob.h"

@@ -4,8 +4,8 @@
 #include <memory>
 #include <atomic>
 #include <grpc++/grpc++.h>
-#include "Core/ConcurrentDictionary.h"
-#include "Core/Thread.h"
+#include "Core/src/ConcurrentDictionary.h"
+#include "Core/src/Thread.h"
 
 class Service;
 class AsyncService;

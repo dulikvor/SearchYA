@@ -1,5 +1,5 @@
 #include "TextualSearchServiceImpl.h"
-#include "Core/Logger.h"
+#include "Core/src/Logger.h"
 #include "ClusterManager/CommandType.h"
 #include "RedisSearchModule/Document.h"
 #include "GeneralParams.h"

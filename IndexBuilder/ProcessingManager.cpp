@@ -1,7 +1,6 @@
 #include "ProcessingManager.h"
-#include "Core/AsyncTask.h"
-#include "Core/Enviorment.h"
-#include "Core/Promise.h"
+#include "Core/src/AsyncTask.h"
+#include "Core/src/Enviorment.h"
 #include "Communication/GeneralParams.h"
 #include "RedisSearchModule/Document.h"
 #include "TasksFactoryContainer.h"
@@ -21,22 +20,13 @@ void ProcessingManager::SubmitNewTask(TaskType taskType,
 	TRACE_INFO("Task-%s: Creating", taskID.c_str());
 	unique_ptr<Task> executorTask = TasksFactoryContainer::Instance().Create(
 			taskType, taskID, coreCount, data, length);
-	shared_ptr<AsyncTask> asyncTask = CreateAsyncTask(taskType, move(executorTask));
+
+	shared_ptr<AsyncTask> asyncTask = make_shared<AsyncTask>(bind(&ProcessingManager::RunNewTask, this, executorTask.release()));
 	{
 		unique_lock<mutex> lock(m_completionMut);
 		m_runningAsyncTasks.push_back(asyncTask);
 	}
 	m_asyncExecutor.SpawnTask(asyncTask.get());
-}
-
-shared_ptr<AsyncTask> ProcessingManager::CreateAsyncTask(TaskType taskType, unique_ptr<Task> task) {
-	function<void(void)> taskFunctor = bind(&ProcessingManager::RunNewTask, this, task.release());
-	if(taskType == TaskType::GetTopK){
-		Promise<vector<Document>> promise;
-		return promise.GetTask(taskFunctor);
-	}
-	else
-		return make_shared<AsyncTask>(taskFunctor);
 }
 
 void ProcessingManager::RunNewTask(Task *task) {

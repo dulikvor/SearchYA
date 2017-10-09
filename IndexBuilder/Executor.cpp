@@ -1,7 +1,7 @@
 #include "Executor.h"
 #include <string>
 #include <mesos/mesos.pb.h>
-#include "Core/Logger.h"
+#include "Core/src/Logger.h"
 #include "Communication/GeneralParams.h"
 #include "IndexBuilder.h"
 #include "TasksFactoryContainer.h"

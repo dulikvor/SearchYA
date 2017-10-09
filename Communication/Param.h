@@ -5,8 +5,8 @@
 #include <iostream>
 #include <memory>
 #include <algorithm>
-#include "Core/Assert.h"
-#include "Core/Exception.h"
+#include "Core/src/Assert.h"
+#include "Core/src/Exception.h"
 #include "Communication/GeneretedFiles/TextualSearchService.pb.h"
 #include "Communication/ParamValueType.h"
 #include "Serializor.h"

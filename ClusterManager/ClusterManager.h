@@ -3,7 +3,7 @@
 #include <condition_variable>
 #include <mutex>
 #include "Communication/ITextualSearchService.h"
-#include "Core/AsyncExecutor.h"
+#include "Core/src/AsyncExecutor.h"
 #include "Communication/GrpcServer.h"
 #include "StateContext.h"
 #include "Scheduler.h"

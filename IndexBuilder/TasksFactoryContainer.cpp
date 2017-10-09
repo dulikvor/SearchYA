@@ -1,6 +1,6 @@
 #include "TasksFactoryContainer.h"
 #include <utility>
-#include "Core/Exception.h"
+#include "Core/src/Exception.h"
 #include "InitTask.h"
 #include "IndexingTask.h"
 #include "TopKTask.h"

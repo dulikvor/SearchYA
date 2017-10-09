@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "Core/Enumeration.h"
+#include "Core/src/Enumeration.h"
 
 class TaskState
 {

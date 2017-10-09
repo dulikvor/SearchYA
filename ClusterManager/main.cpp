@@ -1,16 +1,16 @@
 #include <memory>
 #include <string>
-#include "Core/Logger.h"
-#include "Core/TraceListener.h"
+#include "Core/src/Logger.h"
+#include "Core/src/TraceListener.h"
 #include "ClusterManager/CommandType.h"
 #include "Communication/GeneralParams.h"
 #include "Communication/Param.h"
 #include "ClusterManager/ClusterManager.h"
 #include "Communication/GeneretedFiles/TextualSearchService.pb.h"
-#include "Core/TimedAsyncExecutor.h"
-#include "Core/AsyncTask.h"
-#include "Core/Enviorment.h"
-#include "Core/CommandLine.h"
+#include "Core/src/TimedAsyncExecutor.h"
+#include "Core/src/AsyncTask.h"
+#include "Core/src/Enviorment.h"
+#include "Core/src/CommandLine.h"
 
 using namespace core;
 using namespace std;

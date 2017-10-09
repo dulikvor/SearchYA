@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 #include "RedisSearchModule/Document.h"
-#include "Core/Promise.h"
+#include "Core/src/Promise.h"
 #include "Task.h"
 #include "TaskState.h"
 

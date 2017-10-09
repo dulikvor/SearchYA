@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include "Core/Assert.h"
+#include "Core/src/Assert.h"
 #include "hiredis/hiredis.h"
 
 template<typename... Arg>

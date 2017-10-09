@@ -1,7 +1,7 @@
 #include "ProcessingState.h"
 #include <atomic>
-#include "Core/Exception.h"
-#include "Core/Logger.h"
+#include "Core/src/Exception.h"
+#include "Core/src/Logger.h"
 #include "ClusterManager.h"
 #include "JobFactoryContainer.h"
 

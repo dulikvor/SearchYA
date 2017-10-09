@@ -1,9 +1,9 @@
 #include <memory>
-#include <Core/Enviorment.h>
-#include "Core/Logger.h"
-#include "Core/CommandLine.h"
-#include "Core/Logger.h"
-#include "Core/TraceListener.h"
+#include "Core/src/Enviorment.h"
+#include "Core/src/Logger.h"
+#include "Core/src/CommandLine.h"
+#include "Core/src/Logger.h"
+#include "Core/src/TraceListener.h"
 #include "IndexBuilder.h"
 
 using namespace core;

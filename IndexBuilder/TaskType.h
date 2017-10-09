@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Enumeration.h"
+#include "Core/src/Enumeration.h"
 
 class TaskType
 {
