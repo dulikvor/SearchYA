@@ -1,7 +1,33 @@
+#!/bin/bash
+workingDir=$PWD
 MASTER_ADDRESS=${1-"127.0.0.1"}
 WORKING_AREA_DIR=${2-"MesosWA"}
 RED_COLOR=`tput setaf 1`
 NO_COLOR=`tput sgr0`
+
+setEnviorment()
+{
+    if ! echo $LIBRARY_PATH | grep -q "/Third_Party/lib"; then
+        export "LIBRARY_PATH=$LIBRARY_PATH:$workingDir/Third_Party/lib"
+    fi
+
+    if ! echo $LD_LIBRARY_PATH | grep -q "/Third_Party/lib"; then
+        export "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$workingDir/Third_Party/lib"
+    fi
+
+    if ! echo $PATH | grep -q "/Third_Party/bin"; then
+        export "PATH=$PATH:$workingDir/Third_Party/bin"
+    fi
+
+
+    if ! echo $MESOS_WORK_DIR | grep -q "/Third_Party/tmp/mesos"; then
+        export MESOS_WORK_DIR=$workingDir/Third_Party/tmp/mesos-"$USER"
+    fi
+
+    if ! echo $CPATH | grep -q "/Third_Party/include"; then
+        export "CPATH=$CPATH:$workingDir/Third_Party/include/"
+    fi
+}
 
 #Open all processes in tabs
 initiateAll()
@@ -28,6 +54,7 @@ help()
 }
 	
 
+setEnviorment
 echo "Read arguments Master address-$RED_COLOR$MASTER_ADDRESS$NO_COLOR WA-$RED_COLOR$WORKING_AREA_DIR$NO_COLOR"
 while : ; do
 	echo "Please enter command"
