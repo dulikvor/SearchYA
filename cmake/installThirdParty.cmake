@@ -8,4 +8,4 @@ include(InstallMesos)
 include(InstallHiRedis)
 include(InstallSpdLog)
 include(InstallGrpcc)
-
+include(InstallCppkin)
