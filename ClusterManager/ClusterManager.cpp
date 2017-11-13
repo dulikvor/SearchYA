@@ -6,6 +6,7 @@
 #include "Core/src/Assert.h"
 #include "Core/src/AsyncTask.h"
 #include "Core/src/Logger.h"
+#include "cppkin/cppkin.h"
 #include "Communication/Serializor.h"
 #include "Communication/GeneralParams.h"
 #include "Communication/TextualSearchServiceImpl.h"
@@ -58,6 +59,12 @@ void ClusterManager::Terminate()
 
 void ClusterManager::HandleInit()
 {
+
+	cppkin::GeneralParams cppkinParams;
+	cppkinParams.AddParam(cppkin::ConfigTags::HOST_ADDRESS, ConfigParams::Instance().GetZipkinHostAddress());
+	cppkinParams.AddParam(cppkin::ConfigTags::PORT, 9410);
+	cppkinParams.AddParam(cppkin::ConfigTags::SERVICE_NAME, string("Cluster_Manager"));
+	INIT(cppkinParams);
 	m_scheduler.reset(new Scheduler(ConfigParams::Instance().GetRole()));
 	m_scheduler->Initialize();
 }

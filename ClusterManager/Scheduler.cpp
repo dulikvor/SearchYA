@@ -1,6 +1,7 @@
 #include "Scheduler.h"
 #include "Core/src/Logger.h"
 #include "Core/src/CommandLine.h"
+#include "cppkin/cppkin.h"
 #include "Communication/GeneralParams.h"
 #include "ClusterManager.h"
 #include "JobFactoryContainer.h"
@@ -34,6 +35,7 @@ void Scheduler::registered(mesos::SchedulerDriver* driver, const mesos::Framewor
 void Scheduler::AllocateQualifiedProcessingJobsResources(mesos::Resources& offeredResources,
                 const mesos::SlaveID& slaveID, vector<JobAllocatedResources>& allocatedJobs)
 {
+	TRACE_EVENT("Allocate_processing_resources");
 	vector<Job*> noneQualifiedJobs;
 	Job* job;
 	{
@@ -57,6 +59,7 @@ void Scheduler::AllocateQualifiedProcessingJobsResources(mesos::Resources& offer
 void Scheduler::AllocateInitJobResources(mesos::Resources &offeredResources,
           const mesos::SlaveID &slaveID, vector<JobAllocatedResources>& allocatedJobs)
 {
+	TRACE_EVENT("Allocate_init_resources");
 	static atomic_int id(0);
 	unique_ptr<Job> job = JobFactoryContainer::Instance().Create(JobType::Init, id++);
 	static mesos::Resources taskResources = mesos::Resources::parse(string("cpus:") +
@@ -69,6 +72,7 @@ void Scheduler::AllocateInitJobResources(mesos::Resources &offeredResources,
 
 void Scheduler::resourceOffers(mesos::SchedulerDriver* driver, const vector<mesos::Offer>& offers)
 {
+	CREATE_TRACE("Resource_Offer");
 	for(const mesos::Offer& offer : offers)
 	{
 		for(const mesos::Resource& resource : offer.resources())
@@ -87,6 +91,9 @@ void Scheduler::resourceOffers(mesos::SchedulerDriver* driver, const vector<meso
 
 		vector<mesos::TaskInfo> tasks;
 		BuildTasks(qualifiedJobs, tasks);
+		if(tasks.empty() == false)
+			SUBMIT_SPAN();
+
 		driver->launchTasks(offer.id(), tasks);
 	}
 }
@@ -141,6 +148,7 @@ void Scheduler::InitializeMesos()
 void Scheduler::BuildTasks(const vector<JobAllocatedResources> &jobsAndResources,
                            vector<mesos::TaskInfo> &tasks)
 {
+	TRACE_EVENT("Build_tasks");
 	for(const JobAllocatedResources & jobAllocatedResources : jobsAndResources)
 	{
 		const Job& job = *jobAllocatedResources.first;

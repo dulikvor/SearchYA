@@ -20,4 +20,5 @@ void ConfigParams::Load(const GeneralParams& configParams)
 	m_executableDir = Enviorment::Instance().GetProcessPath();//StringConverter::Convert(configParams.GetValue("Execution Directory"));
 	m_role = "*"; //stringConverter::Convert(configParams.GetValue("Role"));
 	m_redisServerAddress = "127.0.0.1";
+	m_zipkinHostAddress = "127.0.0.1";
 }

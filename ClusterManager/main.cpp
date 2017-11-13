@@ -1,5 +1,3 @@
-#include <memory>
-#include <string>
 #include "Core/src/Logger.h"
 #include "Core/src/TraceListener.h"
 #include "ClusterManager/CommandType.h"
@@ -21,6 +19,7 @@ int main(int argc, char** argv)
 {
 	CommandLine::Instance().Parse(argc, (const char**)argv);
 	Enviorment::Instance().Init();
+
 	string workingDir = Enviorment::Instance().GetProcessPath() + "/" + CommandLine::Instance().GetArgument("workingdir");
 	Logger::Instance().AddListener(make_shared<FileRotationListener>(TraceSeverity::Info, workingDir + "/Service", 50 * 1024 * 1024, 20));
     Logger::Instance().Start(TraceSeverity::Info);

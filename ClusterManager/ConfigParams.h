@@ -28,6 +28,7 @@ public:
 	std::string GetExecDir() { return const_cast<const ConfigParams&>(*this).GetExecDir(); }
 	const std::string& GetRole() const { return m_role; }
 	const std::string& GetRedisServerAddress() const { return m_redisServerAddress; }
+	const std::string& GetZipkinHostAddress() const { return m_zipkinHostAddress; }
 
 private:
 	ConfigParams(){}
@@ -39,6 +40,7 @@ private:
 	std::string m_mesosMasterAddress;
 	std::string m_redisServerAddress;
 	int m_mesosMasterPort;
+	std::string m_zipkinHostAddress;
 	std::string m_executableDir;
 	std::string m_role;
 };
