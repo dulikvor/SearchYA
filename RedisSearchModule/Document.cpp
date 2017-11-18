@@ -46,7 +46,7 @@ string Document::Serialize(const Document& document)
 		Serializor::Serialize(serializeContext, hashPair.first);	
 		Serializor::Serialize(serializeContext, hashPair.second);	
 	}
-	return serializeContext.GetBuffer();
+	return serializeContext.ToString();
 }
 
 Document Document::Deserialize(const char *data, int length)

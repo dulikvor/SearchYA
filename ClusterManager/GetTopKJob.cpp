@@ -22,9 +22,9 @@ unique_ptr<pair<const char*, int>, Job::Deleter> GetTopKJob::GenerateTaskData() 
     Serializor serializor;
     params.Serialize(serializor);
 
-    string serializorBuffer = serializor.GetBuffer();
+    string serializorBuffer = serializor.ToString();
     unique_ptr<char[]> buffer(new char[serializorBuffer.size()]);
     memcpy(buffer.get(), serializorBuffer.c_str(), serializorBuffer.size());
     return unique_ptr<pair<const char*, int>, Job::Deleter>(new pair<const char*, int>(buffer.release(),
-           (int)serializor.GetBuffer().size()));
+           (int)serializorBuffer.size()));
 };

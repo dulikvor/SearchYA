@@ -3,6 +3,9 @@
 #include <mesos/mesos.pb.h>
 #include "Core/src/Logger.h"
 #include "Communication/GeneralParams.h"
+#include "Communication/TaskMetaData.h"
+#include "Communication/Serializor.h"
+#include "cppkin/cppkin.h"
 #include "IndexBuilder.h"
 #include "TasksFactoryContainer.h"
 
@@ -44,7 +47,16 @@ void Executor::disconnected(mesos::ExecutorDriver* driver)
 //
 void Executor::launchTask(mesos::ExecutorDriver* driver, const mesos::TaskInfo& task)
 {
-	TRACE_INFO("Task received %s label - %s", task.task_id().value().c_str(), task.labels().labels(0).value().c_str()); 
+	TRACE_INFO("Task received %s label - %s", task.task_id().value().c_str(), task.labels().labels(0).value().c_str());
+
+	Serializor context(task.data().c_str(), task.data().size());
+	TaskMetaData taskMetaData = TaskMetaData::Deserialize(context);
+
+    cppkin::Span::SpanHeader spanHeader;
+    DESERIALIZE_TRACING_HEADER(Thrift, taskMetaData.TracingData.first.get(), taskMetaData.TracingData.second, spanHeader);
+
+	CREATE_SPAN((string("Processing task - ") + task.task_id().value()).c_str(), spanHeader.TraceID, spanHeader.ID);
+
 	double coresRequired = 0;
 	for(int index = 0; index < task.resources_size(); index++)
 	{
@@ -54,7 +66,9 @@ void Executor::launchTask(mesos::ExecutorDriver* driver, const mesos::TaskInfo& 
 	}
 	string taskType = GetLabelValue("Task Type", task.labels());
 	IndexBuilder::Instance().GetProcessingManager().SubmitNewTask(TaskType::FromString(taskType),
-	task.task_id().value(), coresRequired, task.data().c_str(), task.data().length());
+	task.task_id().value(), coresRequired, taskMetaData.TaskData.first.get(), taskMetaData.TaskData.second);
+	TRACE_EVENT((string("Task - ") + task.task_id().value() + " running").c_str());
+	SUBMIT_SPAN();
 }
 //
 void Executor::killTask(mesos::ExecutorDriver* driver, const mesos::TaskID& taskId)

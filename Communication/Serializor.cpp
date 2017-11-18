@@ -97,6 +97,13 @@ void Serializor::Serialize(Serializor& context, const string& value)
 	context.Write(value.data(), stringSize);
 }
 
+
+void Serializor::Serialize(Serializor& context, const std::pair<const char*, int>& value)
+{
+	context.Write(reinterpret_cast<const char*>(&value.second), sizeof(int));
+	context.Write(value.first, value.second);
+}
+
 void Serializor::Serialize(Serializor& context, const std::vector<std::string>& value)
 {
 	int valueSize = value.size();
@@ -158,6 +165,15 @@ string Serializor::DeserializeString(Serializor& context)
 	context.Read(const_cast<char*>(val.data()), stringSize);
 	return val;
 }
+
+pair<unique_ptr<char, default_delete<char[]>>, int> Serializor::DeserializeCTypeString(Serializor& context)
+{
+	int cTypeStringSize;
+	context.Read(reinterpret_cast<char*>(&cTypeStringSize), sizeof(int));
+	char* buffer = new char[cTypeStringSize];
+	context.Read(buffer, cTypeStringSize);
+	return make_pair(unique_ptr<char, default_delete<char[]>>(buffer), cTypeStringSize);
+};
 
 list<string> Serializor::DeserializeListString(Serializor& context)
 {

@@ -4,6 +4,8 @@
 #include <string>
 #include <list>
 #include <vector>
+#include <utility>
+#include <memory>
 
 class GeneralParams;
 
@@ -28,6 +30,7 @@ public:
 	static void Serialize(Serializor& context, const float& value);
 	static void Serialize(Serializor& context, const double& value);
 	static void Serialize(Serializor& context, const std::string& value);
+	static void Serialize(Serializor& context, const std::pair<const char*, int>& value);
 	static void Serialize(Serializor& context, const std::vector<std::string>& value);
 	static int DeserializeInt(Serializor& context);
 	static short DeserializeShort(Serializor& context);
@@ -36,6 +39,7 @@ public:
 	static float DeserializeFloat(Serializor& context);
 	static double DeserializeDouble(Serializor& context);
 	static std::string DeserializeString(Serializor& context);
+	static std::pair<std::unique_ptr<char, std::default_delete<char[]>>, int> DeserializeCTypeString(Serializor& context);
 	static std::list<std::string> DeserializeListString(Serializor& context);
 	static std::vector<std::string> DeserializeVectorString(Serializor& context);
 
@@ -43,7 +47,7 @@ public:
 	void Read(char* buffer, int size);
 	void Clean();
 	//Accessors
-	std::string GetBuffer(){return m_buffer.str();}
+	std::string ToString(){return m_buffer.str();}
 
 private:
 	std::stringstream m_buffer;

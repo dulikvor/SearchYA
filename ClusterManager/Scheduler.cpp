@@ -3,6 +3,7 @@
 #include "Core/src/CommandLine.h"
 #include "cppkin/cppkin.h"
 #include "Communication/GeneralParams.h"
+#include "Communication/TaskMetaData.h"
 #include "ClusterManager.h"
 #include "JobFactoryContainer.h"
 #include "TaskState.h"
@@ -35,7 +36,7 @@ void Scheduler::registered(mesos::SchedulerDriver* driver, const mesos::Framewor
 void Scheduler::AllocateQualifiedProcessingJobsResources(mesos::Resources& offeredResources,
                 const mesos::SlaveID& slaveID, vector<JobAllocatedResources>& allocatedJobs)
 {
-	TRACE_EVENT("Allocate_processing_resources");
+	TRACE_EVENT("Allocating processing tasks resources");
 	vector<Job*> noneQualifiedJobs;
 	Job* job;
 	{
@@ -59,7 +60,7 @@ void Scheduler::AllocateQualifiedProcessingJobsResources(mesos::Resources& offer
 void Scheduler::AllocateInitJobResources(mesos::Resources &offeredResources,
           const mesos::SlaveID &slaveID, vector<JobAllocatedResources>& allocatedJobs)
 {
-	TRACE_EVENT("Allocate_init_resources");
+	TRACE_EVENT("Allocating init tasks resources");
 	static atomic_int id(0);
 	unique_ptr<Job> job = JobFactoryContainer::Instance().Create(JobType::Init, id++);
 	static mesos::Resources taskResources = mesos::Resources::parse(string("cpus:") +
@@ -72,7 +73,7 @@ void Scheduler::AllocateInitJobResources(mesos::Resources &offeredResources,
 
 void Scheduler::resourceOffers(mesos::SchedulerDriver* driver, const vector<mesos::Offer>& offers)
 {
-	CREATE_TRACE("Resource_Offer");
+	CREATE_TRACE("Scheduling tasks");
 	for(const mesos::Offer& offer : offers)
 	{
 		for(const mesos::Resource& resource : offer.resources())
@@ -148,7 +149,8 @@ void Scheduler::InitializeMesos()
 void Scheduler::BuildTasks(const vector<JobAllocatedResources> &jobsAndResources,
                            vector<mesos::TaskInfo> &tasks)
 {
-	TRACE_EVENT("Build_tasks");
+
+	TRACE_EVENT("Building tasks");
 	for(const JobAllocatedResources & jobAllocatedResources : jobsAndResources)
 	{
 		const Job& job = *jobAllocatedResources.first;
@@ -165,12 +167,26 @@ void Scheduler::BuildTasks(const vector<JobAllocatedResources> &jobsAndResources
 		label->set_key("Task Type");
 		label->set_value(job.GetLabel());
 		tasks.back().mutable_resources()->MergeFrom(mesos::Resources(resourceSlavePair.first));
-		unique_ptr<pair<const char*, int>, Job::Deleter> data = job.GenerateTaskData();
-		if(data->second > 0)
-			tasks.back().set_data(data->first, data->second);
+		unique_ptr<pair<const char*, int>, Job::Deleter> taskData = job.GenerateTaskData();
+
+		string tracingData;
+		SERIALIZE_TRACING_HEADER(Thrift, tracingData);
+		//Building the header.
+		char* tracingBuffer = new char[tracingData.size()];
+		memcpy(tracingBuffer, tracingData.data(), tracingData.size());
+		TaskMetaData taskMetaData(make_pair(unique_ptr<char, std::default_delete<char[]>>(tracingBuffer), tracingData.size()),
+								  make_pair(unique_ptr<char, std::default_delete<char[]>>(const_cast<char*>(taskData->first)), taskData->second)); //not exception safe
+		taskData.release();
+
+		Serializor context;
+		taskMetaData.Serialize(context);
+		string data = context.ToString();
+
+		tasks.back().set_data(data.data(), data.size());
 
 		AddExecutor(resourceSlavePair.second.value(), "Executor"); //only one executor at the moment per slave
-	}	
+	}
+    TRACE_EVENT("Tasks built");
 }
 
 void Scheduler::AddExecutor(const std::string& slaveID, const std::string& executorID)

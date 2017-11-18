@@ -65,7 +65,7 @@ public:
 			Serializor::Serialize(serializeContext, param.first);
 			param.second.Serialize(serializeContext);
 		}
-		return serializeContext.GetBuffer();
+		return serializeContext.ToString();
 	}
 
 	void Deserialize(Serializor& serializor)

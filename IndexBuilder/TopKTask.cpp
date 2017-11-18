@@ -22,12 +22,12 @@ void TopKTask::Run() {
     vector<pair<const char*, int>> arguments;
     Serializor serializor;
     Serializor::Serialize(serializor, m_word);
-    string wordBuffer = serializor.GetBuffer();
+    string wordBuffer = serializor.ToString();
     arguments.push_back(make_pair(wordBuffer.data(), wordBuffer.size()));
     serializor.Clean();
 
     Serializor::Serialize(serializor, m_k);
-    string kBuffer = serializor.GetBuffer();
+    string kBuffer = serializor.ToString();
     arguments.push_back(make_pair(kBuffer.data(), kBuffer.size()));
     serializor.Clean();
 
@@ -37,7 +37,7 @@ void TopKTask::Run() {
             "Search.GetTopKDocuments", arguments);
 
     Serializor::Serialize(serializor, documentsBuffer);
-    IndexBuilder::Instance().GetExecutor().SendMessage(serializor.GetBuffer());
+    IndexBuilder::Instance().GetExecutor().SendMessage(serializor.ToString());
     serializor.Clean();
 
     vector<Document> documents;
